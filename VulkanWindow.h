@@ -32,6 +32,6 @@ protected:
     void keyPressEvent(QKeyEvent *event) override;              //the only one we use now
     //    void keyReleaseEvent(QKeyEvent *event) override{}
     //    void wheelEvent(QWheelEvent *event) override{}
-
+    QVulkanWindowRenderer* mRenderWindow;
 };
 #endif // VULKANWINDOW_H
