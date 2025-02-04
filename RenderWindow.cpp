@@ -24,9 +24,9 @@ RenderWindow::RenderWindow(QVulkanWindow *w, bool msaa)
     }
     // Dag 230125
     //mObjects.push_back(new VkTriangle());
-    //mObjects.push_back((new VkTriangleSurface("D:\\Task1.txt"))); //line
+    mObjects.push_back((new VkTriangleSurface("D:\\Task1.txt"))); //line
     //mObjects.push_back((new VkTriangleSurface("D:\\Task2.txt"))); //line
-    mObjects.push_back((new VkTriangleSurface("D:\\Task3.txt"))); //triangle list
+    //mObjects.push_back((new VkTriangleSurface("D:\\Task3.txt"))); //triangle list
 
 
 }
@@ -154,7 +154,7 @@ void RenderWindow::initResources()
     memset(&ia, 0, sizeof(ia));
     ia.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
     // Dag 220125
-    ia.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+    ia.topology = VK_PRIMITIVE_TOPOLOGY_LINE_STRIP;
     pipelineInfo.pInputAssemblyState = &ia;
 
     // The viewport and scissor will be set dynamically via vkCmdSetViewport/Scissor.
@@ -231,7 +231,7 @@ void RenderWindow::initSwapChainResources()
     const QSize sz = mWindow->swapChainImageSize();
 
     mCamera.perspective(25.0f, sz.width() / (float) sz.height(), 0.01f, 100.0f);
-    mCamera.translate(0, 0, -10); //Camera is -4 away from origo
+    mCamera.translate(0, -10, -40); //Camera is -4 away from origo
 }
 
 void RenderWindow::startNextFrame()
@@ -241,7 +241,7 @@ void RenderWindow::startNextFrame()
     const QSize sz = mWindow->swapChainImageSize();
     //qDebug() << "startNextFrame()";
     //Backtgound color of the render window - dark grey
-    VkClearColorValue clearColor = {{ 0.6, 0.6, 0.8, 1 }};
+    VkClearColorValue clearColor = {{ 0.6, 0.7, 0.9, 1 }};
 
     VkClearDepthStencilValue clearDS = { 1, 0 };
     VkClearValue clearValues[3];
