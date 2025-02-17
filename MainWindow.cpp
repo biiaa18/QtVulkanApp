@@ -26,6 +26,12 @@ MainWindow::MainWindow(VulkanWindow *vw, QPlainTextEdit *logWidget)
     QPushButton *quitButton = new QPushButton(tr("&Quit"));
     quitButton->setFocusPolicy(Qt::NoFocus);
 
+    // QPushButton *nameButton = new QPushButton(tr("&Name"));
+    // nameButton->setFocusPolicy(Qt::NoFocus);
+    // connect(nameButton, SIGNAL(clicked()), this, SLOT(selectName()));
+    // // buttonLayout->addWidget(nameButton, 1);
+
+
     //connect push of grab button to screen grab function
     connect(grabButton, &QPushButton::clicked, this, &MainWindow::onScreenGrabRequested);
     //connect quit button to quit-function
@@ -36,6 +42,7 @@ MainWindow::MainWindow(VulkanWindow *vw, QPlainTextEdit *logWidget)
 
     //Makes the layout of the program, adding items we have made
     QVBoxLayout *layout = new QVBoxLayout;
+    //layout->addWidget(createMenu());
     layout->addWidget(vulkanWindowWrapper, 7);
     mInfoTab = new QTabWidget(this);
     mInfoTab->addTab(mLogWidget, tr("Debug Log"));
@@ -72,4 +79,29 @@ void MainWindow::onScreenGrabRequested()
     fd.selectFile("test.png");
     if (fd.exec() == QDialog::Accepted)
         img.save(fd.selectedFiles().first());
+}
+
+QMenuBar* MainWindow::createMenu(){
+    // menuBar = new QMenuBar(this);
+    // fileMenu = new QMenu(tr("&File"), this);
+    // openFileAction = fileMenu->addAction(tr("&Open file..."));
+    // exitAction = fileMenu->addAction(tr("E&xit"));
+    // menuBar->addMenu(fileMenu);
+    // menuBar->setVisible(true);
+    // //
+   // connect(openFileAction, SIGNAL(triggered()), this, SLOT(openFile()));
+
+    return menuBar;
+};
+
+void MainWindow::openFile(){
+    auto filnavn = QFileDialog::getOpenFileName(this);
+    if (!filnavn.isEmpty())
+    {
+        VkTriangleSurface* surf = new VkTriangleSurface(filnavn.toStdString());
+        auto rw = dynamic_cast<RenderWindow*>(mVulkanWindow->getRenderWindow());
+        rw->getObjects().push_back(surf);
+        rw->releaseResources();
+        rw->initResources();
+    }
 }

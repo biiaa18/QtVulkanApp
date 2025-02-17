@@ -7,11 +7,13 @@
 #include "VkTrianglesurface.h"
 #include "visualobject.h"
 #include "vkcamera.h"
+using namespace std;
 
 class RenderWindow : public QVulkanWindowRenderer
 {
 public:
     RenderWindow(QVulkanWindow *w, bool msaa = false);
+    RenderWindow(); //new constructor for vulkan window
 
     //Initializes the Vulkan resources needed,
     // the buffers
@@ -35,7 +37,8 @@ public:
     //Get Vulkan info - just for fun
     void getVulkanHWInfo();
 
-    std::vector<VisualObject*>& getObjects() { return mObjects; }
+    vector<VisualObject*>& getObjects() { return mObjects; }
+    unordered_map<string, VisualObject*>&getMap(){return mMap;};
 
 protected:
 
@@ -65,11 +68,13 @@ protected:
     VkPipeline mPipeline{ VK_NULL_HANDLE };
 
 private:
-    friend class VulkanWindow;
+    friend class VulkanWindow; //vulkan window can now access private objects of render window class, so we can rotate/scale/etc using key operations in vulkan window
     VkTriangle mTriangle;
     VkTriangleSurface mSurface;
     VisualObject mVisualObject;
-    std::vector<VisualObject*> mObjects;
+    vector<VisualObject*> mObjects;
+    unordered_map<string, VisualObject*> mMap;
+
 
     void createBuffer(VkDevice logicalDevice,
                         const VkDeviceSize uniAlign, VisualObject* visualObject,
@@ -80,6 +85,9 @@ private:
     //VkDevice logicalDevice;
     //VkPipelineInputAssemblyStateCreateInfo ia;
     //VkGraphicsPipelineCreateInfo pipelineInfo;
+
+
+
 };
 
 #endif // RENDERWINDOW_H

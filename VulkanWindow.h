@@ -1,6 +1,6 @@
 #ifndef VULKANWINDOW_H
 #define VULKANWINDOW_H
-
+#include "RenderWindow.h"
 #include <QVulkanWindow>
 
 /*The QVulkanWindow subclass reimplements the factory function QVulkanWindow::createRenderer().
@@ -17,6 +17,8 @@ public:
     VulkanWindow();
 
     QVulkanWindowRenderer* createRenderer() override;
+    QVulkanWindowRenderer* getRenderWindow() const {return mRenderWindow;};
+
 
 signals:
     void frameQueued(int colorValue);
@@ -32,6 +34,9 @@ protected:
     void keyPressEvent(QKeyEvent *event) override;              //the only one we use now
     //    void keyReleaseEvent(QKeyEvent *event) override{}
     //    void wheelEvent(QWheelEvent *event) override{}
-    QVulkanWindowRenderer* mRenderWindow;
+    QVulkanWindowRenderer* mRenderWindow; //points to render window (or rather class it inherits from
+    int mIndex=0; // the same as int mIndex{0}; just another way of writing
+    VisualObject* mSelectedObject; //we want to be able to choose any object from mObjects
+
 };
 #endif // VULKANWINDOW_H

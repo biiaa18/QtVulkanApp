@@ -31,6 +31,9 @@ void VkCamera::translate(float dx, float dy, float dz)
     mViewMatrix.translate(dx, dy, dz);
 }
 
+void VkCamera::rotate (float t, float x, float y, float z){
+    mViewMatrix.rotate(t,x,y,z);
+}
 
 QMatrix4x4 VkCamera::cMatrix()
 {

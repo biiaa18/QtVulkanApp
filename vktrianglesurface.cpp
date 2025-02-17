@@ -33,7 +33,7 @@ VkTriangleSurface::VkTriangleSurface(const string &filename)
         mVertices.push_back(v);
         qDebug() << v.x << v.y << v.z;
     }
-    //mMatrix.translate(0.0f, 1.0f, 0.0f);
+    mMatrix.translate(0.0f, -9.0f, -5.0f);
     inn.close();
 }
 

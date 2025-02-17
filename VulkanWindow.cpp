@@ -1,5 +1,4 @@
 #include "VulkanWindow.h"
-#include "RenderWindow.h"
 #include <QKeyEvent>
 #include <QDebug>
 
@@ -16,16 +15,40 @@ QVulkanWindowRenderer* VulkanWindow::createRenderer()
 
 void VulkanWindow::keyPressEvent(QKeyEvent *event)
 {
+
+
+    if(event->key()==Qt::Key_0){
+        qDebug("Object 1 chosen");
+        mIndex=0;
+    }
+
+    if(event->key()==Qt::Key_1){
+        qDebug("Object 2 chosen");
+        mIndex=1;
+    }
+
     if (event->key() == Qt::Key_A)
     {
         qDebug("moving left or right");
-        dynamic_cast<RenderWindow*>(mRenderWindow)->mObjects.at(0)->move(-0.1f);
+        dynamic_cast<RenderWindow*>(mRenderWindow)->mObjects.at(mIndex)->move(-0.1f);
 
     }
-    if(event->key() == Qt::Key_S)
+    if (event->key() == Qt::Key_S)
+    {
+        qDebug("scale");
+        dynamic_cast<RenderWindow*>(mRenderWindow)->mObjects.at(mIndex)->scale(1.0f);
+
+    }
+    if(event->key() == Qt::Key_C)
     {
         qDebug("move camera");
         dynamic_cast<RenderWindow*>(mRenderWindow)->mCamera.translate(.0f, 0.0f, -1.0f);
+
+    }
+    if(event->key() == Qt::Key_R)
+    {
+        qDebug("rotate camera");
+        dynamic_cast<RenderWindow*>(mRenderWindow)->mCamera.rotate(45.0f,.0f, 1.0f, 0.0f);
 
     }
     if (event->key() == Qt::Key_Escape)

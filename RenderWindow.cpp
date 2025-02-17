@@ -27,7 +27,12 @@ RenderWindow::RenderWindow(QVulkanWindow *w, bool msaa)
     mObjects.push_back((new VkTriangleSurface("D:\\Task1.txt"))); //line
     //mObjects.push_back((new VkTriangleSurface("D:\\Task2.txt"))); //line
     //mObjects.push_back((new VkTriangleSurface("D:\\Task3.txt"))); //triangle list
+    //mObjects.at(0)->setName("task1");
+    //mObjects.at(1)->setName("task2");
 
+    // for (auto it=mObjects.begin(); it!=mObjects.end(); it++){
+    //     mMap.insert(pair<string,VisualObject*>{(*it)->getName(), *it });
+    // }
 
 }
 
@@ -279,13 +284,28 @@ void RenderWindow::startNextFrame()
     mDeviceFunctions->vkCmdSetScissor(cmdBuf, 0, 1, &scissor);
 
     /********************************* Our draw call!: *********************************/
-    for (auto it=mObjects.begin(); it!=mObjects.end(); it++)
-    {
-        mDeviceFunctions->vkCmdBindVertexBuffers(cmdBuf, 0, 1, &(*it)->mBuffer, &vbOffset);
-        setModelMatrix(mCamera.cMatrix() * (*it)->mMatrix);
-        mDeviceFunctions->vkCmdDraw(cmdBuf, (*it)->mVertices.size(), 1, 0, 0);
+    // for (auto it=mObjects.begin(); it!=mObjects.end(); it++)
+    // {
+    //     mDeviceFunctions->vkCmdBindVertexBuffers(cmdBuf, 0, 1, &(*it)->mBuffer, &vbOffset);
+    //     setModelMatrix(mCamera.cMatrix() * (*it)->mMatrix);
+    //     mDeviceFunctions->vkCmdDraw(cmdBuf, (*it)->mVertices.size(), 1, 0, 0);
+    // }
+
+    for (auto it=mMap.begin();it!=mMap.end();it++){
+        // it first is name and second is VisualObject*
+        auto p=(*it).second;
+        //we replace previous *it with p, because it is now p that is VisualObject* pointer
+        mDeviceFunctions->vkCmdBindVertexBuffers(cmdBuf, 0, 1, &p->mBuffer, &vbOffset);
+        setModelMatrix(mCamera.cMatrix() *p->mMatrix);
+        mDeviceFunctions->vkCmdDraw(cmdBuf, p->mVertices.size(), 1, 0, 0);
+
     }
+
+
+
+
     mDeviceFunctions->vkCmdEndRenderPass(cmdBuf);
+    //mObjects.at(0)->
     //mObjects.at(0)->rotate(1.0f, 0.0f, 0.0f, 1.0f);
     //qDebug() << mObjects.at(1)->mMatrix;
     mWindow->frameReady();

@@ -21,6 +21,11 @@ public:
     void scale(float s);
     void rotate(float t, float x, float y, float z);
 
+    void setName(string name);
+    string getName() const;
+
+protected:
+    string mName;
 };
 
 #endif // VISUALOBJECT_H
