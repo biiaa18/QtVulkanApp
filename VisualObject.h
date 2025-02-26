@@ -20,7 +20,7 @@ public:
     VkPrimitiveTopology mTopology { VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST };
     //
     QMatrix4x4 mMatrix;
-    void move(float x, float y=0.0f, float z=0.0f);
+    void move(float x, float y, float z);
     void scale(float s);
     void rotate(float t, float x, float y, float z);
 protected:

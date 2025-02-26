@@ -26,17 +26,17 @@ RenderWindow::RenderWindow(QVulkanWindow *w, bool msaa)
         }
     }
     // Dag 230125
-    mObjects.push_back(new VkTriangle());
+    mObjects.push_back((new VkTriangle()));
     mObjects.push_back((new VkTriangleSurface()));
     // Dag 030225
-    mObjects.at(0)->setName("triangel");
-    mObjects.at(1)->setName("surf");
+    // mObjects.at(0)->setName("triangel");
+    // mObjects.at(1)->setName("surf");
     // **************************************
     // Legger inn objekter i map
     // **************************************
     //std::string navn{"navn"}; // Skal VisualObject klassen få en navn-variabel?
-    for (auto it=mObjects.begin(); it!=mObjects.end(); it++)
-        mMap.insert(std::pair<std::string, VisualObject*>{(*it)->getName(),*it});
+    // for (auto it=mObjects.begin(); it!=mObjects.end(); it++)
+    //     mMap.insert(std::pair<std::string, VisualObject*>{(*it)->getName(),*it});
 }
 
 void RenderWindow::initResources()
@@ -246,7 +246,8 @@ void RenderWindow::initSwapChainResources()
     const QSize sz = mWindow->swapChainImageSize();
 
     mCamera.perspective(25.0f, sz.width() / (float) sz.height(), 0.01f, 100.0f);
-    mCamera.translate(0, 0, -4); //Camera is -4 away from origo
+    mCamera.translate(0, 0, -15); //Camera is -4 away from origo
+    mCamera.rotate(45,1.0f,0.0f,0.0f);
 }
 
 void RenderWindow::startNextFrame()
@@ -310,7 +311,7 @@ void RenderWindow::startNextFrame()
     }
 */
     mDeviceFunctions->vkCmdEndRenderPass(cmdBuf);
-    mObjects.at(1)->rotate(1.0f, 0.0f, 0.0f, 1.0f);
+    //mObjects.at(1)->rotate(1.0f, 0.0f, 0.0f, 1.0f);
     //qDebug() << mObjects.at(1)->mMatrix;
     mWindow->frameReady();
     mWindow->requestUpdate(); // render continuously, throttled by the presentation rate

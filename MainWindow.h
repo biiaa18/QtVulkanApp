@@ -8,10 +8,10 @@ QT_FORWARD_DECLARE_CLASS(QPlainTextEdit)
 
 //Forward declaration
 class VulkanWindow;
-class QMenu;
-class QMenuBar;
-class QAction;
-class QDialogButtonBox;
+// class QMenu;
+// class QMenuBar;
+// class QAction;
+// class QDialogButtonBox;
 
 class MainWindow : public QWidget
 {
@@ -28,17 +28,17 @@ private:
     QTabWidget *mInfoTab{ nullptr };
     QPlainTextEdit *mLogWidget{ nullptr };
 
-    QMenuBar* createMenu();
+//     QMenuBar* createMenu();
 
-    QMenuBar* menuBar{ nullptr };
-    QMenu* fileMenu{ nullptr };
-    QAction* openFileAction{ nullptr };
-    QAction* exitAction{ nullptr };
-    std::string mSelectedName;
+//     QMenuBar* menuBar{ nullptr };
+//     QMenu* fileMenu{ nullptr };
+//     QAction* openFileAction{ nullptr };
+//     QAction* exitAction{ nullptr };
+//     std::string mSelectedName;
 
-private slots:
-    void openFile();
-    void selectName();
+// private slots:
+//     void openFile();
+//     void selectName();
 };
 
 #endif // HELLOVULKANWIDGET_H
