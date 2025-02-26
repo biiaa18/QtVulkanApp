@@ -18,7 +18,7 @@ public:
     VulkanWindow();
 
     QVulkanWindowRenderer* createRenderer() override;
-    QVulkanWindowRenderer* getRenderWindow() const { return mRenderWindow; }
+    QVulkanWindowRenderer* getRenderer() const { return mRenderer; }
     void setSelectedObject(VisualObject* object) { mSelectedObject = object; }
 
 signals:
@@ -36,7 +36,7 @@ protected:
     //    void keyReleaseEvent(QKeyEvent *event) override{}
     //    void wheelEvent(QWheelEvent *event) override{}
 
-    QVulkanWindowRenderer* mRenderWindow{ nullptr };
+    QVulkanWindowRenderer* mRenderer{ nullptr };
     VisualObject* mSelectedObject{ nullptr };
     int mIndex{0};
 

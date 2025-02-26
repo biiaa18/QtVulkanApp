@@ -10,10 +10,10 @@
 #include "VisualObject.h"
 #include "TriangleSurface.h"
 
-class RenderWindow : public QVulkanWindowRenderer
+class Renderer : public QVulkanWindowRenderer
 {
 public:
-    RenderWindow(QVulkanWindow *w, bool msaa = false);
+    Renderer(QVulkanWindow *w, bool msaa = false);
 
     //Initializes the Vulkan resources needed,
     // the buffers

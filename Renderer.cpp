@@ -9,9 +9,9 @@ static inline VkDeviceSize aligned(VkDeviceSize v, VkDeviceSize byteAlign)
 }
 
 
-/*** RenderWindow class ***/
+/*** Renderer class ***/
 
-RenderWindow::RenderWindow(QVulkanWindow *w, bool msaa)
+Renderer::Renderer(QVulkanWindow *w, bool msaa)
 	: mWindow(w)
 {
     if (msaa) {
@@ -26,10 +26,13 @@ RenderWindow::RenderWindow(QVulkanWindow *w, bool msaa)
         }
     }
     // Dag 230125
-    mObjects.push_back((new Triangle()));
-    mObjects.push_back((new TriangleSurface()));
-    // Dag 030225
-    // mObjects.at(0)->setName("triangel");
+    // mObjects.push_back((new Triangle()));
+    // mObjects.push_back((new TriangleSurface()));
+    mObjects.push_back((new TriangleSurface("D:\\1x_axis.txt")));
+    mObjects.push_back((new TriangleSurface("D:\\1y_axis.txt")));
+    mObjects.push_back((new TriangleSurface("D:\\1z_axis.txt")));
+    // // Dag 030225
+    // // mObjects.at(0)->setName("triangel");
     // mObjects.at(1)->setName("surf");
     // **************************************
     // Legger inn objekter i map
@@ -39,7 +42,7 @@ RenderWindow::RenderWindow(QVulkanWindow *w, bool msaa)
     //     mMap.insert(std::pair<std::string, VisualObject*>{(*it)->getName(),*it});
 }
 
-void RenderWindow::initResources()
+void Renderer::initResources()
 {
     qDebug("\n ***************************** initResources ******************************************* \n");
 
@@ -163,7 +166,7 @@ void RenderWindow::initResources()
     memset(&ia, 0, sizeof(ia));
     ia.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
     // Dag 220125
-    ia.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+    ia.topology = VK_PRIMITIVE_TOPOLOGY_LINE_STRIP;
     pipelineInfo.pInputAssemblyState = &ia;
 
     // The viewport and scissor will be set dynamically via vkCmdSetViewport/Scissor.
@@ -234,7 +237,7 @@ void RenderWindow::initResources()
 }
 
 // This function is called at startup and when the app window is resized
-void RenderWindow::initSwapChainResources()
+void Renderer::initSwapChainResources()
 {
     qDebug("\n ***************************** initSwapChainResources ******************************************* \n");
 
@@ -250,7 +253,7 @@ void RenderWindow::initSwapChainResources()
     mCamera.rotate(45,1.0f,0.0f,0.0f);
 }
 
-void RenderWindow::startNextFrame()
+void Renderer::startNextFrame()
 {
     VkCommandBuffer cmdBuf = mWindow->currentCommandBuffer();
     const QSize sz = mWindow->swapChainImageSize();
@@ -317,7 +320,7 @@ void RenderWindow::startNextFrame()
     mWindow->requestUpdate(); // render continuously, throttled by the presentation rate
 }
 
-VkShaderModule RenderWindow::createShader(const QString &name)
+VkShaderModule Renderer::createShader(const QString &name)
 {
     //This uses Qt's own file opening and resource system
     //We probably will replace it with pure C++ when expanding the program
@@ -344,7 +347,7 @@ VkShaderModule RenderWindow::createShader(const QString &name)
     return shaderModule;
 }
 
-void RenderWindow::setModelMatrix(QMatrix4x4 modelMatrix)
+void Renderer::setModelMatrix(QMatrix4x4 modelMatrix)
 {
 
 	mDeviceFunctions->vkCmdPushConstants(mWindow->currentCommandBuffer(), mPipelineLayout, 
@@ -352,11 +355,11 @@ void RenderWindow::setModelMatrix(QMatrix4x4 modelMatrix)
 }
 
 // Dag 240125
-// This function contains some of the body of our former RenderWindow::initResources() function
+// This function contains some of the body of our former Renderer::initResources() function
 // If we want to have more objects, we need to initialize buffers for each of them
 // This version is not a version with encapsulation
 // We use the VisualObject members mBuffer and mBufferMemory
-void RenderWindow::createBuffer(VkDevice logicalDevice, const VkDeviceSize uniAlign,
+void Renderer::createBuffer(VkDevice logicalDevice, const VkDeviceSize uniAlign,
                                 VisualObject* visualObject, VkBufferUsageFlags usage)
 {
     VkBufferCreateInfo bufferInfo{};
@@ -399,7 +402,7 @@ void RenderWindow::createBuffer(VkDevice logicalDevice, const VkDeviceSize uniAl
     mDeviceFunctions->vkUnmapMemory(logicalDevice, visualObject->mBufferMemory);
 }
 
-void RenderWindow::getVulkanHWInfo()
+void Renderer::getVulkanHWInfo()
 {
     qDebug("\n ***************************** Vulkan Hardware Info ******************************************* \n");
     QVulkanInstance *inst = mWindow->vulkanInstance();
@@ -445,12 +448,12 @@ void RenderWindow::getVulkanHWInfo()
     qDebug("\n ***************************** Vulkan Hardware Info finished ******************************************* \n");
 }
 
-void RenderWindow::releaseSwapChainResources()
+void Renderer::releaseSwapChainResources()
 {
     qDebug("\n ***************************** releaseSwapChainResources ******************************************* \n");
 }
 
-void RenderWindow::releaseResources()
+void Renderer::releaseResources()
 {
     qDebug("\n ***************************** releaseResources ******************************************* \n");
 

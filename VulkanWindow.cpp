@@ -9,16 +9,16 @@ VulkanWindow::VulkanWindow()
 
 QVulkanWindowRenderer* VulkanWindow::createRenderer()
 {
-    //Makes a new instance of the RenderWindow (our Renderer) class
-    mRenderWindow = new RenderWindow(this, true); // last true == try MSAA
-    return mRenderWindow;
+    //Makes a new instance of the Renderer (our Renderer) class
+    mRenderer = new Renderer(this, true); // last true == try MSAA
+    return mRenderer;
 }
 
 void VulkanWindow::keyPressEvent(QKeyEvent *event)
 {
     if (event->key() == Qt::Key_W)
     {
-        dynamic_cast<RenderWindow*>(mRenderWindow)->mObjects.at(mIndex)->move(0.0f, 1.0f, 0.0f);
+        dynamic_cast<Renderer*>(mRenderer)->mObjects.at(mIndex)->move(0.0f, 1.0f, 0.0f);
         // if(mSelectedObject)
         // {
         //     qDebug("Move forward");
@@ -34,7 +34,7 @@ void VulkanWindow::keyPressEvent(QKeyEvent *event)
             qDebug("Move backwards");
             mSelectedObject->move(-10.1f,0.0f, 0.0f);
         }
-        dynamic_cast<RenderWindow*>(mRenderWindow)->mObjects.at(mIndex)->move(0.0f, -1.0f, 0.0f);
+        dynamic_cast<Renderer*>(mRenderer)->mObjects.at(mIndex)->move(0.0f, -1.0f, 0.0f);
     }
 
     if (event->key() == Qt::Key_A)
@@ -44,7 +44,7 @@ void VulkanWindow::keyPressEvent(QKeyEvent *event)
             qDebug("Move left");
             mSelectedObject->move(0.0f,0.0f, 10.1f);
         }
-        dynamic_cast<RenderWindow*>(mRenderWindow)->mObjects.at(mIndex)->move(0.0f,0.0f, 1.1f);
+        dynamic_cast<Renderer*>(mRenderer)->mObjects.at(mIndex)->move(0.0f,0.0f, 1.1f);
     }
 
     if (event->key() == Qt::Key_D)
@@ -54,13 +54,13 @@ void VulkanWindow::keyPressEvent(QKeyEvent *event)
             qDebug("Move right");
             mSelectedObject->move(0.0f,0.0f, -10.1f);
         }
-        dynamic_cast<RenderWindow*>(mRenderWindow)->mObjects.at(mIndex)->move(0.0f,0.0f, -1.1f);
+        dynamic_cast<Renderer*>(mRenderer)->mObjects.at(mIndex)->move(0.0f,0.0f, -1.1f);
     }
 
     if(event->key() == Qt::Key_M)
     {
         qDebug("Scaling object");
-        dynamic_cast<RenderWindow*>(mRenderWindow)->mObjects.at(mIndex)->scale(0.9f);
+        dynamic_cast<Renderer*>(mRenderer)->mObjects.at(mIndex)->scale(0.9f);
     }
     if (event->key() == Qt::Key_Escape)
     {
@@ -79,15 +79,23 @@ void VulkanWindow::keyPressEvent(QKeyEvent *event)
     //****** Camera control ******** //
     if(event->key() == Qt::Key_T)
     {
-        dynamic_cast<RenderWindow*>(mRenderWindow)->mCamera.translate(.0f, 0.0f, 0.2f);
+        dynamic_cast<Renderer*>(mRenderer)->mCamera.translate(.0f, 0.0f, 0.2f);
     }
     if(event->key() == Qt::Key_A)
     {
-        // dynamic_cast<RenderWindow*>(mRenderWindow)->mCamera.translate(.0f, 0.0f, -0.2f);
+        // dynamic_cast<Renderer*>(mRenderer)->mCamera.translate(.0f, 0.0f, -0.2f);
     }
-    if(event->key() == Qt::Key_R)
+    if(event->key() == Qt::Key_Y)
     {
-        dynamic_cast<RenderWindow*>(mRenderWindow)->mCamera.rotate(45, 1.0f, 0.0f, 0.0f);
+        dynamic_cast<Renderer*>(mRenderer)->mCamera.rotate(45, 0.0f, 1.0f, 0.0f);
+    }
+    if(event->key() == Qt::Key_X)
+    {
+        dynamic_cast<Renderer*>(mRenderer)->mCamera.rotate(45, 1.0f, 0.0f, 0.0f);
+    }
+    if(event->key() == Qt::Key_Z)
+    {
+        dynamic_cast<Renderer*>(mRenderer)->mCamera.rotate(45, 0.0f, 0.0f, 1.0f);
     }
 }
 
@@ -95,10 +103,10 @@ void VulkanWindow::keyPressEvent(QKeyEvent *event)
 // {
 //     // qDebug("X: %d, mouselast: %d" , event->pos().x(), mMouseXlast);
 //     if(event->pos().x() - mMouseXlast > 0)
-//         dynamic_cast<RenderWindow*>(mRenderWindow)->mCamera.rotate(0.5f, 0.0f, 1.0f, 0.0f);
+//         dynamic_cast<Renderer*>(mRenderer)->mCamera.rotate(0.5f, 0.0f, 1.0f, 0.0f);
 
 //     if(event->pos().x() - mMouseXlast < 0)
-//         dynamic_cast<RenderWindow*>(mRenderWindow)->mCamera.rotate(-0.5f, 0.0f, 1.0f, 0.0f);
+//         dynamic_cast<Renderer*>(mRenderer)->mCamera.rotate(-0.5f, 0.0f, 1.0f, 0.0f);
 
 //     mMouseXlast = event->pos().x();
 // }
