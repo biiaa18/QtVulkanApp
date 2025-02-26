@@ -15,6 +15,7 @@ QVulkanWindowRenderer* VulkanWindow::createRenderer()
 
 void VulkanWindow::keyPressEvent(QKeyEvent *event)
 {
+<<<<<<< Updated upstream
 
 
     if(event->key()==Qt::Key_0){
@@ -28,6 +29,50 @@ void VulkanWindow::keyPressEvent(QKeyEvent *event)
     }
 
     if (event->key() == Qt::Key_A)
+=======
+    if (event->key() == Qt::Key_W)
+    {
+        dynamic_cast<RenderWindow*>(mRenderWindow)->mObjects.at(mIndex)->move(0.0f, 1.0f, 0.0f);
+        // if(mSelectedObject)
+        // {
+        //     qDebug("Move forward");
+        //     mSelectedObject->move(10.0f,0.0f, 0.0f);
+        // }
+
+    }
+
+    if (event->key() == Qt::Key_S)
+    {
+        if(mSelectedObject)
+        {
+            qDebug("Move backwards");
+            mSelectedObject->move(-10.1f,0.0f, 0.0f);
+        }
+        dynamic_cast<RenderWindow*>(mRenderWindow)->mObjects.at(mIndex)->move(0.0f, -1.0f, 0.0f);
+    }
+
+    if (event->key() == Qt::Key_A)
+    {
+        if(mSelectedObject)
+        {
+            qDebug("Move left");
+            mSelectedObject->move(0.0f,0.0f, 10.1f);
+        }
+        dynamic_cast<RenderWindow*>(mRenderWindow)->mObjects.at(mIndex)->move(0.0f,0.0f, 1.1f);
+    }
+
+    if (event->key() == Qt::Key_D)
+    {
+        if(mSelectedObject)
+        {
+            qDebug("Move right");
+            mSelectedObject->move(0.0f,0.0f, -10.1f);
+        }
+        dynamic_cast<RenderWindow*>(mRenderWindow)->mObjects.at(mIndex)->move(0.0f,0.0f, -1.1f);
+    }
+
+    if(event->key() == Qt::Key_M)
+>>>>>>> Stashed changes
     {
         qDebug("moving left or right");
         dynamic_cast<RenderWindow*>(mRenderWindow)->mObjects.at(mIndex)->move(-0.1f);
@@ -55,4 +100,43 @@ void VulkanWindow::keyPressEvent(QKeyEvent *event)
     {
         QCoreApplication::quit();       //Shuts down the whole program
     }
+<<<<<<< Updated upstream
 }
+=======
+
+    if (event->key() == Qt::Key_0){
+        qDebug("triangle object");
+        mIndex = 0;
+    }
+    if (event->key() == Qt::Key_1){
+        qDebug("rectangle object");
+        mIndex = 1;
+    }
+
+    //****** Camera control ******** //
+    if(event->key() == Qt::Key_T)
+    {
+        dynamic_cast<RenderWindow*>(mRenderWindow)->mCamera.translate(.0f, 0.0f, 0.2f);
+    }
+    if(event->key() == Qt::Key_A)
+    {
+        // dynamic_cast<RenderWindow*>(mRenderWindow)->mCamera.translate(.0f, 0.0f, -0.2f);
+    }
+    if(event->key() == Qt::Key_R)
+    {
+        dynamic_cast<RenderWindow*>(mRenderWindow)->mCamera.rotate(45, 1.0f, 0.0f, 0.0f);
+    }
+}
+
+// void VulkanWindow::mouseMoveEvent(QMouseEvent *event)
+// {
+//     // qDebug("X: %d, mouselast: %d" , event->pos().x(), mMouseXlast);
+//     if(event->pos().x() - mMouseXlast > 0)
+//         dynamic_cast<RenderWindow*>(mRenderWindow)->mCamera.rotate(0.5f, 0.0f, 1.0f, 0.0f);
+
+//     if(event->pos().x() - mMouseXlast < 0)
+//         dynamic_cast<RenderWindow*>(mRenderWindow)->mCamera.rotate(-0.5f, 0.0f, 1.0f, 0.0f);
+
+//     mMouseXlast = event->pos().x();
+// }
+>>>>>>> Stashed changes

@@ -37,8 +37,13 @@ public:
     //Get Vulkan info - just for fun
     void getVulkanHWInfo();
 
+<<<<<<< Updated upstream
     vector<VisualObject*>& getObjects() { return mObjects; }
     unordered_map<string, VisualObject*>&getMap(){return mMap;};
+=======
+    std::vector<VisualObject*>& getObjects() { return mObjects; }
+    // std::unordered_map<std::string, VisualObject*>& getMap() { return mMap; }
+>>>>>>> Stashed changes
 
 protected:
 

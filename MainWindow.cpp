@@ -26,11 +26,16 @@ MainWindow::MainWindow(VulkanWindow *vw, QPlainTextEdit *logWidget)
     QPushButton *quitButton = new QPushButton(tr("&Quit"));
     quitButton->setFocusPolicy(Qt::NoFocus);
 
+<<<<<<< Updated upstream
     // QPushButton *nameButton = new QPushButton(tr("&Name"));
     // nameButton->setFocusPolicy(Qt::NoFocus);
     // connect(nameButton, SIGNAL(clicked()), this, SLOT(selectName()));
     // // buttonLayout->addWidget(nameButton, 1);
 
+=======
+   /* QPushButton *nameButton = new QPushButton(tr("&Name")); // Dag 040225
+    nameButton->setFocusPolicy(Qt::NoFocus);     */           // Dag 040225
+>>>>>>> Stashed changes
 
     //connect push of grab button to screen grab function
     connect(grabButton, &QPushButton::clicked, this, &MainWindow::onScreenGrabRequested);
@@ -39,15 +44,29 @@ MainWindow::MainWindow(VulkanWindow *vw, QPlainTextEdit *logWidget)
     //connect changes in our logger to trigger scroll to end of log window, using a lambda
     connect(mLogWidget, &QPlainTextEdit::textChanged, [logWidget]()
             { logWidget->moveCursor(QTextCursor::End); });
+<<<<<<< Updated upstream
 
     //Makes the layout of the program, adding items we have made
     QVBoxLayout *layout = new QVBoxLayout;
     //layout->addWidget(createMenu());
+=======
+    //select file to import
+    // connect(nameButton, SIGNAL(clicked()), this, SLOT(selectName()));   // Dag 040225
+
+    //Makes the layout of the program, adding items we have made
+    QVBoxLayout *layout = new QVBoxLayout;
+    // layout->setMenuBar(createMenu());
+>>>>>>> Stashed changes
     layout->addWidget(vulkanWindowWrapper, 7);
     mInfoTab = new QTabWidget(this);
     mInfoTab->addTab(mLogWidget, tr("Debug Log"));
     layout->addWidget(mInfoTab, 2);
     QHBoxLayout *buttonLayout = new QHBoxLayout;
+<<<<<<< Updated upstream
+=======
+
+    // buttonLayout->addWidget(nameButton, 1); // Dag 040225
+>>>>>>> Stashed changes
     buttonLayout->addWidget(grabButton, 1);
     buttonLayout->addWidget(quitButton, 1);
     layout->addLayout(buttonLayout);
@@ -81,6 +100,7 @@ void MainWindow::onScreenGrabRequested()
         img.save(fd.selectedFiles().first());
 }
 
+<<<<<<< Updated upstream
 QMenuBar* MainWindow::createMenu(){
     // menuBar = new QMenuBar(this);
     // fileMenu = new QMenu(tr("&File"), this);
@@ -105,3 +125,61 @@ void MainWindow::openFile(){
         rw->initResources();
     }
 }
+=======
+// QMenuBar *MainWindow::createMenu()
+// {
+//     menuBar = new QMenuBar(this);
+//     fileMenu = new QMenu(tr("&File"), this);
+//     openFileAction = fileMenu->addAction(tr("&Open file..."));
+//     exitAction = fileMenu->addAction(tr("E&xit"));
+//     menuBar->addMenu(fileMenu);
+//     menuBar->setVisible(true);
+//     //
+//     connect(openFileAction, &QAction::triggered, this, &MainWindow::openFile);
+//     connect(exitAction, &QAction::triggered, qApp, &QCoreApplication::quit);
+
+//     //   editMenu = new QMenu(this);
+//     //   editNameAction = editMenu->addAction(tr("&Enter name..."));
+//     //   menuBar->addMenu(editMenu);
+//     //   editMenu->setVisible(true);
+//     return menuBar;
+// }
+// void MainWindow::openFile() // slot
+// {
+//     auto filnavn = QFileDialog::getOpenFileName(this);
+//     if (!filnavn.isEmpty())
+//     {
+//         //QString tekst;
+//         //loadFile(filnavn, tekst);
+//         //textEdit->setPlainText(tekst);
+//         VkTriangleSurface* surf = new VkTriangleSurface(filnavn.toStdString());
+//         auto rw = dynamic_cast<RenderWindow*>(mVulkanWindow->getRenderWindow());
+//         rw->getObjects().push_back(surf);
+//         rw->releaseResources();
+//         rw->initResources();
+//     }
+// }
+
+// void MainWindow::selectName()
+// {
+//     bool ok;
+//     QString text = QInputDialog::getText(this, tr("QInputDialog::getText()"),
+//                                          tr("Object name:"), QLineEdit::Normal,
+//                                          QDir::home().dirName(), &ok);
+//     if (ok && !text.isEmpty())
+//         mSelectedName = text.toStdString();
+
+//     auto rw = dynamic_cast<RenderWindow*>(mVulkanWindow->getRenderWindow());
+//     auto map = rw->getMap();
+//     auto visualObject = map[mSelectedName];
+//     if (visualObject != nullptr)
+//         mVulkanWindow->setSelectedObject(visualObject);
+//     else {
+//         QMessageBox msgBox;
+//         msgBox.setText("Finner ikke " + QString(mSelectedName.c_str()));
+//         msgBox.setIcon(QMessageBox::Warning);
+//         msgBox.setDefaultButton(QMessageBox::Close);
+//         // int ret = msgBox.exec();
+//     }
+// }
+>>>>>>> Stashed changes

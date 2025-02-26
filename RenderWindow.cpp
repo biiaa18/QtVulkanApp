@@ -23,6 +23,7 @@ RenderWindow::RenderWindow(QVulkanWindow *w, bool msaa)
         }
     }
     // Dag 230125
+<<<<<<< Updated upstream
     //mObjects.push_back(new VkTriangle());
     mObjects.push_back((new VkTriangleSurface("D:\\Task1.txt"))); //line
     //mObjects.push_back((new VkTriangleSurface("D:\\Task2.txt"))); //line
@@ -34,6 +35,19 @@ RenderWindow::RenderWindow(QVulkanWindow *w, bool msaa)
     //     mMap.insert(pair<string,VisualObject*>{(*it)->getName(), *it });
     // }
 
+=======
+    mObjects.push_back((new VkTriangle()));
+    mObjects.push_back((new VkTriangleSurface()));
+    // Dag 030225
+    // mObjects.at(0)->setName("triangel");
+    // mObjects.at(1)->setName("surf");
+    // **************************************
+    // Legger inn objekter i map
+    // **************************************
+    //std::string navn{"navn"}; // Skal VisualObject klassen få en navn-variabel?
+    // for (auto it=mObjects.begin(); it!=mObjects.end(); it++)
+    //     mMap.insert(std::pair<std::string, VisualObject*>{(*it)->getName(),*it});
+>>>>>>> Stashed changes
 }
 
 void RenderWindow::initResources()
@@ -236,7 +250,12 @@ void RenderWindow::initSwapChainResources()
     const QSize sz = mWindow->swapChainImageSize();
 
     mCamera.perspective(25.0f, sz.width() / (float) sz.height(), 0.01f, 100.0f);
+<<<<<<< Updated upstream
     mCamera.translate(0, -10, -40); //Camera is -4 away from origo
+=======
+    mCamera.translate(0, 0, -15); //Camera is -4 away from origo
+    mCamera.rotate(45,1.0f,0.0f,0.0f);
+>>>>>>> Stashed changes
 }
 
 void RenderWindow::startNextFrame()
@@ -305,8 +324,12 @@ void RenderWindow::startNextFrame()
 
 
     mDeviceFunctions->vkCmdEndRenderPass(cmdBuf);
+<<<<<<< Updated upstream
     //mObjects.at(0)->
     //mObjects.at(0)->rotate(1.0f, 0.0f, 0.0f, 1.0f);
+=======
+    //mObjects.at(1)->rotate(1.0f, 0.0f, 0.0f, 1.0f);
+>>>>>>> Stashed changes
     //qDebug() << mObjects.at(1)->mMatrix;
     mWindow->frameReady();
     mWindow->requestUpdate(); // render continuously, throttled by the presentation rate

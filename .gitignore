@@ -88,3 +88,9 @@ CMakeUserPresets.json
 
 # spir-v files, since we compile them from shader files
 # *.spv
+CMakeLists.txt
+CMakeLists.txt
+MainWindow.cpp
+MainWindow.h
+*.cpp
+*.h

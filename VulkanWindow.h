@@ -30,7 +30,11 @@ protected:
     // these functions in the cpp-file to use them of course!)
     //
     //    void mousePressEvent(QMouseEvent *event) override{}
+<<<<<<< Updated upstream
     //    void mouseMoveEvent(QMouseEvent *event) override{}
+=======
+    //void mouseMoveEvent(QMouseEvent *event) override;
+>>>>>>> Stashed changes
     void keyPressEvent(QKeyEvent *event) override;              //the only one we use now
     //    void keyReleaseEvent(QKeyEvent *event) override{}
     //    void wheelEvent(QWheelEvent *event) override{}
@@ -38,5 +42,14 @@ protected:
     int mIndex=0; // the same as int mIndex{0}; just another way of writing
     VisualObject* mSelectedObject; //we want to be able to choose any object from mObjects
 
+<<<<<<< Updated upstream
+=======
+    QVulkanWindowRenderer* mRenderWindow{ nullptr };
+    VisualObject* mSelectedObject{ nullptr };
+    int mIndex{0};
+
+// private:
+//     int mMouseXlast{0}; //for mouse rotate input
+>>>>>>> Stashed changes
 };
 #endif // VULKANWINDOW_H

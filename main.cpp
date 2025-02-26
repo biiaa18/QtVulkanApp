@@ -6,6 +6,8 @@
 #include <QPointer>
 #include "MainWindow.h"
 #include "VulkanWindow.h"
+#include "beziercurve.h"
+using namespace std;
 
 Q_LOGGING_CATEGORY(lcVk, "qt.vulkan")
 
@@ -25,6 +27,9 @@ int main(int argc, char *argv[])
 {
     //Makes a Qt application
     QApplication app(argc, argv);
+
+    // BezierCurve obj;
+    // obj.evaluateBezier(0.5);
 
     //Logger setup
     messageLogWidget = new QPlainTextEdit(QLatin1String(QLibraryInfo::build()) + QLatin1Char('\n'));

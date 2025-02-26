@@ -11,9 +11,18 @@ qt_add_executable(QtVulkanApp
     main.cpp
 
     VulkanWindow.h VulkanWindow.cpp
+<<<<<<< Updated upstream
     vertex.h  visualobject.cpp visualobject.h vktriangle.cpp vktriangle.h vktrianglesurface.cpp vktrianglesurface.h
     vertex.cpp
     vkcamera.h vkcamera.cpp
+=======
+    VkTriangleSurface.h VkTriangleSurface.cpp
+    VisualObject.h VisualObject.cpp
+    Vertex.h Vertex.cpp
+    VkCamera.h VkCamera.cpp
+    VkTriangle.h VkTriangle.cpp
+    beziercurve.h beziercurve.cpp
+>>>>>>> Stashed changes
 )
 # Define the shader files
 set(SHADER_FILES
