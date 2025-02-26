@@ -6,16 +6,16 @@ find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets)
 qt_standard_project_setup()
 
 qt_add_executable(QtVulkanApp
-    RenderWindow.cpp RenderWindow.h
+    Renderer.cpp Renderer.h
     MainWindow.cpp MainWindow.h
     main.cpp
 
     VulkanWindow.h VulkanWindow.cpp
-    VkTriangleSurface.h VkTriangleSurface.cpp
+    TriangleSurface.h TriangleSurface.cpp
     VisualObject.h VisualObject.cpp
     Vertex.h Vertex.cpp
-    VkCamera.h VkCamera.cpp
-    VkTriangle.h VkTriangle.cpp
+    Camera.h Camera.cpp
+    Triangle.h Triangle.cpp
     beziercurve.h beziercurve.cpp
 )
 # Define the shader files

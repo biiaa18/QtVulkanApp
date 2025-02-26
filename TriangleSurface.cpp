@@ -1,7 +1,7 @@
-#include "VkTriangleSurface.h"
+#include "TriangleSurface.h"
 #include <fstream>
 #include <QDebug>
-VkTriangleSurface::VkTriangleSurface() : VisualObject()
+TriangleSurface::TriangleSurface() : VisualObject()
 {
     Vertex v1{-5.0f,   0.0f,  0.0f,   1.0f, 0.0f, 0.0f, 0.0f, 0.0f};
     Vertex v2{0.0f,   0.0f, -5.0f,   0.0f, 1.0f, 0.0f, 0.0f, 0.0f};
@@ -22,7 +22,7 @@ VkTriangleSurface::VkTriangleSurface() : VisualObject()
     // mMatrix.translate(0.5f, 0, 0); // fra startNextFrame
 }
 
-VkTriangleSurface::VkTriangleSurface(const std::string &filename)
+TriangleSurface::TriangleSurface(const std::string &filename)
 {
     std::ifstream inn(filename);
     if (!inn.is_open())

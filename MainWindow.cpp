@@ -11,8 +11,8 @@
 #include <QLineEdit>
 #include <QInputDialog>
 #include "VulkanWindow.h"
-#include "RenderWindow.h"
-#include "VkTriangleSurface.h"
+#include "Renderer.h"
+#include "TriangleSurface.h"
 
 MainWindow::MainWindow(VulkanWindow *vw, QPlainTextEdit *logWidget)
     : mVulkanWindow(vw)

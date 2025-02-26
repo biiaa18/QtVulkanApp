@@ -1,8 +1,8 @@
-#ifndef VKCAMERA_H
-#define VKCAMERA_H
+#ifndef CAMERA_H
+#define CAMERA_H
 #include <QMatrix4x4>
 
-class VkCamera
+class Camera
 {
 private:
     QVector3D mEye{0.0, 0.0, 9.0};  // Kameraposisjon
@@ -13,8 +13,8 @@ private:
     QMatrix4x4 mViewMatrix{};
 
 public:
-    VkCamera();
-    ~VkCamera() { }
+    Camera();
+    ~Camera() { }
 
     void init();
     void perspective(int degrees, double aspect, double nearplane, double farplane);
@@ -25,4 +25,4 @@ public:
     QMatrix4x4 cMatrix();
 };
 
-#endif // VKCAMERA_H
+#endif // CAMERA_H

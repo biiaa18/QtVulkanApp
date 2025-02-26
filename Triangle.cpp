@@ -1,8 +1,8 @@
-#include "VkTriangle.h"
+#include "Triangle.h"
 #include "Vertex.h"
 #include "VisualObject.h"
 
-VkTriangle::VkTriangle() : VisualObject()
+Triangle::Triangle() : VisualObject()
 {
     //Vertex v1{-0.5f,   0.0f,  0.0f,   1.0f, 0.0f, 0.0f, 0.0f, 0.0f};
     //Vertex v2{-0.5f,   -0.5f,  0.0f,   0.0f, 1.0f, 0.0f, 0.0f, 0.0f};
