@@ -1,7 +1,7 @@
 #include "Renderer.h"
 #include <QVulkanFunctions>
 #include <QFile>
-
+using namespace std;
 //Utility function for alignment:
 static inline VkDeviceSize aligned(VkDeviceSize v, VkDeviceSize byteAlign)
 {
@@ -26,20 +26,43 @@ Renderer::Renderer(QVulkanWindow *w, bool msaa)
         }
     }
     // Dag 230125
-    // mObjects.push_back((new Triangle()));
-    // mObjects.push_back((new TriangleSurface()));
-    mObjects.push_back((new TriangleSurface("D:\\1x_axis.txt")));
-    mObjects.push_back((new TriangleSurface("D:\\1y_axis.txt")));
-    mObjects.push_back((new TriangleSurface("D:\\1z_axis.txt")));
+    mObjects.push_back((new Triangle()));
+    //plane
+    mObjects.push_back((new TriangleSurface()));
+    //house
+    mObjects.push_back((new TriangleSurface()));
+    mObjects.push_back((new TriangleSurface()));
+    mObjects.push_back((new TriangleSurface()));
+    // mObjects.push_back((new TriangleSurface("D:\\1x_axis.txt")));
+    // mObjects.push_back((new TriangleSurface("D:\\1y_axis.txt")));
+    // mObjects.push_back((new TriangleSurface("D:\\1z_axis.txt")));
     // // Dag 030225
-    // // mObjects.at(0)->setName("triangel");
-    // mObjects.at(1)->setName("surf");
+    //house
+    //mObjects.at(0)->move(0.0f, 1.0f, 0.0f);
+    //wall1
+    mObjects.at(1)->scale(0.5);
+    mObjects.at(1)->move(0.0f,4.0f,0.0f);
+    mObjects.at(1)->rotate(90.0f, 1.0f, 0.0f, 1.0f);
+    //wall2
+    // mObjects.at(2)->rotate(90.0f, 1.0f, 0.0f, 0.0f);
+    // mObjects.at(2)->scale(0.5);
+    // mObjects.at(2)->move(2.5f,0.0f,0.0f);
+    // //wall3
+    // mObjects.at(2)->rotate(90.0f, 0.0f, 0.0f, 1.0f);
+    // mObjects.at(2)->move(0.0f,0.0f,2.5f);
+    // mObjects.at(2)->scale(0.5);
+
+
+
+    mObjects.at(0)->setName("plane");
+    mObjects.at(1)->setName("wall1");
+    mObjects.at(2)->setName("wall2");
     // **************************************
     // Legger inn objekter i map
     // **************************************
-    //std::string navn{"navn"}; // Skal VisualObject klassen få en navn-variabel?
-    // for (auto it=mObjects.begin(); it!=mObjects.end(); it++)
-    //     mMap.insert(std::pair<std::string, VisualObject*>{(*it)->getName(),*it});
+    //string navn{"navn"};
+    for (auto it=mObjects.begin(); it!=mObjects.end(); it++)
+        mMap.insert(pair<string, VisualObject*>{(*it)->getName(),*it});
 }
 
 void Renderer::initResources()
@@ -166,7 +189,7 @@ void Renderer::initResources()
     memset(&ia, 0, sizeof(ia));
     ia.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
     // Dag 220125
-    ia.topology = VK_PRIMITIVE_TOPOLOGY_LINE_STRIP;
+    ia.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
     pipelineInfo.pInputAssemblyState = &ia;
 
     // The viewport and scissor will be set dynamically via vkCmdSetViewport/Scissor.
@@ -314,7 +337,11 @@ void Renderer::startNextFrame()
     }
 */
     mDeviceFunctions->vkCmdEndRenderPass(cmdBuf);
-    //mObjects.at(1)->rotate(1.0f, 0.0f, 0.0f, 1.0f);
+    // mObjects.at(0)->move(0.0f, 1.0f, 0.0f);
+    // mObjects.at(2)->rotate(45.0f, 0.0f, 1.0f, 0.0f);
+    // mObjects.at(2)->scale(0.5);
+
+
     //qDebug() << mObjects.at(1)->mMatrix;
     mWindow->frameReady();
     mWindow->requestUpdate(); // render continuously, throttled by the presentation rate

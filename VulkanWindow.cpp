@@ -22,7 +22,7 @@ void VulkanWindow::keyPressEvent(QKeyEvent *event)
         // if(mSelectedObject)
         // {
         //     qDebug("Move forward");
-        //     mSelectedObject->move(10.0f,0.0f, 0.0f);
+        //     mSelectedObject->move(0.0f,10.0f, 0.0f);
         // }
 
     }
