@@ -10,6 +10,7 @@
 #include "VisualObject.h"
 #include "TriangleSurface.h"
 #include "house.h"
+#include "player.h"
 
 class Renderer : public QVulkanWindowRenderer
 {

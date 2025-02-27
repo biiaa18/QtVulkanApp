@@ -69,7 +69,7 @@ void VulkanWindow::keyPressEvent(QKeyEvent *event)
 
     if (event->key() == Qt::Key_0){
         qDebug("triangle object");
-        mIndex = 0;
+        mIndex = 9;
     }
     if (event->key() == Qt::Key_1){
         qDebug("rectangle object");
@@ -81,6 +81,11 @@ void VulkanWindow::keyPressEvent(QKeyEvent *event)
     {
         dynamic_cast<Renderer*>(mRenderer)->mCamera.translate(.0f, 0.0f, 0.2f);
     }
+    if(event->key() == Qt::Key_G)
+    {
+        dynamic_cast<Renderer*>(mRenderer)->mCamera.translate(.0f, 0.0f, -0.2f);
+    }
+
     if(event->key() == Qt::Key_A)
     {
         // dynamic_cast<Renderer*>(mRenderer)->mCamera.translate(.0f, 0.0f, -0.2f);

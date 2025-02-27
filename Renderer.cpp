@@ -50,8 +50,10 @@ Renderer::Renderer(QVulkanWindow *w, bool msaa)
     mObjects.push_back((new Triangle())); //7
     mObjects.push_back((new Triangle())); //8
     mObjects.at(8)->move (2.0f,0.0f,0.0f);
+    //player
+    mObjects.push_back((new Player()));//9
 
-    // mObjects.push_back((new TriangleSurface()));
+
     // mObjects.push_back((new TriangleSurface()));
     // mObjects.push_back((new TriangleSurface("D:\\1x_axis.txt")));
     // mObjects.push_back((new TriangleSurface("D:\\1y_axis.txt")));
@@ -291,9 +293,9 @@ void Renderer::initSwapChainResources()
     //find the size of the window
     const QSize sz = mWindow->swapChainImageSize();
 
-    mCamera.perspective(25.0f, sz.width() / (float) sz.height(), 0.01f, 100.0f);
-    mCamera.translate(0, 0, -15); //Camera is -4 away from origo
-    mCamera.rotate(45,1.0f,0.0f,0.0f);
+    mCamera.perspective(45.0f, sz.width() / (float) sz.height(), 0.01f, 100.0f);
+    mCamera.translate(0, 2, -15); //Camera is -4 away from origo
+    mCamera.rotate(30,1.0f,0.0f,0.0f);
 }
 
 void Renderer::startNextFrame()
