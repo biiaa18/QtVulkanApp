@@ -3,10 +3,10 @@
 #include <QDebug>
 TriangleSurface::TriangleSurface() : VisualObject()
 {
-    Vertex v1{-5.0f,   0.0f,  0.0f,   1.0f, 0.0f, 0.0f, 0.0f, 0.0f};
-    Vertex v2{0.0f,   0.0f, -5.0f,   0.0f, 1.0f, 0.0f, 0.0f, 0.0f};
-    Vertex v3{5.0f,   0.0f,  0.0f,   0.0f, 0.0f, 1.0f, 0.0f, 0.0f};
-    Vertex v4{0.0f,   0.0f,  5.0f,   1.0f, 1.0f, 0.0f, 0.0f, 0.0f};
+    Vertex v1{0.0f,   0.0f,  0.0f,   1.0f, 1.0f, 1.0f, 0.0f, 0.0f};
+    Vertex v2{0.0f,   0.0f, 10.0f,   0.0f, 1.0f, 1.0f, 0.0f, 0.0f};
+    Vertex v3{10.0f,   0.0f,  10.0f,   0.0f, 1.0f, 1.0f, 0.0f, 0.0f};
+    Vertex v4{10.0f,   0.0f,  0.0f,   0.0f, 1.0f, 1.0f, 0.0f, 0.0f};
     //    Vertex v1{0.0f,   0.0f,  0.0f,   1.0f, 0.0f, 0.0f, 0.0f, 0.0f};
     //    Vertex v2{1.0f,   0.0f,  0.0f,   0.0f, 1.0f, 0.0f, 0.0f, 0.0f};
     //    Vertex v3{0.0f,   1.0f,  0.0f,   0.0f, 0.0f, 1.0f, 0.0f, 0.0f};
@@ -19,7 +19,8 @@ TriangleSurface::TriangleSurface() : VisualObject()
     mVertices.push_back(v4);
 
     // mMatrix.scale(0.5f);
-    // mMatrix.translate(0.5f, 0, 0); // fra startNextFrame
+   mMatrix.translate(-5.0f, 0, 0); // fra startNextFrame
+    //mMatrix.rotate()
 }
 
 TriangleSurface::TriangleSurface(const std::string &filename)

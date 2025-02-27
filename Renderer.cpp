@@ -25,28 +25,48 @@ Renderer::Renderer(QVulkanWindow *w, bool msaa)
             }
         }
     }
-    // Dag 230125
-    mObjects.push_back((new Triangle()));
+
+
+
     //plane
-    mObjects.push_back((new TriangleSurface()));
-    //house
-    mObjects.push_back((new TriangleSurface()));
-    mObjects.push_back((new TriangleSurface()));
-    mObjects.push_back((new TriangleSurface()));
+    mObjects.push_back((new TriangleSurface()));  //0
+    //house: i decided to do walls this way was less lines, so i didnt push vertices for each wall in house.cpp
+    //walls
+    mObjects.push_back((new house(0.0))); //1
+    mObjects.push_back((new house(0.0))); //2
+    mObjects.at(2)->move (0.0f,0.0f,2.0f);
+    mObjects.push_back((new house(0.0))); //3
+    mObjects.at(3)->rotate(-90.0f, 0.0f, 1.0f, 0.0f);
+    mObjects.push_back((new house(0.0))); //4
+    mObjects.at(4)->move (2.0f,0.0f,0.0f);
+    mObjects.at(4)->rotate(-90.0f, 0.0f, 1.0f, 0.0f);
+    //roof: used pythagoras here to understand the translation
+    mObjects.push_back((new house(1.0))); //5
+    mObjects.at(5)->move (0.0f,1.59f,-0.41f);
+    mObjects.at(5)->rotate(45.0f, 1.0f, 0.0f, 0.0f);
+    mObjects.push_back((new house(1.0))); //6
+    mObjects.at(6)->move (0.0f,1.59f,2.41f);
+    mObjects.at(6)->rotate(-45.0f, 1.0f, 0.0f, 0.0f);
+    mObjects.push_back((new Triangle())); //7
+    mObjects.push_back((new Triangle())); //8
+    mObjects.at(8)->move (2.0f,0.0f,0.0f);
+
+    // mObjects.push_back((new TriangleSurface()));
+    // mObjects.push_back((new TriangleSurface()));
     // mObjects.push_back((new TriangleSurface("D:\\1x_axis.txt")));
     // mObjects.push_back((new TriangleSurface("D:\\1y_axis.txt")));
     // mObjects.push_back((new TriangleSurface("D:\\1z_axis.txt")));
-    // // Dag 030225
-    //house
-    //mObjects.at(0)->move(0.0f, 1.0f, 0.0f);
-    //wall1
-    mObjects.at(1)->scale(0.5);
-    mObjects.at(1)->move(0.0f,4.0f,0.0f);
-    mObjects.at(1)->rotate(90.0f, 1.0f, 0.0f, 1.0f);
-    //wall2
-    // mObjects.at(2)->rotate(90.0f, 1.0f, 0.0f, 0.0f);
+
+    // //house
+    // //mObjects.at(0)->move(0.0f, 1.0f, 0.0f);
+    // //wall1
+    // mObjects.at(1)->scale(0.5);
+    // mObjects.at(1)->move(0.0f,4.0f,0.0f);
+    // mObjects.at(1)->rotate(90.0f, 1.0f, 0.0f, 1.0f);
+    // //wall2
     // mObjects.at(2)->scale(0.5);
-    // mObjects.at(2)->move(2.5f,0.0f,0.0f);
+    // mObjects.at(2)->move(3.5f,4.0f,0.0f);
+    // mObjects.at(2)->rotate(90.0f, 1.0f, 0.0f, 1.0f);
     // //wall3
     // mObjects.at(2)->rotate(90.0f, 0.0f, 0.0f, 1.0f);
     // mObjects.at(2)->move(0.0f,0.0f,2.5f);
@@ -55,8 +75,8 @@ Renderer::Renderer(QVulkanWindow *w, bool msaa)
 
 
     mObjects.at(0)->setName("plane");
-    mObjects.at(1)->setName("wall1");
-    mObjects.at(2)->setName("wall2");
+    // mObjects.at(1)->setName("wall1");
+    // mObjects.at(2)->setName("wall2");
     // **************************************
     // Legger inn objekter i map
     // **************************************
