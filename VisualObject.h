@@ -26,6 +26,11 @@ public:
     // to render different topology types
     int drawType{0}; // 0 is for fill, 1 is for lines
     void setdrawType(int type){drawType=type;};
+
+    std::vector<Vertex> MiddlePoints;
+    Vertex getMiddlePoints(int object_number);
+    float radius{0.0f};
+
 protected:
     std::string mName;
 };

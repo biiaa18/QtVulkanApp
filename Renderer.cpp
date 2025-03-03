@@ -1,6 +1,7 @@
 #include "Renderer.h"
 #include <QVulkanFunctions>
 #include <QFile>
+#include <QtMath>
 using namespace std;
 //Utility function for alignment:
 static inline VkDeviceSize aligned(VkDeviceSize v, VkDeviceSize byteAlign)
@@ -30,8 +31,8 @@ Renderer::Renderer(QVulkanWindow *w, bool msaa)
 
     //plane
     mObjects.push_back((new TriangleSurface()));  //0
-    //house: i decided to do walls this way was less lines, so i didnt push vertices for each wall in house.cpp
-    //walls
+    // // house: i decided to do walls this way was less lines, so i didnt push vertices for each wall in house.cpp
+    // //walls
     // mObjects.push_back((new house(0.0))); //1
     // mObjects.push_back((new house(0.0))); //2
     // mObjects.at(2)->move (0.0f,0.0f,2.0f);
@@ -40,7 +41,7 @@ Renderer::Renderer(QVulkanWindow *w, bool msaa)
     // mObjects.push_back((new house(0.0))); //4
     // mObjects.at(4)->move (2.0f,0.0f,0.0f);
     // mObjects.at(4)->rotate(-90.0f, 0.0f, 1.0f, 0.0f);
-    // //roof: used pythagoras here to understand the translation
+    // // //roof: used pythagoras here to understand the translation
     // mObjects.push_back((new house(1.0))); //5
     // mObjects.at(5)->move (0.0f,1.59f,-0.41f);
     // mObjects.at(5)->rotate(45.0f, 1.0f, 0.0f, 0.0f);
@@ -51,16 +52,17 @@ Renderer::Renderer(QVulkanWindow *w, bool msaa)
     // mObjects.push_back((new Triangle())); //8
     // mObjects.at(8)->move (2.0f,0.0f,0.0f);
     // //player
-    // mObjects.push_back((new Player()));//9
-
-
+    mObjects.push_back((new Player()));//1
+    mObjects.push_back((new Player()));//2
+    mObjects.at(2)->move (0.0f,0.0f,2.0f);
+    //checkCollision(mObjects.at(1)->getMiddlePoints(1),mObjects.at(2)->getMiddlePoints(2),mObjects.at(1)->radius, mObjects.at(2)->radius);
     // mObjects.push_back((new TriangleSurface()));
     // mObjects.push_back((new TriangleSurface("D:\\1x_axis.txt")));
-    // mObjects.at(1)->setdrawType(1);
+    // mObjects.at(10)->setdrawType(1);
     // mObjects.push_back((new TriangleSurface("D:\\1y_axis.txt")));
-    // mObjects.at(2)->setdrawType(1);
+    // mObjects.at(11)->setdrawType(1);
     // mObjects.push_back((new TriangleSurface("D:\\1z_axis.txt")));
-    // mObjects.at(3)->setdrawType(1);
+    // mObjects.at(12)->setdrawType(1);
 
     // //house
     // //mObjects.at(0)->move(0.0f, 1.0f, 0.0f);
@@ -210,7 +212,7 @@ void Renderer::initResources()
     pipelineInfo.pStages = shaderStages;
     pipelineInfo.pVertexInputState = &vertexInputInfo;
 
-    VkPipelineInputAssemblyStateCreateInfo ia;
+    VkPipelineInputAssemblyStateCreateInfo ia;  //input assembly
     memset(&ia, 0, sizeof(ia));
     ia.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
     // Dag 220125
@@ -226,7 +228,7 @@ void Renderer::initResources()
     vp.scissorCount = 1;
     pipelineInfo.pViewportState = &vp;
 
-    VkPipelineRasterizationStateCreateInfo rs;
+    VkPipelineRasterizationStateCreateInfo rs;  //rasterization
     memset(&rs, 0, sizeof(rs));
     rs.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
     rs.polygonMode = VK_POLYGON_MODE_FILL;//VK_POLYGON_MODE_LINE;
@@ -272,6 +274,15 @@ void Renderer::initResources()
     pipelineInfo.layout = mPipelineLayout;
     pipelineInfo.renderPass = mWindow->defaultRenderPass();
 
+    err = mDeviceFunctions->vkCreateGraphicsPipelines(logicalDevice, mPipelineCache, 1, &pipelineInfo, nullptr, &mPipeline);
+    if (err != VK_SUCCESS)
+        qFatal("Failed to create graphics pipeline: %d", err);
+
+    //Making a pipeline2 for drawing lines
+    mPipeline2 = mPipeline;                                    //reusing most of the settings from the first pipeline
+    ia.topology = VK_PRIMITIVE_TOPOLOGY_LINE_STRIP;   // or VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+    rs.polygonMode = VK_POLYGON_MODE_LINE;           // VK_POLYGON_MODE_LINE will make a wireframe; VK_POLYGON_MODE_FILL
+    pipelineInfo.pInputAssemblyState = &ia;
     err = mDeviceFunctions->vkCreateGraphicsPipelines(logicalDevice, mPipelineCache, 1, &pipelineInfo, nullptr, &mPipeline);
     if (err != VK_SUCCESS)
         qFatal("Failed to create graphics pipeline: %d", err);
@@ -350,14 +361,20 @@ void Renderer::startNextFrame()
         if ((*it)->drawType==0){
             //pipeline 1 for triangle list
             mDeviceFunctions->vkCmdBindPipeline(cmdBuf, VK_PIPELINE_BIND_POINT_GRAPHICS, mPipeline2);
+
         }
         else{
             //pipeline2 for line list
-            mDeviceFunctions->vkCmdBindPipeline(cmdBuf, VK_PIPELINE_BIND_POINT_GRAPHICS, mPipeline1);
+            mDeviceFunctions->vkCmdBindPipeline(cmdBuf, VK_PIPELINE_BIND_POINT_GRAPHICS, mPipeline);
         }
+
         mDeviceFunctions->vkCmdBindVertexBuffers(cmdBuf, 0, 1, &(*it)->mBuffer, &vbOffset);
         setModelMatrix(mCamera.cMatrix() * (*it)->mMatrix);
         mDeviceFunctions->vkCmdDraw(cmdBuf, (*it)->mVertices.size(), 1, 0, 0);
+
+        // mDeviceFunctions->vkCmdBindVertexBuffers(cmdBuf, 0, 1, &(*it)->mBuffer, &vbOffset);
+        // setModelMatrix(mCamera.cMatrix() * (*it)->mMatrix);
+        // mDeviceFunctions->vkCmdDraw(cmdBuf, (*it)->mVertices.size(), 1, 0, 0);
     }
     // Alternativt draw kall ved å traversere unordered map
     /*    for (auto it=mMap.begin(); it!=mMap.end(); it++)
@@ -373,6 +390,10 @@ void Renderer::startNextFrame()
     // mObjects.at(0)->move(0.0f, 1.0f, 0.0f);
     // mObjects.at(2)->rotate(45.0f, 0.0f, 1.0f, 0.0f);
     // mObjects.at(2)->scale(0.5);
+
+
+    //check collision
+    //checkCollision(mObjects.at(1)->getMiddlePoints(1),mObjects.at(2)->getMiddlePoints(2),mObjects.at(1)->radius, mObjects.at(2)->radius);
 
 
     //qDebug() << mObjects.at(1)->mMatrix;
@@ -569,3 +590,20 @@ void Renderer::releaseResources()
     }
 }
 
+bool Renderer::checkCollision(Vertex v1, Vertex v2, float radius1, float radius2){
+    Vertex distance;
+    distance.x=v1.x-v2.x;
+    distance.y=v1.y-v2.y;
+    distance.z=v1.z-v2.z;
+    distance.r=0.0f;
+    distance.g=0.0f;
+    distance.g=0.0f;
+    distance.u=0.0f;
+    distance.v=0.0f;
+    qDebug("They collide");
+    float distance_length=qSqrt(qPow(distance.x,2) +qPow(distance.y,2) + qPow(distance.z,2));
+    if (distance_length<(radius1+radius2)){
+        qDebug("They collide");
+    }
+
+    return false;}

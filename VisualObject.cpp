@@ -16,6 +16,12 @@ VisualObject::VisualObject()
     mMatrix.setToIdentity();
 }
 
+Vertex VisualObject::getMiddlePoints(int object_number){
+    int index=object_number;
+
+    return MiddlePoints[index];
+};
+
 void VisualObject::move(float x, float y, float z)
 {
     mMatrix.translate(x, y, z);

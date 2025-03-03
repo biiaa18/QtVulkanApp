@@ -4,6 +4,7 @@
 #include "Vertex.h"
 class Player: public VisualObject
 {
+    //float radius{};
 public:
     Player();
 };

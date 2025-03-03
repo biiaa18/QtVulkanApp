@@ -12,6 +12,8 @@ public:
     //std::vector<Vertex> getVertices() { return mVertices; }
     TriangleSurface();
     TriangleSurface(const std::string& filename);
+
+    float radius{};
 };
 
 #endif // TRIANGLESURFACE_H

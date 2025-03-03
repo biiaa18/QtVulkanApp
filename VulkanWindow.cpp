@@ -69,11 +69,15 @@ void VulkanWindow::keyPressEvent(QKeyEvent *event)
 
     if (event->key() == Qt::Key_0){
         qDebug("triangle object");
-        mIndex = 9;
+        mIndex = 0;
     }
     if (event->key() == Qt::Key_1){
         qDebug("rectangle object");
         mIndex = 1;
+    }
+    if (event->key() == Qt::Key_2){
+        qDebug("rectangle object");
+        mIndex = 2;
     }
 
     //****** Camera control ******** //

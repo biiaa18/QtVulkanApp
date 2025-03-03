@@ -39,6 +39,8 @@ public:
     //Get Vulkan info - just for fun
     void getVulkanHWInfo();
 
+    bool checkCollision(Vertex v1, Vertex v2, float radius1, float radius2);
+
     std::vector<VisualObject*>& getObjects() { return mObjects; }
     std::unordered_map<std::string, VisualObject*>& getMap() { return mMap; }
 
@@ -70,7 +72,7 @@ protected:
     VkPipeline mPipeline{ VK_NULL_HANDLE };
     VkPipelineLayout mPipelineLayout2{ VK_NULL_HANDLE };
     VkPipeline mPipeline2{ VK_NULL_HANDLE };
-    VkPipeline mPipeline1{ VK_NULL_HANDLE };
+
 
 private:
     friend class VulkanWindow;
