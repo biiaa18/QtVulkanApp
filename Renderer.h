@@ -70,6 +70,7 @@ protected:
     VkPipeline mPipeline{ VK_NULL_HANDLE };
     VkPipelineLayout mPipelineLayout2{ VK_NULL_HANDLE };
     VkPipeline mPipeline2{ VK_NULL_HANDLE };
+    VkPipeline mPipeline1{ VK_NULL_HANDLE };
 
 private:
     friend class VulkanWindow;
@@ -77,6 +78,7 @@ private:
     TriangleSurface mSurface;
     VisualObject mVisualObject;
     std::vector<VisualObject*> mObjects;
+    //std::vector<VisualObject*> mPickups[6]; //i want to have 6 pickups
     std::unordered_map<std::string, VisualObject*> mMap;    // alternativ container
 
     void createBuffer(VkDevice logicalDevice,

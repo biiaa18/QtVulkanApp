@@ -102,6 +102,17 @@ void VulkanWindow::keyPressEvent(QKeyEvent *event)
     {
         dynamic_cast<Renderer*>(mRenderer)->mCamera.rotate(45, 0.0f, 0.0f, 1.0f);
     }
+
+    //////////////////////collect pickup
+    if(event->key() == Qt::Key_K)
+    {
+        // if (IsColliding){
+        //     mPickups.push_back(getPickup);
+        // }
+
+        //dynamic_cast<Renderer*>(mRenderer)->mCamera.rotate(45, 0.0f, 0.0f, 1.0f);
+    }
+
 }
 
 // void VulkanWindow::mouseMoveEvent(QMouseEvent *event)

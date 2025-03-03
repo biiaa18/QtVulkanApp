@@ -32,32 +32,35 @@ Renderer::Renderer(QVulkanWindow *w, bool msaa)
     mObjects.push_back((new TriangleSurface()));  //0
     //house: i decided to do walls this way was less lines, so i didnt push vertices for each wall in house.cpp
     //walls
-    mObjects.push_back((new house(0.0))); //1
-    mObjects.push_back((new house(0.0))); //2
-    mObjects.at(2)->move (0.0f,0.0f,2.0f);
-    mObjects.push_back((new house(0.0))); //3
-    mObjects.at(3)->rotate(-90.0f, 0.0f, 1.0f, 0.0f);
-    mObjects.push_back((new house(0.0))); //4
-    mObjects.at(4)->move (2.0f,0.0f,0.0f);
-    mObjects.at(4)->rotate(-90.0f, 0.0f, 1.0f, 0.0f);
-    //roof: used pythagoras here to understand the translation
-    mObjects.push_back((new house(1.0))); //5
-    mObjects.at(5)->move (0.0f,1.59f,-0.41f);
-    mObjects.at(5)->rotate(45.0f, 1.0f, 0.0f, 0.0f);
-    mObjects.push_back((new house(1.0))); //6
-    mObjects.at(6)->move (0.0f,1.59f,2.41f);
-    mObjects.at(6)->rotate(-45.0f, 1.0f, 0.0f, 0.0f);
-    mObjects.push_back((new Triangle())); //7
-    mObjects.push_back((new Triangle())); //8
-    mObjects.at(8)->move (2.0f,0.0f,0.0f);
-    //player
-    mObjects.push_back((new Player()));//9
+    // mObjects.push_back((new house(0.0))); //1
+    // mObjects.push_back((new house(0.0))); //2
+    // mObjects.at(2)->move (0.0f,0.0f,2.0f);
+    // mObjects.push_back((new house(0.0))); //3
+    // mObjects.at(3)->rotate(-90.0f, 0.0f, 1.0f, 0.0f);
+    // mObjects.push_back((new house(0.0))); //4
+    // mObjects.at(4)->move (2.0f,0.0f,0.0f);
+    // mObjects.at(4)->rotate(-90.0f, 0.0f, 1.0f, 0.0f);
+    // //roof: used pythagoras here to understand the translation
+    // mObjects.push_back((new house(1.0))); //5
+    // mObjects.at(5)->move (0.0f,1.59f,-0.41f);
+    // mObjects.at(5)->rotate(45.0f, 1.0f, 0.0f, 0.0f);
+    // mObjects.push_back((new house(1.0))); //6
+    // mObjects.at(6)->move (0.0f,1.59f,2.41f);
+    // mObjects.at(6)->rotate(-45.0f, 1.0f, 0.0f, 0.0f);
+    // mObjects.push_back((new Triangle())); //7
+    // mObjects.push_back((new Triangle())); //8
+    // mObjects.at(8)->move (2.0f,0.0f,0.0f);
+    // //player
+    // mObjects.push_back((new Player()));//9
 
 
     // mObjects.push_back((new TriangleSurface()));
     // mObjects.push_back((new TriangleSurface("D:\\1x_axis.txt")));
+    // mObjects.at(1)->setdrawType(1);
     // mObjects.push_back((new TriangleSurface("D:\\1y_axis.txt")));
+    // mObjects.at(2)->setdrawType(1);
     // mObjects.push_back((new TriangleSurface("D:\\1z_axis.txt")));
+    // mObjects.at(3)->setdrawType(1);
 
     // //house
     // //mObjects.at(0)->move(0.0f, 1.0f, 0.0f);
@@ -344,6 +347,14 @@ void Renderer::startNextFrame()
     /********************************* Our draw call!: *********************************/
     for (auto it=mObjects.begin(); it!=mObjects.end(); it++)
     {
+        if ((*it)->drawType==0){
+            //pipeline 1 for triangle list
+            mDeviceFunctions->vkCmdBindPipeline(cmdBuf, VK_PIPELINE_BIND_POINT_GRAPHICS, mPipeline2);
+        }
+        else{
+            //pipeline2 for line list
+            mDeviceFunctions->vkCmdBindPipeline(cmdBuf, VK_PIPELINE_BIND_POINT_GRAPHICS, mPipeline1);
+        }
         mDeviceFunctions->vkCmdBindVertexBuffers(cmdBuf, 0, 1, &(*it)->mBuffer, &vbOffset);
         setModelMatrix(mCamera.cMatrix() * (*it)->mMatrix);
         mDeviceFunctions->vkCmdDraw(cmdBuf, (*it)->mVertices.size(), 1, 0, 0);

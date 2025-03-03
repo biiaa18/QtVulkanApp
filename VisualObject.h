@@ -23,6 +23,9 @@ public:
     void move(float x, float y, float z);
     void scale(float s);
     void rotate(float t, float x, float y, float z);
+    // to render different topology types
+    int drawType{0}; // 0 is for fill, 1 is for lines
+    void setdrawType(int type){drawType=type;};
 protected:
     std::string mName;
 };
