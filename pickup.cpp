@@ -1,9 +1,9 @@
-#include "player.h"
+#include "pickup.h"
 
-Player::Player() {            //right  up   forward
-    Vertex v1{0.0f,  0.1f,  8.0f,   1.0f, 0.0f, 0.0f, 0.0f, 0.0f};
-    Vertex v2{0.5f,   0.1f,  8.0f,   1.0f, 0.0f, 0.0f, 0.0f, 0.0f};
-    Vertex v3{0.25f,   0.1f,  7.75f,   1.0f, 0.0f, 0.0f, 0.0f, 0.0f};
+Pickup::Pickup() {
+    Vertex v1{-3.0f,  0.1f,  5.0f,   0.1f, 0.0f, 0.0f, 0.0f, 0.0f};
+    Vertex v2{-3.25f,   0.5f,  5.0f,   0.4f, 0.0f, 0.3f, 0.0f, 0.0f};
+    Vertex v3{-3.5f,   0.1f,  5.0f,   0.0f, 0.0f, 1.0f, 0.0f, 0.0f};
     mVertices.push_back(v1);
     mVertices.push_back(v2);
     mVertices.push_back(v3);

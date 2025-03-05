@@ -53,8 +53,13 @@ Renderer::Renderer(QVulkanWindow *w, bool msaa)
     // mObjects.at(8)->move (2.0f,0.0f,0.0f);
     // //player
     mObjects.push_back((new Player()));//1
-    mObjects.push_back((new Player()));//2
-    mObjects.at(1)->move (-5.0f,0.0f,0.0f);
+    mObjects.push_back((new Pickup()));//2
+
+
+    // mObjects.push_back((new Player()));//2
+    // mObjects.at(1)->move (-5.0f,0.0f,0.0f);
+    // mObjects.at(1)->updateMiddlePoints(0,-5.0f,0.0f,0.0f);
+
     //mObjects.at(1)->getMiddlePoints(0);
     // checkCollision(mObjects.at(1)->getMiddlePoints(0),mObjects.at(2)->getMiddlePoints(0),mObjects.at(1)->radius, mObjects.at(2)->radius);
     // mObjects.push_back((new TriangleSurface()));
@@ -357,6 +362,7 @@ void Renderer::startNextFrame()
     mDeviceFunctions->vkCmdSetScissor(cmdBuf, 0, 1, &scissor);
 
     /********************************* Our draw call!: *********************************/
+
     for (auto it=mObjects.begin(); it!=mObjects.end(); it++)
     {
         if ((*it)->drawType==0){
@@ -389,14 +395,14 @@ void Renderer::startNextFrame()
 */
     mDeviceFunctions->vkCmdEndRenderPass(cmdBuf);
     // mObjects.at(0)->move(0.0f, 1.0f, 0.0f);
-    // mObjects.at(2)->rotate(45.0f, 0.0f, 1.0f, 0.0f);
+    //mObjects.at(2)->rotate(0.0f, 0.0f, 1.0f, 0.0f);
     // mObjects.at(2)->scale(0.5);
 
 
     //check collision
-    //checkCollision(mObjects.at(1)->getMiddlePoints(1),mObjects.at(2)->getMiddlePoints(2),mObjects.at(1)->radius, mObjects.at(2)->radius);
-    qDebug()<<mObjects.at(1)->getMiddlePoints(0).x<<mObjects.at(1)->getMiddlePoints(0).y<<mObjects.at(1)->getMiddlePoints(0).z;
-    //checkCollision(mObjects.at(1)->getMiddlePoints(0),mObjects.at(2)->getMiddlePoints(0),mObjects.at(1)->radius, mObjects.at(2)->radius);
+    //qDebug()<<mObjects.at(1)->getMiddlePoints(0).x<<mObjects.at(1)->getMiddlePoints(0).y<<mObjects.at(1)->getMiddlePoints(0).z;
+    checkCollision(mObjects.at(1)->getMiddlePoints(0),mObjects.at(2)->getMiddlePoints(0),mObjects.at(1)->radius, mObjects.at(2)->radius);
+
     //qDebug() << mObjects.at(1)->mMatrix;
     mWindow->frameReady();
     mWindow->requestUpdate(); // render continuously, throttled by the presentation rate
@@ -591,7 +597,7 @@ void Renderer::releaseResources()
     }
 }
 
-bool Renderer::checkCollision(Vertex v1, Vertex v2, float radius1, float radius2){
+void Renderer::checkCollision(Vertex v1, Vertex v2, float radius1, float radius2){
     Vertex distance;
     distance.x=v1.x-v2.x;
     distance.y=v1.y-v2.y;
@@ -601,11 +607,10 @@ bool Renderer::checkCollision(Vertex v1, Vertex v2, float radius1, float radius2
     distance.g=0.0f;
     distance.u=0.0f;
     distance.v=0.0f;
-    qDebug("They collide");
     float distance_length=qSqrt(qPow(distance.x,2) +qPow(distance.y,2) + qPow(distance.z,2));
-    if (distance_length<(radius1+radius2)){
-        //qDebug("They collide");
-        qDebug()<<distance_length;
+    if (distance_length<=(radius1+radius2)){
+        qDebug("They collide");
+        IsColliding=true;
     }
     qDebug()<<distance_length;
-    return false;}
+}

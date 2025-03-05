@@ -18,7 +18,7 @@ void VulkanWindow::keyPressEvent(QKeyEvent *event)
 {
     if (event->key() == Qt::Key_W)
     {
-        float rate=-1.0f;
+        float rate=-0.5f;
         dynamic_cast<Renderer*>(mRenderer)->mObjects.at(1)->move(0.0f, 0.0f, rate);
         qDebug("Move forward");
         dynamic_cast<Renderer*>(mRenderer)->mObjects.at(1)->updateMiddlePoints(0,0.0f,0.0f,rate);
@@ -39,7 +39,7 @@ void VulkanWindow::keyPressEvent(QKeyEvent *event)
         //     mSelectedObject->move(-10.1f,0.0f, 0.0f);
         // }
                                                       //mIndex
-        float rate=1.0f;
+        float rate=0.5f;
         dynamic_cast<Renderer*>(mRenderer)->mObjects.at(1)->move(0.0f, 0.0f,rate);
         dynamic_cast<Renderer*>(mRenderer)->mObjects.at(1)->updateMiddlePoints(0,0.0f,0.0f,rate);
 
@@ -54,7 +54,7 @@ void VulkanWindow::keyPressEvent(QKeyEvent *event)
         //     qDebug("Move left");
         //     mSelectedObject->move(0.0f,0.0f, 10.1f);
         // }
-        float rate=-1.0f;
+        float rate=-0.5f;
         qDebug("Move left");
         dynamic_cast<Renderer*>(mRenderer)->mObjects.at(1)->move(rate,0.0f, 0.0f);
         dynamic_cast<Renderer*>(mRenderer)->mObjects.at(1)->updateMiddlePoints(0,rate,0.0f,0.0f);
@@ -67,7 +67,7 @@ void VulkanWindow::keyPressEvent(QKeyEvent *event)
         //     qDebug("Move right");
         //     mSelectedObject->move(0.0f,0.0f, -10.1f);
         // }
-        float rate=1.0f;
+        float rate=0.5f;
         qDebug("Move right");
         dynamic_cast<Renderer*>(mRenderer)->mObjects.at(1)->move(rate,0.0f, 0.0f);
         dynamic_cast<Renderer*>(mRenderer)->mObjects.at(1)->updateMiddlePoints(0,rate,0.0f,0.0f);
@@ -83,18 +83,18 @@ void VulkanWindow::keyPressEvent(QKeyEvent *event)
         QCoreApplication::quit();       //Shuts down the whole program
     }
 
-    if (event->key() == Qt::Key_0){
-        qDebug("plane");
-        mIndex = 0;
-    }
-    if (event->key() == Qt::Key_1){
-        qDebug("Player");
-        mIndex = 1;
-    }
-    if (event->key() == Qt::Key_2){
-        qDebug("rectangle object");
-        mIndex = 2;
-    }
+    // if (event->key() == Qt::Key_0){
+    //     qDebug("plane");
+    //     mIndex = 0;
+    // }
+    // if (event->key() == Qt::Key_1){
+    //     qDebug("Player");
+    //     mIndex = 1;
+    // }
+    // if (event->key() == Qt::Key_2){
+    //     qDebug("rectangle object");
+    //     mIndex = 2;
+    // }
 
     //****** Camera control ******** //
     if(event->key() == Qt::Key_T)
@@ -106,7 +106,7 @@ void VulkanWindow::keyPressEvent(QKeyEvent *event)
         dynamic_cast<Renderer*>(mRenderer)->mCamera.translate(.0f, 0.0f, -0.2f);
     }
 
-    if(event->key() == Qt::Key_A)
+    if(event->key() == Qt::Key_I)
     {
         // dynamic_cast<Renderer*>(mRenderer)->mCamera.translate(.0f, 0.0f, -0.2f);
     }
@@ -126,11 +126,11 @@ void VulkanWindow::keyPressEvent(QKeyEvent *event)
     //////////////////////collect pickup
     if(event->key() == Qt::Key_K)
     {
-        // if (IsColliding){
-        //     mPickups.push_back(getPickup);
-        // }
+        if (dynamic_cast<Renderer*>(mRenderer)->IsColliding){
 
-        //dynamic_cast<Renderer*>(mRenderer)->mCamera.rotate(45, 0.0f, 0.0f, 1.0f);
+        }
+        //     mPickups.push_back(getPickup);  //mPickups.push_back((new Pickup()));
+        // }
     }
 
 }

@@ -11,6 +11,7 @@
 #include "TriangleSurface.h"
 #include "house.h"
 #include "player.h"
+#include "pickup.h"
 
 class Renderer : public QVulkanWindowRenderer
 {
@@ -39,11 +40,13 @@ public:
     //Get Vulkan info - just for fun
     void getVulkanHWInfo();
 
-    bool checkCollision(Vertex v1, Vertex v2, float radius1, float radius2);
+    //return object from vector Pickups?
+    void checkCollision(Vertex v1, Vertex v2, float radius1, float radius2);
 
     std::vector<VisualObject*>& getObjects() { return mObjects; }
     std::unordered_map<std::string, VisualObject*>& getMap() { return mMap; }
 
+    bool IsColliding{false};
 protected:
 
     //Creates the Vulkan shader module from the precompiled shader files in .spv format
@@ -80,7 +83,7 @@ private:
     TriangleSurface mSurface;
     VisualObject mVisualObject;
     std::vector<VisualObject*> mObjects;
-    //std::vector<VisualObject*> mPickups[6]; //i want to have 6 pickups
+    std::vector<VisualObject*> mPickups; //i want to have 6 pickups
     std::unordered_map<std::string, VisualObject*> mMap;    // alternativ container
 
     void createBuffer(VkDevice logicalDevice,

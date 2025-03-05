@@ -19,6 +19,7 @@ qt_add_executable(QtVulkanApp
     beziercurve.h beziercurve.cpp
     player.h player.cpp
     house.h house.cpp
+    pickup.h pickup.cpp
 )
 # Define the shader files
 set(SHADER_FILES
