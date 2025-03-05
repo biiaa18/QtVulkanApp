@@ -54,8 +54,9 @@ Renderer::Renderer(QVulkanWindow *w, bool msaa)
     // //player
     mObjects.push_back((new Player()));//1
     mObjects.push_back((new Player()));//2
-    mObjects.at(2)->move (0.0f,0.0f,2.0f);
-    //checkCollision(mObjects.at(1)->getMiddlePoints(1),mObjects.at(2)->getMiddlePoints(2),mObjects.at(1)->radius, mObjects.at(2)->radius);
+    mObjects.at(1)->move (-5.0f,0.0f,0.0f);
+    //mObjects.at(1)->getMiddlePoints(0);
+    // checkCollision(mObjects.at(1)->getMiddlePoints(0),mObjects.at(2)->getMiddlePoints(0),mObjects.at(1)->radius, mObjects.at(2)->radius);
     // mObjects.push_back((new TriangleSurface()));
     // mObjects.push_back((new TriangleSurface("D:\\1x_axis.txt")));
     // mObjects.at(10)->setdrawType(1);
@@ -394,8 +395,8 @@ void Renderer::startNextFrame()
 
     //check collision
     //checkCollision(mObjects.at(1)->getMiddlePoints(1),mObjects.at(2)->getMiddlePoints(2),mObjects.at(1)->radius, mObjects.at(2)->radius);
-
-
+    qDebug()<<mObjects.at(1)->getMiddlePoints(0).x<<mObjects.at(1)->getMiddlePoints(0).y<<mObjects.at(1)->getMiddlePoints(0).z;
+    //checkCollision(mObjects.at(1)->getMiddlePoints(0),mObjects.at(2)->getMiddlePoints(0),mObjects.at(1)->radius, mObjects.at(2)->radius);
     //qDebug() << mObjects.at(1)->mMatrix;
     mWindow->frameReady();
     mWindow->requestUpdate(); // render continuously, throttled by the presentation rate
@@ -603,7 +604,8 @@ bool Renderer::checkCollision(Vertex v1, Vertex v2, float radius1, float radius2
     qDebug("They collide");
     float distance_length=qSqrt(qPow(distance.x,2) +qPow(distance.y,2) + qPow(distance.z,2));
     if (distance_length<(radius1+radius2)){
-        qDebug("They collide");
+        //qDebug("They collide");
+        qDebug()<<distance_length;
     }
-
+    qDebug()<<distance_length;
     return false;}

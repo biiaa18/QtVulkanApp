@@ -22,6 +22,13 @@ Vertex VisualObject::getMiddlePoints(int object_number){
     return MiddlePoints[index];
 };
 
+void VisualObject::updateMiddlePoints(int index,float new_x,float new_y,float new_z){
+    MiddlePoints[index].x+=new_x;
+    MiddlePoints[index].y+=new_y;
+    MiddlePoints[index].z+=new_z;
+
+};
+
 void VisualObject::move(float x, float y, float z)
 {
     mMatrix.translate(x, y, z);

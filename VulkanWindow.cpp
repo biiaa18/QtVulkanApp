@@ -18,7 +18,11 @@ void VulkanWindow::keyPressEvent(QKeyEvent *event)
 {
     if (event->key() == Qt::Key_W)
     {
-        dynamic_cast<Renderer*>(mRenderer)->mObjects.at(mIndex)->move(0.0f, 1.0f, 0.0f);
+        float rate=-1.0f;
+        dynamic_cast<Renderer*>(mRenderer)->mObjects.at(1)->move(0.0f, 0.0f, rate);
+        qDebug("Move forward");
+        dynamic_cast<Renderer*>(mRenderer)->mObjects.at(1)->updateMiddlePoints(0,0.0f,0.0f,rate);
+
         // if(mSelectedObject)
         // {
         //     qDebug("Move forward");
@@ -29,32 +33,44 @@ void VulkanWindow::keyPressEvent(QKeyEvent *event)
 
     if (event->key() == Qt::Key_S)
     {
-        if(mSelectedObject)
-        {
-            qDebug("Move backwards");
-            mSelectedObject->move(-10.1f,0.0f, 0.0f);
-        }
-        dynamic_cast<Renderer*>(mRenderer)->mObjects.at(mIndex)->move(0.0f, -1.0f, 0.0f);
+        // if(mSelectedObject)
+        // {
+        //     qDebug("Move backwards");
+        //     mSelectedObject->move(-10.1f,0.0f, 0.0f);
+        // }
+                                                      //mIndex
+        float rate=1.0f;
+        dynamic_cast<Renderer*>(mRenderer)->mObjects.at(1)->move(0.0f, 0.0f,rate);
+        dynamic_cast<Renderer*>(mRenderer)->mObjects.at(1)->updateMiddlePoints(0,0.0f,0.0f,rate);
+
+
+        qDebug("Move backwards");
     }
 
     if (event->key() == Qt::Key_A)
     {
-        if(mSelectedObject)
-        {
-            qDebug("Move left");
-            mSelectedObject->move(0.0f,0.0f, 10.1f);
-        }
-        dynamic_cast<Renderer*>(mRenderer)->mObjects.at(mIndex)->move(0.0f,0.0f, 1.1f);
+        // if(mSelectedObject)
+        // {
+        //     qDebug("Move left");
+        //     mSelectedObject->move(0.0f,0.0f, 10.1f);
+        // }
+        float rate=-1.0f;
+        qDebug("Move left");
+        dynamic_cast<Renderer*>(mRenderer)->mObjects.at(1)->move(rate,0.0f, 0.0f);
+        dynamic_cast<Renderer*>(mRenderer)->mObjects.at(1)->updateMiddlePoints(0,rate,0.0f,0.0f);
     }
 
     if (event->key() == Qt::Key_D)
     {
-        if(mSelectedObject)
-        {
-            qDebug("Move right");
-            mSelectedObject->move(0.0f,0.0f, -10.1f);
-        }
-        dynamic_cast<Renderer*>(mRenderer)->mObjects.at(mIndex)->move(0.0f,0.0f, -1.1f);
+        // if(mSelectedObject)
+        // {
+        //     qDebug("Move right");
+        //     mSelectedObject->move(0.0f,0.0f, -10.1f);
+        // }
+        float rate=1.0f;
+        qDebug("Move right");
+        dynamic_cast<Renderer*>(mRenderer)->mObjects.at(1)->move(rate,0.0f, 0.0f);
+        dynamic_cast<Renderer*>(mRenderer)->mObjects.at(1)->updateMiddlePoints(0,rate,0.0f,0.0f);
     }
 
     if(event->key() == Qt::Key_M)
@@ -68,11 +84,11 @@ void VulkanWindow::keyPressEvent(QKeyEvent *event)
     }
 
     if (event->key() == Qt::Key_0){
-        qDebug("triangle object");
+        qDebug("plane");
         mIndex = 0;
     }
     if (event->key() == Qt::Key_1){
-        qDebug("rectangle object");
+        qDebug("Player");
         mIndex = 1;
     }
     if (event->key() == Qt::Key_2){

@@ -15,10 +15,9 @@ Player::Player() {            //right  up   forward
     v4.z=(v1.z+v2.z+v3.z)/3;
     v4.r=0.0f;
     v4.g=0.0f;
-    v4.g=0.0f;
+    v4.b=0.0f;
     v4.u=0.0f;
     v4.v=0.0f;
-    MiddlePoints.push_back(v4);
     MiddlePoints.push_back(v4);
     radius=0.5f;
 }
