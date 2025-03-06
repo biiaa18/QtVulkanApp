@@ -33,8 +33,7 @@ public:
     void updateMiddlePoints(int index,float new_x,float new_y,float new_z);
     float radius{0.0f};
 
-    //Bezier kurve med 3 kontroll punkter c, t er hastighet
-    void Patrol(VisualObject* obj,float t,Vertex c0, Vertex c1, Vertex c2);//alt+Enter to generate definition
+
 protected:
     std::string mName;
 };

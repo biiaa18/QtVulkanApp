@@ -53,15 +53,24 @@ Renderer::Renderer(QVulkanWindow *w, bool msaa)
     // mObjects.at(8)->move (2.0f,0.0f,0.0f);
     // //player
     mObjects.push_back((new Player()));//1
-    mObjects.push_back((new Pickup()));//2
-    mObjects.push_back((new Pickup()));//3
-    mObjects.at(3)->move (0.0f,0.0f,-2.0f);
-    mObjects.at(3)->updateMiddlePoints(0,0.0f,0.0f,-2.0f);
-    mObjects.push_back((new Pickup()));//4
-    mObjects.at(1)->move (0.0f,0.0f,2.0f);
-    mObjects.at(1)->updateMiddlePoints(0,0.0f,0.0f,2.0f);
 
-    mObjects.push_back((new NPC(mObjects.at(3)->getVertices(0))));//5
+
+
+
+
+    // //Pickups
+    mPickups.push_back((new Pickup()));//0
+    mPickups.push_back((new Pickup()));//1
+    mPickups.at(1)->move (4.0f,0.0f,-2.0f);
+    mPickups.at(1)->updateMiddlePoints(0,4.0f,0.0f,-2.0f);
+    mPickups.push_back((new Pickup()));//2
+    mPickups.at(2)->move (0.0f,0.0f,2.0f);
+    mPickups.at(2)->updateMiddlePoints(0,0.0f,0.0f,2.0f);
+
+
+    mObjects.push_back((new NPC(mPickups.at(0)->getVertices(0))));//2
+    Patrol(mObjects.at(2),0.0f,mPickups.at(0)->getVertices(0),mPickups.at(1)->getVertices(0),mPickups.at(2)->getVertices(0));
+
     // mObjects.push_back((new Pickup()));//5
     // mObjects.push_back((new Pickup()));//6
     // mObjects.push_back((new Pickup()));//7
@@ -130,6 +139,11 @@ void Renderer::initResources()
     bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO; // Set the structure type
 
     for (auto it=mObjects.begin(); it!=mObjects.end(); it++)
+    {
+        createBuffer(logicalDevice, uniAlign, *it);
+    }
+
+    for (auto it=mPickups.begin(); it!=mPickups.end(); it++)
     {
         createBuffer(logicalDevice, uniAlign, *it);
     }
@@ -393,6 +407,19 @@ void Renderer::startNextFrame()
         // setModelMatrix(mCamera.cMatrix() * (*it)->mMatrix);
         // mDeviceFunctions->vkCmdDraw(cmdBuf, (*it)->mVertices.size(), 1, 0, 0);
     }
+
+    for (auto it=mPickups.begin(); it!=mPickups.end(); it++){
+        if ((*it)->drawType==0){
+            //pipeline 1 for triangle list
+            mDeviceFunctions->vkCmdBindPipeline(cmdBuf, VK_PIPELINE_BIND_POINT_GRAPHICS, mPipeline2);
+
+        }
+        mDeviceFunctions->vkCmdBindVertexBuffers(cmdBuf, 0, 1, &(*it)->mBuffer, &vbOffset);
+        setModelMatrix(mCamera.cMatrix() * (*it)->mMatrix);
+        mDeviceFunctions->vkCmdDraw(cmdBuf, (*it)->mVertices.size(), 1, 0, 0);
+    }
+
+
     // Alternativt draw kall ved å traversere unordered map
     /*    for (auto it=mMap.begin(); it!=mMap.end(); it++)
     {
@@ -411,8 +438,8 @@ void Renderer::startNextFrame()
 
     //check collision
     //qDebug()<<mObjects.at(1)->getMiddlePoints(0).x<<mObjects.at(1)->getMiddlePoints(0).y<<mObjects.at(1)->getMiddlePoints(0).z;
-    checkCollision(mObjects.at(1)->getMiddlePoints(0),mObjects.at(2)->getMiddlePoints(0),mObjects.at(1)->radius, mObjects.at(2)->radius);
-
+    //checkCollision(mObjects.at(1)->getMiddlePoints(0),mPickups.at(0)->getMiddlePoints(0),mObjects.at(1)->radius, mPickups.at(0)->radius);
+    //Patrol(mObjects.at(2),0.0f,mPickups.at(0)->getVertices(0),mPickups.at(1)->getVertices(0),mPickups.at(2)->getVertices(0));
     //qDebug() << mObjects.at(1)->mMatrix;
     mWindow->frameReady();
     mWindow->requestUpdate(); // render continuously, throttled by the presentation rate
@@ -605,6 +632,20 @@ void Renderer::releaseResources()
         }
 
     }
+
+    for (auto it=mPickups.begin(); it!=mPickups.end(); it++) {
+        if ((*it)->mBuffer) {
+            mDeviceFunctions->vkDestroyBuffer(dev, (*it)->mBuffer, nullptr);
+            (*it)->mBuffer = VK_NULL_HANDLE;
+        }
+    }
+    for (auto it=mPickups.begin(); it!=mPickups.end(); it++) {
+        if ((*it)->mBufferMemory) {
+            mDeviceFunctions->vkFreeMemory(dev, (*it)->mBufferMemory, nullptr);
+            (*it)->mBuffer = VK_NULL_HANDLE;
+        }
+
+    }
 }
 
 void Renderer::checkCollision(Vertex v1, Vertex v2, float radius1, float radius2){
@@ -623,4 +664,11 @@ void Renderer::checkCollision(Vertex v1, Vertex v2, float radius1, float radius2
         IsColliding=true;
     }
     qDebug()<<distance_length;
+}
+
+void Renderer::Patrol(VisualObject* obj, float t,Vertex c0, Vertex c1, Vertex c2)
+{
+    float x=(c0.x)*(t*(t-2)+1) + (c1.x)*t*(-2*t+2) +(c2.x)*qPow(t,2);
+    float z=(c0.z)*(t*(t-2)+1) + (c1.z)*t*(-2*t+2) +(c2.z)*qPow(t,2);
+    obj->move(z,0.0f,x);
 }
