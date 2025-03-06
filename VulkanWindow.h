@@ -21,6 +21,8 @@ public:
     QVulkanWindowRenderer* getRenderer() const { return mRenderer; }
     void setSelectedObject(VisualObject* object) { mSelectedObject = object; }
 
+
+
 signals:
     void frameQueued(int colorValue);
 
@@ -39,6 +41,10 @@ protected:
     QVulkanWindowRenderer* mRenderer{ nullptr };
     VisualObject* mSelectedObject{ nullptr };
     int mIndex{0};
+
+    int count{0};
+    VisualObject* approved{nullptr};
+    VisualObject* pickup {nullptr};
 
 // private:
 //     int mMouseXlast{0}; //for mouse rotate input

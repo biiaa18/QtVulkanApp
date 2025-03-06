@@ -64,12 +64,12 @@ Renderer::Renderer(QVulkanWindow *w, bool msaa)
     mPickups.at(1)->move (4.0f,0.0f,-2.0f);
     mPickups.at(1)->updateMiddlePoints(0,4.0f,0.0f,-2.0f);
     mPickups.push_back((new Pickup()));//2
-    mPickups.at(2)->move (0.0f,0.0f,2.0f);
-    mPickups.at(2)->updateMiddlePoints(0,0.0f,0.0f,2.0f);
+    mPickups.at(2)->move (0.0f,0.0f,3.0f);
+    mPickups.at(2)->updateMiddlePoints(0,0.0f,0.0f,3.0f);
 
 
-    mObjects.push_back((new NPC(mPickups.at(0)->getVertices(0))));//2
-    Patrol(mObjects.at(2),0.0f,mPickups.at(0)->getVertices(0),mPickups.at(1)->getVertices(0),mPickups.at(2)->getVertices(0));
+    mObjects.push_back((new NPC(mPickups.at(0)->getMiddlePoints(0))));//2
+    // Patrol(mObjects.at(2),0.0f,mPickups.at(1)->getMiddlePoints(0),mPickups.at(0)->getMiddlePoints(0),mPickups.at(2)->getMiddlePoints(0));
 
     // mObjects.push_back((new Pickup()));//5
     // mObjects.push_back((new Pickup()));//6
@@ -438,9 +438,11 @@ void Renderer::startNextFrame()
 
     //check collision
     //qDebug()<<mObjects.at(1)->getMiddlePoints(0).x<<mObjects.at(1)->getMiddlePoints(0).y<<mObjects.at(1)->getMiddlePoints(0).z;
-    //checkCollision(mObjects.at(1)->getMiddlePoints(0),mPickups.at(0)->getMiddlePoints(0),mObjects.at(1)->radius, mPickups.at(0)->radius);
-    //Patrol(mObjects.at(2),0.0f,mPickups.at(0)->getVertices(0),mPickups.at(1)->getVertices(0),mPickups.at(2)->getVertices(0));
-    //qDebug() << mObjects.at(1)->mMatrix;
+    //checkCollision(mObjects.at(1),mPickups.at(0));
+
+    //NPC patrol
+    //Patrol(mObjects.at(2),0.0f,mPickups.at(1)->getMiddlePoints(0),mPickups.at(0)->getMiddlePoints(0),mPickups.at(2)->getMiddlePoints(0));
+
     mWindow->frameReady();
     mWindow->requestUpdate(); // render continuously, throttled by the presentation rate
 }
@@ -648,27 +650,53 @@ void Renderer::releaseResources()
     }
 }
 
-void Renderer::checkCollision(Vertex v1, Vertex v2, float radius1, float radius2){
+VisualObject* Renderer::checkCollision(VisualObject* v1, VisualObject* v2){
     Vertex distance;
-    distance.x=v1.x-v2.x;
-    distance.y=v1.y-v2.y;
-    distance.z=v1.z-v2.z;
+    distance.x=v1->getMiddlePoints(0).x- v2->getMiddlePoints(0).x;
+    distance.y=v1->getMiddlePoints(0).y- v2->getMiddlePoints(0).y;
+    distance.z=v1->getMiddlePoints(0).z- v2->getMiddlePoints(0).z;
     distance.r=0.0f;
     distance.g=0.0f;
     distance.g=0.0f;
     distance.u=0.0f;
     distance.v=0.0f;
     float distance_length=qSqrt(qPow(distance.x,2) +qPow(distance.y,2) + qPow(distance.z,2));
+    float radius1 =v1->radius;
+    float radius2 =v2->radius;
     if (distance_length<=(radius1+radius2)){
         qDebug("They collide");
         IsColliding=true;
     }
+    else{
+        IsColliding=false;
+    }
     qDebug()<<distance_length;
+
+    return v2;
 }
 
 void Renderer::Patrol(VisualObject* obj, float t,Vertex c0, Vertex c1, Vertex c2)
 {
     float x=(c0.x)*(t*(t-2)+1) + (c1.x)*t*(-2*t+2) +(c2.x)*qPow(t,2);
     float z=(c0.z)*(t*(t-2)+1) + (c1.z)*t*(-2*t+2) +(c2.z)*qPow(t,2);
-    obj->move(z,0.0f,x);
+
+    // do {
+    //     obj->move(z,0.0f,x);
+    // } while (t<=1.0);
+    // bool CanMove=true;
+    // float new_x=c1.x-c0.x;
+    // float new_y=c1.y-c0.y;
+    // float new_z=c1.z-c0.z;
+    // obj->move(new_x,new_y, new_z);
+    // CanMove=false;
+    // if (!CanMove){
+
+    // }
+
+
+
+    // if (t>=0.0f){
+    //     float x=(c0.x)*(-t*(-t-2)+1) + (c1.x)*(-t)*(-2*(-t)+2) +(c2.x)*qPow(t,2);
+    //     float z=(c0.z)*(-t*(-t-2)+1) + (c1.z)*(-t)*(-2*(-t)+2) +(c2.z)*qPow(t,2);
+    // }
 }

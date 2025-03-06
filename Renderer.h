@@ -42,7 +42,7 @@ public:
     void getVulkanHWInfo();
 
     //return object from vector Pickups?
-    void checkCollision(Vertex v1, Vertex v2, float radius1, float radius2);
+    VisualObject* checkCollision(VisualObject* v1, VisualObject* v2);
 
     std::vector<VisualObject*>& getObjects() { return mObjects; }
     std::unordered_map<std::string, VisualObject*>& getMap() { return mMap; }

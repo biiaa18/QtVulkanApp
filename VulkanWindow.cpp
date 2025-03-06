@@ -1,7 +1,7 @@
 #include "VulkanWindow.h"
 #include "Renderer.h"
 #include <QKeyEvent>
-
+#include <vector>
 VulkanWindow::VulkanWindow()
 {
     mSelectedObject = nullptr;
@@ -126,11 +126,30 @@ void VulkanWindow::keyPressEvent(QKeyEvent *event)
     //////////////////////collect pickup
     if(event->key() == Qt::Key_K)
     {
-        if (dynamic_cast<Renderer*>(mRenderer)->IsColliding){
+        VisualObject* player{dynamic_cast<Renderer*>(mRenderer)->mObjects.at(1)};
+        std::vector<VisualObject*> temp=dynamic_cast<Renderer*>(mRenderer)->mPickups;
 
+
+
+       //check if player collides with any pickups, iterating through every pickup....
+        for (auto it=temp.begin(); it!=temp.end(); it++){
+            pickup=dynamic_cast<Renderer*>(mRenderer)->checkCollision(player, *it);
+            if (dynamic_cast<Renderer*>(mRenderer)->IsColliding){
+
+                approved=pickup;
+
+                count+=1;
+                qDebug("Picked up");
+                qDebug()<<count;
+                temp.push_back(pickup);
+                break;
+            }
+            else{
+                qDebug("You are too far away");
+            }
         }
-        //     mPickups.push_back(getPickup);  //mPickups.push_back((new Pickup()));
-        // }
+        qDebug("exit for loooooooop");
+        pickup=nullptr;
     }
 
 }
