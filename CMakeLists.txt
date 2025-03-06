@@ -20,6 +20,7 @@ qt_add_executable(QtVulkanApp
     player.h player.cpp
     house.h house.cpp
     pickup.h pickup.cpp
+    npc.h npc.cpp
 )
 # Define the shader files
 set(SHADER_FILES

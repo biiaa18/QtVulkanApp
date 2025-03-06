@@ -12,6 +12,7 @@
 #include "house.h"
 #include "player.h"
 #include "pickup.h"
+#include "npc.h"
 
 class Renderer : public QVulkanWindowRenderer
 {

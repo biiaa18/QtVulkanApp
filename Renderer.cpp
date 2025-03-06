@@ -54,7 +54,17 @@ Renderer::Renderer(QVulkanWindow *w, bool msaa)
     // //player
     mObjects.push_back((new Player()));//1
     mObjects.push_back((new Pickup()));//2
+    mObjects.push_back((new Pickup()));//3
+    mObjects.at(3)->move (0.0f,0.0f,-2.0f);
+    mObjects.at(3)->updateMiddlePoints(0,0.0f,0.0f,-2.0f);
+    mObjects.push_back((new Pickup()));//4
+    mObjects.at(1)->move (0.0f,0.0f,2.0f);
+    mObjects.at(1)->updateMiddlePoints(0,0.0f,0.0f,2.0f);
 
+    mObjects.push_back((new NPC(mObjects.at(3)->getVertices(0))));//5
+    // mObjects.push_back((new Pickup()));//5
+    // mObjects.push_back((new Pickup()));//6
+    // mObjects.push_back((new Pickup()));//7
 
     // mObjects.push_back((new Player()));//2
     // mObjects.at(1)->move (-5.0f,0.0f,0.0f);

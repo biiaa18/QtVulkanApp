@@ -29,6 +29,13 @@ void VisualObject::updateMiddlePoints(int index,float new_x,float new_y,float ne
 
 };
 
+void VisualObject::Patrol(VisualObject* obj, float t,Vertex c0, Vertex c1, Vertex c2)
+{
+    // float x=....t ...c;
+    // float y=....t ...c;
+    //move(x,y,0.0f);
+}
+
 void VisualObject::move(float x, float y, float z)
 {
     mMatrix.translate(x, y, z);
