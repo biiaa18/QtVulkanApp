@@ -31,6 +31,7 @@ public:
     std::vector<Vertex> MiddlePoints;
     Vertex getMiddlePoints(int object_number);
     void updateMiddlePoints(int index,float new_x,float new_y,float new_z);
+    void setNewPosition(VisualObject* ptr,float new_x,float new_z);
     float radius{0.0f};
 
 

@@ -6,6 +6,7 @@ class NPC:public VisualObject
 {
 public:
     NPC(Vertex start);
+
 };
 
 #endif // NPC_H

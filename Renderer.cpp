@@ -69,7 +69,11 @@ Renderer::Renderer(QVulkanWindow *w, bool msaa)
 
 
     mObjects.push_back((new NPC(mPickups.at(0)->getMiddlePoints(0))));//2
-    // Patrol(mObjects.at(2),0.0f,mPickups.at(1)->getMiddlePoints(0),mPickups.at(0)->getMiddlePoints(0),mPickups.at(2)->getMiddlePoints(0));
+
+    // for (int i=0;i<10;i++){
+    //     mObjects.at(2)->move(0.0f, 0.1f, 0.0f);
+    //     break;
+    // }
 
     // mObjects.push_back((new Pickup()));//5
     // mObjects.push_back((new Pickup()));//6
@@ -434,14 +438,29 @@ void Renderer::startNextFrame()
     // mObjects.at(0)->move(0.0f, 1.0f, 0.0f);
     //mObjects.at(2)->rotate(0.0f, 0.0f, 1.0f, 0.0f);
     // mObjects.at(2)->scale(0.5);
+    // for (int i=0;i<10;i++){
+    //     mObjects.at(2)->move(0.0f, 0.01f, 0.0f);
+    //     break;
+    // }
+
+    // for (int i=0;i<10;i++){
+    //     mObjects.at(2)->move(0.0f, 0.1f, 0.0f);
+    //     break;
+    // }
 
 
     //check collision
     //qDebug()<<mObjects.at(1)->getMiddlePoints(0).x<<mObjects.at(1)->getMiddlePoints(0).y<<mObjects.at(1)->getMiddlePoints(0).z;
     //checkCollision(mObjects.at(1),mPickups.at(0));
 
-    //NPC patrol
-    //Patrol(mObjects.at(2),0.0f,mPickups.at(1)->getMiddlePoints(0),mPickups.at(0)->getMiddlePoints(0),mPickups.at(2)->getMiddlePoints(0));
+    //NPC patrol, next frame secures that new vertex positions are drawn in real time
+
+    // for (float i=0.000001;i<1.1f;i+=0.1f){
+    //     float b=Patrol(mObjects.at(2),i,mPickups.at(1)->getMiddlePoints(0),mPickups.at(0)->getMiddlePoints(0),mPickups.at(2)->getMiddlePoints(0));
+    //     mObjects.at(2)->setNewPosition(mObjects.at(2),b,0.0);
+    // }
+
+    // Patrol(mObjects.at(2),0.0f,mPickups.at(1)->getMiddlePoints(0),mPickups.at(0)->getMiddlePoints(0),mPickups.at(2)->getMiddlePoints(0));
 
     mWindow->frameReady();
     mWindow->requestUpdate(); // render continuously, throttled by the presentation rate
@@ -670,15 +689,24 @@ VisualObject* Renderer::checkCollision(VisualObject* v1, VisualObject* v2){
     else{
         IsColliding=false;
     }
-    qDebug()<<distance_length;
+    //qDebug()<<distance_length;
 
     return v2;
 }
 
-void Renderer::Patrol(VisualObject* obj, float t,Vertex c0, Vertex c1, Vertex c2)
+float Renderer::Patrol(VisualObject* obj, float t,Vertex c0, Vertex c1, Vertex c2)
 {
+    //float t=t1/100.0f;
     float x=(c0.x)*(t*(t-2)+1) + (c1.x)*t*(-2*t+2) +(c2.x)*qPow(t,2);
     float z=(c0.z)*(t*(t-2)+1) + (c1.z)*t*(-2*t+2) +(c2.z)*qPow(t,2);
+
+    // if (t>=1.0f){
+
+    // }
+    // else{
+    //     //obj->setNewPosition(obj,x,z);
+    //     obj->move(z,0.0f,x);  //set position thing...
+    // }
 
     // do {
     //     obj->move(z,0.0f,x);
@@ -699,4 +727,6 @@ void Renderer::Patrol(VisualObject* obj, float t,Vertex c0, Vertex c1, Vertex c2
     //     float x=(c0.x)*(-t*(-t-2)+1) + (c1.x)*(-t)*(-2*(-t)+2) +(c2.x)*qPow(t,2);
     //     float z=(c0.z)*(-t*(-t-2)+1) + (c1.z)*(-t)*(-2*(-t)+2) +(c2.z)*qPow(t,2);
     // }
+    return x;
+    return z;
 }

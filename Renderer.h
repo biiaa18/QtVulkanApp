@@ -50,7 +50,7 @@ public:
     bool IsColliding{false};
 
     //Bezier kurve med 3 kontroll punkter c, t er hastighet
-    void Patrol(VisualObject* obj,float t,Vertex c0, Vertex c1, Vertex c2);//alt+Enter to generate definition
+    float Patrol(VisualObject* obj,float t,Vertex c0, Vertex c1, Vertex c2);//alt+Enter to generate definition
 protected:
 
     //Creates the Vulkan shader module from the precompiled shader files in .spv format

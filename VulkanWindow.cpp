@@ -130,7 +130,6 @@ void VulkanWindow::keyPressEvent(QKeyEvent *event)
         std::vector<VisualObject*> temp=dynamic_cast<Renderer*>(mRenderer)->mPickups;
 
 
-
        //check if player collides with any pickups, iterating through every pickup....
         for (auto it=temp.begin(); it!=temp.end(); it++){
             pickup=dynamic_cast<Renderer*>(mRenderer)->checkCollision(player, *it);
@@ -141,7 +140,16 @@ void VulkanWindow::keyPressEvent(QKeyEvent *event)
                 count+=1;
                 qDebug("Picked up");
                 qDebug()<<count;
-                temp.push_back(pickup);
+                qDebug(" out of ");
+                qDebug()<<6;
+                //temp.push_back(pickup); make inventory array.
+
+                //deletion could have been done with map, but i'm lazy to redo vector to map right now...
+                auto it=std::find(temp.begin(), temp.end(), approved);
+                auto itr2=temp.begin();
+                int index=it-itr2;
+                //temp.pop_back(); doesnt affect renderer, while dynamic cast does
+                dynamic_cast<Renderer*>(mRenderer)->mPickups.erase(dynamic_cast<Renderer*>(mRenderer)->mPickups.begin()+index);
                 break;
             }
             else{

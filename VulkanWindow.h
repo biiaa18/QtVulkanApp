@@ -3,6 +3,7 @@
 
 #include <QVulkanWindow>
 #include "VisualObject.h"
+#include <QtAlgorithms>
 
 /*The QVulkanWindow subclass reimplements the factory function QVulkanWindow::createRenderer().
 This returns a new instance of the QVulkanWindowRenderer subclass.
@@ -45,6 +46,8 @@ protected:
     int count{0};
     VisualObject* approved{nullptr};
     VisualObject* pickup {nullptr};
+
+
 
 // private:
 //     int mMouseXlast{0}; //for mouse rotate input
