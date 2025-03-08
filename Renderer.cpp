@@ -31,61 +31,32 @@ Renderer::Renderer(QVulkanWindow *w, bool msaa)
 
     //plane
     mObjects.push_back((new TriangleSurface()));  //0
-    // // house: i decided to do walls this way was less lines, so i didnt push vertices for each wall in house.cpp
-    // //walls
-    // mObjects.push_back((new house(0.0))); //1
-    // mObjects.push_back((new house(0.0))); //2
-    // mObjects.at(2)->move (0.0f,0.0f,2.0f);
-    // mObjects.push_back((new house(0.0))); //3
-    // mObjects.at(3)->rotate(-90.0f, 0.0f, 1.0f, 0.0f);
-    // mObjects.push_back((new house(0.0))); //4
-    // mObjects.at(4)->move (2.0f,0.0f,0.0f);
-    // mObjects.at(4)->rotate(-90.0f, 0.0f, 1.0f, 0.0f);
-    // // //roof: used pythagoras here to understand the translation
-    // mObjects.push_back((new house(1.0))); //5
-    // mObjects.at(5)->move (0.0f,1.59f,-0.41f);
-    // mObjects.at(5)->rotate(45.0f, 1.0f, 0.0f, 0.0f);
-    // mObjects.push_back((new house(1.0))); //6
-    // mObjects.at(6)->move (0.0f,1.59f,2.41f);
-    // mObjects.at(6)->rotate(-45.0f, 1.0f, 0.0f, 0.0f);
-    // mObjects.push_back((new Triangle())); //7
-    // mObjects.push_back((new Triangle())); //8
-    // mObjects.at(8)->move (2.0f,0.0f,0.0f);
+
     // //player
     mObjects.push_back((new Player()));//1
 
+    // // house: i decided to do walls this way was less lines, so i didnt push vertices for each wall in house.cpp
+    // //walls
+    mObjects.push_back((new house(0.0))); //1
+    mObjects.push_back((new house(0.0))); //2
+    mObjects.at(2)->move (0.0f,0.0f,2.0f);
+    mObjects.push_back((new house(0.0))); //3
+    mObjects.at(3)->rotate(-90.0f, 0.0f, 1.0f, 0.0f);
+    mObjects.push_back((new house(0.0))); //4
+    mObjects.at(4)->move (2.0f,0.0f,0.0f);
+    mObjects.at(4)->rotate(-90.0f, 0.0f, 1.0f, 0.0f);
+    // //roof: used pythagoras here to understand the translation
+    mObjects.push_back((new house(1.0))); //5
+    mObjects.at(5)->move (0.0f,1.59f,-0.41f);
+    mObjects.at(5)->rotate(45.0f, 1.0f, 0.0f, 0.0f);
+    mObjects.push_back((new house(1.0))); //6
+    mObjects.at(6)->move (0.0f,1.59f,2.41f);
+    mObjects.at(6)->rotate(-45.0f, 1.0f, 0.0f, 0.0f);
+    mObjects.push_back((new Triangle())); //7
+    mObjects.push_back((new Triangle())); //8
+    mObjects.at(8)->move (2.0f,0.0f,0.0f);
 
-
-
-
-    // //Pickups
-    mPickups.push_back((new Pickup()));//0
-    mPickups.push_back((new Pickup()));//1
-    mPickups.at(1)->move (4.0f,0.0f,-2.0f);
-    mPickups.at(1)->updateMiddlePoints(0,4.0f,0.0f,-2.0f);
-    mPickups.push_back((new Pickup()));//2
-    mPickups.at(2)->move (0.0f,0.0f,3.0f);
-    mPickups.at(2)->updateMiddlePoints(0,0.0f,0.0f,3.0f);
-
-
-    mObjects.push_back((new NPC(mPickups.at(0)->getMiddlePoints(0))));//2
-
-    // for (int i=0;i<10;i++){
-    //     mObjects.at(2)->move(0.0f, 0.1f, 0.0f);
-    //     break;
-    // }
-
-    // mObjects.push_back((new Pickup()));//5
-    // mObjects.push_back((new Pickup()));//6
-    // mObjects.push_back((new Pickup()));//7
-
-    // mObjects.push_back((new Player()));//2
-    // mObjects.at(1)->move (-5.0f,0.0f,0.0f);
-    // mObjects.at(1)->updateMiddlePoints(0,-5.0f,0.0f,0.0f);
-
-    //mObjects.at(1)->getMiddlePoints(0);
-    // checkCollision(mObjects.at(1)->getMiddlePoints(0),mObjects.at(2)->getMiddlePoints(0),mObjects.at(1)->radius, mObjects.at(2)->radius);
-    // mObjects.push_back((new TriangleSurface()));
+    // //Axis
     // mObjects.push_back((new TriangleSurface("D:\\1x_axis.txt")));
     // mObjects.at(10)->setdrawType(1);
     // mObjects.push_back((new TriangleSurface("D:\\1y_axis.txt")));
@@ -93,20 +64,30 @@ Renderer::Renderer(QVulkanWindow *w, bool msaa)
     // mObjects.push_back((new TriangleSurface("D:\\1z_axis.txt")));
     // mObjects.at(12)->setdrawType(1);
 
-    // //house
-    // //mObjects.at(0)->move(0.0f, 1.0f, 0.0f);
-    // //wall1
-    // mObjects.at(1)->scale(0.5);
-    // mObjects.at(1)->move(0.0f,4.0f,0.0f);
-    // mObjects.at(1)->rotate(90.0f, 1.0f, 0.0f, 1.0f);
-    // //wall2
-    // mObjects.at(2)->scale(0.5);
-    // mObjects.at(2)->move(3.5f,4.0f,0.0f);
-    // mObjects.at(2)->rotate(90.0f, 1.0f, 0.0f, 1.0f);
-    // //wall3
-    // mObjects.at(2)->rotate(90.0f, 0.0f, 0.0f, 1.0f);
-    // mObjects.at(2)->move(0.0f,0.0f,2.5f);
-    // mObjects.at(2)->scale(0.5);
+    // //Pickups
+    mPickups.push_back((new Pickup()));//0
+    mPickups.push_back((new Pickup()));//1
+    mPickups.at(1)->move (0.0f,0.0f,-2.0f);
+    mPickups.at(1)->updateMiddlePoints(0,4.0f,0.0f,-2.0f);
+    mPickups.push_back((new Pickup()));//2
+    mPickups.at(2)->move (0.0f,0.0f,3.0f);
+    mPickups.at(2)->updateMiddlePoints(0,0.0f,0.0f,3.0f);
+    mPickups.push_back((new Pickup()));//3
+    mPickups.at(3)->move (5.0f,0.0f,0.0f);
+    mPickups.at(3)->updateMiddlePoints(0,5.0f,0.0f,0.0f);
+    mPickups.push_back((new Pickup()));//4
+    mPickups.at(4)->move (4.0f,0.0f,3.0f);
+    mPickups.at(4)->updateMiddlePoints(0,4.0f,0.0f,3.0f);
+    mPickups.push_back((new Pickup()));//5
+    mPickups.at(5)->move (4.0f,0.0f,-4.0f);
+    mPickups.at(5)->updateMiddlePoints(0,4.0f,0.0f,-4.0f);
+
+    // //NPC
+    mObjects.push_back((new NPC(mPickups.at(0)->getMiddlePoints(0))));//must always be under pickups creation....
+    // for (int i=0;i<10;i++){
+    //     mObjects.at(2)->move(0.0f, 0.1f, 0.0f);
+    //     break;
+    // }
 
 
 
@@ -342,8 +323,14 @@ void Renderer::initSwapChainResources()
     const QSize sz = mWindow->swapChainImageSize();
 
     mCamera.perspective(45.0f, sz.width() / (float) sz.height(), 0.01f, 100.0f);
-    mCamera.translate(0, 2, -15); //Camera is -4 away from origo
+    mCamera.translate(0, 2, -15); //Camera is -15 away from origo
     mCamera.rotate(30,1.0f,0.0f,0.0f);
+
+
+    insideCamera.perspective(50.0f, sz.width() / (float) sz.height(), 0.01f, 100.0f); //first parameter brings camera closer to the scene
+    insideCamera.translate(-1.0, 1, -2.6); // -right, +backwards,- up
+    insideCamera.rotate(70,1.0f,0.0f,0.0f); // we look at the scene from the top
+
 }
 
 void Renderer::startNextFrame()
@@ -405,11 +392,8 @@ void Renderer::startNextFrame()
 
         mDeviceFunctions->vkCmdBindVertexBuffers(cmdBuf, 0, 1, &(*it)->mBuffer, &vbOffset);
         setModelMatrix(mCamera.cMatrix() * (*it)->mMatrix);
+        setModelMatrix(insideCamera.cMatrix() * (*it)->mMatrix);
         mDeviceFunctions->vkCmdDraw(cmdBuf, (*it)->mVertices.size(), 1, 0, 0);
-
-        // mDeviceFunctions->vkCmdBindVertexBuffers(cmdBuf, 0, 1, &(*it)->mBuffer, &vbOffset);
-        // setModelMatrix(mCamera.cMatrix() * (*it)->mMatrix);
-        // mDeviceFunctions->vkCmdDraw(cmdBuf, (*it)->mVertices.size(), 1, 0, 0);
     }
 
     for (auto it=mPickups.begin(); it!=mPickups.end(); it++){
@@ -420,6 +404,7 @@ void Renderer::startNextFrame()
         }
         mDeviceFunctions->vkCmdBindVertexBuffers(cmdBuf, 0, 1, &(*it)->mBuffer, &vbOffset);
         setModelMatrix(mCamera.cMatrix() * (*it)->mMatrix);
+        setModelMatrix(insideCamera.cMatrix() * (*it)->mMatrix);
         mDeviceFunctions->vkCmdDraw(cmdBuf, (*it)->mVertices.size(), 1, 0, 0);
     }
 
@@ -447,7 +432,6 @@ void Renderer::startNextFrame()
     //     mObjects.at(2)->move(0.0f, 0.1f, 0.0f);
     //     break;
     // }
-
 
     //check collision
     //qDebug()<<mObjects.at(1)->getMiddlePoints(0).x<<mObjects.at(1)->getMiddlePoints(0).y<<mObjects.at(1)->getMiddlePoints(0).z;

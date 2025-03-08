@@ -150,6 +150,10 @@ void VulkanWindow::keyPressEvent(QKeyEvent *event)
                 int index=it-itr2;
                 //temp.pop_back(); doesnt affect renderer, while dynamic cast does
                 dynamic_cast<Renderer*>(mRenderer)->mPickups.erase(dynamic_cast<Renderer*>(mRenderer)->mPickups.begin()+index);
+
+                // if (count==6){
+                //     qDebug("You won");
+                // }
                 break;
             }
             else{

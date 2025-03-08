@@ -96,6 +96,7 @@ private:
     //VkBuffer& buffer,
     //VkDeviceMemory& bufferMemory) ;
     Camera mCamera;
+    Camera insideCamera;
     //VkDevice logicalDevice;
     //VkPipelineInputAssemblyStateCreateInfo ia;
     //VkGraphicsPipelineCreateInfo pipelineInfo;
