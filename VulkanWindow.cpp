@@ -73,11 +73,11 @@ void VulkanWindow::keyPressEvent(QKeyEvent *event)
         dynamic_cast<Renderer*>(mRenderer)->mObjects.at(1)->updateMiddlePoints(0,rate,0.0f,0.0f);
     }
 
-    if(event->key() == Qt::Key_M)
-    {
-        qDebug("Scaling object");
-        dynamic_cast<Renderer*>(mRenderer)->mObjects.at(mIndex)->scale(0.9f);
-    }
+    // if(event->key() == Qt::Key_M)
+    // {
+    //     qDebug("Scaling object");
+    //     dynamic_cast<Renderer*>(mRenderer)->mObjects.at(mIndex)->scale(0.9f);
+    // }
     if (event->key() == Qt::Key_Escape)
     {
         QCoreApplication::quit();       //Shuts down the whole program
@@ -97,27 +97,28 @@ void VulkanWindow::keyPressEvent(QKeyEvent *event)
     // }
 
     //****** Camera control ******** //
-    if(event->key() == Qt::Key_T)
-    {
-        dynamic_cast<Renderer*>(mRenderer)->mCamera.translate(.0f, 0.0f, 0.2f);
-    }
-    if(event->key() == Qt::Key_G)
-    {
-        dynamic_cast<Renderer*>(mRenderer)->mCamera.translate(.0f, 0.0f, -0.2f);
-    }
+    // if(event->key() == Qt::Key_T)
+    // {
+    //     dynamic_cast<Renderer*>(mRenderer)->mCamera.translate(.0f, 0.0f, 0.2f);
+    // }
+    // if(event->key() == Qt::Key_G)
+    // {
+    //     dynamic_cast<Renderer*>(mRenderer)->mCamera.translate(.0f, 0.0f, -0.2f);
+    // }
 
-    if(event->key() == Qt::Key_I)
-    {
-        // dynamic_cast<Renderer*>(mRenderer)->mCamera.translate(.0f, 0.0f, -0.2f);
-    }
+    // if(event->key() == Qt::Key_I)
+    // {
+    //     // dynamic_cast<Renderer*>(mRenderer)->mCamera.translate(.0f, 0.0f, -0.2f);
+    //     grabKeyboard();
+    // }
     if(event->key() == Qt::Key_Y)
     {
         dynamic_cast<Renderer*>(mRenderer)->mCamera.rotate(45, 0.0f, 1.0f, 0.0f);
     }
-    if(event->key() == Qt::Key_X)
-    {
-        dynamic_cast<Renderer*>(mRenderer)->mCamera.rotate(45, 1.0f, 0.0f, 0.0f);
-    }
+    // if(event->key() == Qt::Key_X)
+    // {
+    //     dynamic_cast<Renderer*>(mRenderer)->mCamera.rotate(45, 1.0f, 0.0f, 0.0f);
+    // }
     if(event->key() == Qt::Key_Z)
     {
         dynamic_cast<Renderer*>(mRenderer)->mCamera.rotate(45, 0.0f, 0.0f, 1.0f);
@@ -134,7 +135,6 @@ void VulkanWindow::keyPressEvent(QKeyEvent *event)
         for (auto it=temp.begin(); it!=temp.end(); it++){
             pickup=dynamic_cast<Renderer*>(mRenderer)->checkCollision(player, *it);
             if (dynamic_cast<Renderer*>(mRenderer)->IsColliding){
-
                 approved=pickup;
 
                 count+=1;
@@ -142,7 +142,6 @@ void VulkanWindow::keyPressEvent(QKeyEvent *event)
                 qDebug()<<count;
                 qDebug(" out of ");
                 qDebug()<<6;
-                //temp.push_back(pickup); make inventory array.
 
                 //deletion could have been done with map, but i'm lazy to redo vector to map right now...
                 auto it=std::find(temp.begin(), temp.end(), approved);
@@ -151,16 +150,16 @@ void VulkanWindow::keyPressEvent(QKeyEvent *event)
                 //temp.pop_back(); doesnt affect renderer, while dynamic cast does
                 dynamic_cast<Renderer*>(mRenderer)->mPickups.erase(dynamic_cast<Renderer*>(mRenderer)->mPickups.begin()+index);
 
-                // if (count==6){
-                //     qDebug("You won");
-                // }
+                if (count==6){
+                    qDebug("You won");
+
+                }
                 break;
             }
             else{
                 qDebug("You are too far away");
             }
         }
-        qDebug("exit for loooooooop");
         pickup=nullptr;
     }
 
