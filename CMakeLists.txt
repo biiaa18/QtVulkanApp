@@ -18,9 +18,10 @@ qt_add_executable(QtVulkanApp
     Triangle.h Triangle.cpp
     beziercurve.h beziercurve.cpp
     player.h player.cpp
-    house.h house.cpp
+    wall.h wall.cpp
     pickup.h pickup.cpp
     npc.h npc.cpp
+    door.h door.cpp
 )
 # Define the shader files
 set(SHADER_FILES

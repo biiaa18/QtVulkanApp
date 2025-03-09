@@ -35,26 +35,29 @@ Renderer::Renderer(QVulkanWindow *w, bool msaa)
     // //player
     mObjects.push_back((new Player()));//1
 
-    // // house: i decided to do walls this way was less lines, so i didnt push vertices for each wall in house.cpp
+    // // house: i decided to do walls this way, was less lines, so i didnt push vertices for each wall in house.cpp
     // //walls
-    mObjects.push_back((new house(0.0))); //1
-    mObjects.push_back((new house(0.0))); //2
-    mObjects.at(2)->move (0.0f,0.0f,2.0f);
-    mObjects.push_back((new house(0.0))); //3
-    mObjects.at(3)->rotate(-90.0f, 0.0f, 1.0f, 0.0f);
-    mObjects.push_back((new house(0.0))); //4
-    mObjects.at(4)->move (2.0f,0.0f,0.0f);
+    mObjects.push_back((new wall(0.0))); //2
+    mObjects.push_back((new wall(0.0))); //3
+    mObjects.at(3)->move (0.0f,0.0f,2.0f);
+    mObjects.push_back((new wall(0.0))); //4
     mObjects.at(4)->rotate(-90.0f, 0.0f, 1.0f, 0.0f);
-    // //roof: used pythagoras here to understand the translation
-    mObjects.push_back((new house(1.0))); //5
-    mObjects.at(5)->move (0.0f,1.59f,-0.41f);
-    mObjects.at(5)->rotate(45.0f, 1.0f, 0.0f, 0.0f);
-    mObjects.push_back((new house(1.0))); //6
-    mObjects.at(6)->move (0.0f,1.59f,2.41f);
-    mObjects.at(6)->rotate(-45.0f, 1.0f, 0.0f, 0.0f);
-    mObjects.push_back((new Triangle())); //7
-    mObjects.push_back((new Triangle())); //8
-    mObjects.at(8)->move (2.0f,0.0f,0.0f);
+    mObjects.push_back((new door())); //5   is the actual door
+    mObjects.at(5)->move (0.0f,0.0f,0.67f);
+    mObjects.at(5)->updateMiddlePoints(0,0.0f,0.0f,0.66f);
+    mObjects.push_back((new door())); //6
+    mObjects.push_back((new door())); //7
+    mObjects.at(7)->move (0.0f,0.0f,1.35f);
+    //roof: used pythagoras here to understand the translation
+    mObjects.push_back((new wall(1.0))); //8
+    mObjects.at(8)->move (0.0f,1.59f,-0.41f);
+    mObjects.at(8)->rotate(45.0f, 1.0f, 0.0f, 0.0f);
+    mObjects.push_back((new wall(1.0))); //9
+    mObjects.at(9)->move (0.0f,1.59f,2.41f);
+    mObjects.at(9)->rotate(-45.0f, 1.0f, 0.0f, 0.0f);
+    mObjects.push_back((new Triangle())); //10
+    mObjects.push_back((new Triangle())); //11
+    mObjects.at(11)->move (2.0f,0.0f,0.0f);
 
     // //Axis
     // mObjects.push_back((new TriangleSurface("D:\\1x_axis.txt")));
@@ -389,23 +392,37 @@ void Renderer::startNextFrame()
             //pipeline2 for line list
             mDeviceFunctions->vkCmdBindPipeline(cmdBuf, VK_PIPELINE_BIND_POINT_GRAPHICS, mPipeline);
         }
-
-        mDeviceFunctions->vkCmdBindVertexBuffers(cmdBuf, 0, 1, &(*it)->mBuffer, &vbOffset);
-        setModelMatrix(mCamera.cMatrix() * (*it)->mMatrix);
-        setModelMatrix(insideCamera.cMatrix() * (*it)->mMatrix);
-        mDeviceFunctions->vkCmdDraw(cmdBuf, (*it)->mVertices.size(), 1, 0, 0);
+        // if camera can switch, we switch to insideCamera from mMatrix
+        if(CanSwitch==false){
+            mDeviceFunctions->vkCmdBindVertexBuffers(cmdBuf, 0, 1, &(*it)->mBuffer, &vbOffset);
+            setModelMatrix(mCamera.cMatrix() * (*it)->mMatrix);
+            mDeviceFunctions->vkCmdDraw(cmdBuf, (*it)->mVertices.size(), 1, 0, 0);
+        }
+        else{
+            mDeviceFunctions->vkCmdBindVertexBuffers(cmdBuf, 0, 1, &(*it)->mBuffer, &vbOffset);
+            setModelMatrix(insideCamera.cMatrix() * (*it)->mMatrix);
+            mDeviceFunctions->vkCmdDraw(cmdBuf, (*it)->mVertices.size(), 1, 0, 0);
+        }
     }
 
+    // //for rendering pickups
     for (auto it=mPickups.begin(); it!=mPickups.end(); it++){
         if ((*it)->drawType==0){
             //pipeline 1 for triangle list
             mDeviceFunctions->vkCmdBindPipeline(cmdBuf, VK_PIPELINE_BIND_POINT_GRAPHICS, mPipeline2);
 
         }
-        mDeviceFunctions->vkCmdBindVertexBuffers(cmdBuf, 0, 1, &(*it)->mBuffer, &vbOffset);
-        setModelMatrix(mCamera.cMatrix() * (*it)->mMatrix);
-        setModelMatrix(insideCamera.cMatrix() * (*it)->mMatrix);
-        mDeviceFunctions->vkCmdDraw(cmdBuf, (*it)->mVertices.size(), 1, 0, 0);
+
+        if(CanSwitch==false){
+            mDeviceFunctions->vkCmdBindVertexBuffers(cmdBuf, 0, 1, &(*it)->mBuffer, &vbOffset);
+            setModelMatrix(mCamera.cMatrix() * (*it)->mMatrix);
+            mDeviceFunctions->vkCmdDraw(cmdBuf, (*it)->mVertices.size(), 1, 0, 0);
+        }
+        else{
+            mDeviceFunctions->vkCmdBindVertexBuffers(cmdBuf, 0, 1, &(*it)->mBuffer, &vbOffset);
+            setModelMatrix(insideCamera.cMatrix() * (*it)->mMatrix);
+            mDeviceFunctions->vkCmdDraw(cmdBuf, (*it)->mVertices.size(), 1, 0, 0);
+        }
     }
 
 
@@ -437,6 +454,32 @@ void Renderer::startNextFrame()
     //qDebug()<<mObjects.at(1)->getMiddlePoints(0).x<<mObjects.at(1)->getMiddlePoints(0).y<<mObjects.at(1)->getMiddlePoints(0).z;
     //checkCollision(mObjects.at(1),mPickups.at(0));
 
+    //check collision with the door
+    checkCollision(mObjects.at(1),mObjects.at(5));
+    if (DoorIsOpen){
+        //qDebug("You can enter");
+
+        // //MOST LIKELY i'll have to call update position here instead of move, because i only wanna move it once
+        mObjects.at(5)->move(0.0f,-0.001f,0.0f); //door object
+        mObjects.at(5)->updateMiddlePoints(0,0.0f,-2.0f,0.0f);
+        // //check collision with the entrance, i use just first created object of wall, because middle point is calculated in relation to the whole house either way, so it doesnt matter which wall i'm using
+        checkCollision(mObjects.at(1),mObjects.at(2));
+        if (HouseEntered){
+            CanSwitch=true;
+        }
+    }
+    else{ //door will slide back up, if player doesn't enter
+            // if(DoorIsOpen){
+            //     mObjects.at(5)->move(0.0f,2.0f,0.0f); //door object
+            //     mObjects.at(5)->updateMiddlePoints(0,0.0f,2.0f,0.0f);
+            // }
+            // else{
+            // qDebug("door is closed");
+            // }
+    }
+
+
+    //mObjects.at(1)->setNewPosition(mObjects.at(1),5.0f,5.0f,5.0f);
     //NPC patrol, next frame secures that new vertex positions are drawn in real time
 
     // for (float i=0.000001;i<1.1f;i+=0.1f){
@@ -667,8 +710,15 @@ VisualObject* Renderer::checkCollision(VisualObject* v1, VisualObject* v2){
     float radius1 =v1->radius;
     float radius2 =v2->radius;
     if (distance_length<=(radius1+radius2)){
-        qDebug("They collide");
+        //qDebug("They collide");
         IsColliding=true;
+        if (v2->CollisionType==1){
+            DoorIsOpen=true;
+        }
+
+        else if (DoorIsOpen && v2->CollisionType==2){
+            HouseEntered=true;
+        }
     }
     else{
         IsColliding=false;

@@ -9,10 +9,11 @@
 #include "TriangleSurface.h"
 #include "VisualObject.h"
 #include "TriangleSurface.h"
-#include "house.h"
+#include "wall.h"
 #include "player.h"
 #include "pickup.h"
 #include "npc.h"
+#include "door.h"
 
 class Renderer : public QVulkanWindowRenderer
 {
@@ -97,6 +98,9 @@ private:
     //VkDeviceMemory& bufferMemory) ;
     Camera mCamera;
     Camera insideCamera;
+    bool CanSwitch{false};
+    bool DoorIsOpen{false};
+    bool HouseEntered{false};
     //VkDevice logicalDevice;
     //VkPipelineInputAssemblyStateCreateInfo ia;
     //VkGraphicsPipelineCreateInfo pipelineInfo;

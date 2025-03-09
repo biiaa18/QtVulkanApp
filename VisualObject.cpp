@@ -29,11 +29,12 @@ void VisualObject::updateMiddlePoints(int index,float new_x,float new_y,float ne
 
 }
 
-void VisualObject::setNewPosition(VisualObject* ptr,float new_x, float new_z)
+void VisualObject::setNewPosition(VisualObject* ptr,float new_x,float new_y, float new_z)
 {
     VisualObject* temp=ptr;
     for (int i=0;i<temp->mVertices.size();i++){
         mVertices[i].x=new_x;
+        mVertices[i].y=new_y;
         mVertices[i].z=new_z;
     }
 };

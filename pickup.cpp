@@ -20,4 +20,5 @@ Pickup::Pickup() {
     v4.v=0.0f;
     MiddlePoints.push_back(v4);
     radius=0.28f;
+    CollisionType=0;
 }
