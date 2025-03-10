@@ -52,6 +52,9 @@ public:
 
     //Bezier kurve med 3 kontroll punkter c, t er hastighet
     float Patrol(VisualObject* obj,float t,Vertex c0, Vertex c1, Vertex c2);//alt+Enter to generate definition
+
+    float updateNPC(float speed, VisualObject* ptr);
+    bool MovingRight=true;
 protected:
 
     //Creates the Vulkan shader module from the precompiled shader files in .spv format

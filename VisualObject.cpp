@@ -29,15 +29,32 @@ void VisualObject::updateMiddlePoints(int index,float new_x,float new_y,float ne
 
 }
 
-void VisualObject::setNewPosition(VisualObject* ptr,float new_x,float new_y, float new_z)
+void VisualObject::setNewPosition(float speed, float new_x,float new_y, float new_z)
 {
-    VisualObject* temp=ptr;
-    for (int i=0;i<temp->mVertices.size();i++){
-        mVertices[i].x=new_x;
-        mVertices[i].y=new_y;
-        mVertices[i].z=new_z;
-    }
-};
+    // mMatrix.setToIdentity();
+    // QVector4D vec4={new_x,new_y,new_z,0.0f};
+    // QVector4D x_vec=(vec4*mMatrix.inverted())/speed;   //x=b*A^-1
+
+    // if (mVertices.at(0).x>1.0f || new_z>1.0f){
+    //     new_x=1.0f;
+    //     new_z=1.0f;
+    // }
+
+
+    // for (float i=0.0;i<2.0;i+=0.1){
+    //     mMatrix.translate(x_vec.x() ,x_vec.y(),x_vec.z());
+    // }
+
+
+
+    // for (int i=0;i<temp->mVertices.size();i++){
+    //     mVertices[i].x=new_x;
+    //     mVertices[i].y=new_y;
+    //     mVertices[i].z=new_z;
+    // }
+
+}
+
 
 
 void VisualObject::move(float x, float y, float z)

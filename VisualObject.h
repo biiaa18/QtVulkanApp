@@ -31,11 +31,11 @@ public:
     std::vector<Vertex> MiddlePoints;
     Vertex getMiddlePoints(int object_number);
     void updateMiddlePoints(int index,float new_x,float new_y,float new_z);
-    void setNewPosition(VisualObject* ptr,float new_x,float new_y,float new_z);
+    void setNewPosition(float speed,float new_x,float new_y,float new_z);
     float radius{0.0f};
 
     int CollisionType{0}; // 0 is for pickups, 1 is for the door, 2 is for entrance
-
+    std::vector<Vertex> NewPositions;
 protected:
     std::string mName;
 };
