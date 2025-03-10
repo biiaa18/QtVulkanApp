@@ -1,4 +1,4 @@
-#include "Renderer.h"
+ #include "Renderer.h"
 #include <QVulkanFunctions>
 #include <QFile>
 #include <QtMath>
@@ -449,7 +449,7 @@ void Renderer::startNextFrame()
     //check collision with the door
     checkCollision(mObjects.at(1),mObjects.at(5));
     if (DoorIsOpen){
-        qDebug("You can enter");
+        //qDebug("You can enter");
         mObjects.at(5)->move(0.0f,-0.1f,0.0f); //door object
         // //check collision with the entrance, i use just first created object of wall, because middle point is calculated in relation to the whole house either way, so it doesnt matter which wall i'm using
         checkCollision(mObjects.at(1),mObjects.at(2));
