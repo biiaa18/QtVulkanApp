@@ -36,6 +36,8 @@ public:
 
     int CollisionType{0}; // 0 is for pickups, 1 is for the door, 2 is for entrance
     std::vector<Vertex> NewPositions;
+
+    bool MovingRight=true;
 protected:
     std::string mName;
 };

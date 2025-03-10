@@ -20,16 +20,16 @@ NPC::NPC(Vertex start) {
 
     //centroid
     Vertex v5;
-    v5.x=(v1.x+v2.x+v3.x)/3;
-    v5.y=(v1.y+v2.y+v3.y)/3;
-    v5.z=(v1.z+v2.z+v3.z)/3;
+    v5.x=(v1.x +v2.x+v3.x+v4.x)/4;
+    v5.y=start.y;
+    v5.z=(v1.z +v2.z+v3.z+v4.z)/4;
     v5.r=0.0f;
     v5.g=0.0f;
     v5.b=0.0f;
     v5.u=0.0f;
     v5.v=0.0f;
     MiddlePoints.push_back(v5);
-    radius=0.28f;
+    radius=0.25f;
 }
 
 

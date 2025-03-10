@@ -71,7 +71,7 @@ Renderer::Renderer(QVulkanWindow *w, bool msaa)
     mPickups.push_back((new Pickup()));//0
     mPickups.push_back((new Pickup()));//1
     mPickups.at(1)->move (0.0f,0.0f,-2.0f);
-    mPickups.at(1)->updateMiddlePoints(0,4.0f,0.0f,-2.0f);
+    mPickups.at(1)->updateMiddlePoints(0,0.0f,0.0f,-2.0f);
     mPickups.push_back((new Pickup()));//2
     mPickups.at(2)->move (0.0f,0.0f,3.0f);
     mPickups.at(2)->updateMiddlePoints(0,0.0f,0.0f,3.0f);
@@ -86,15 +86,9 @@ Renderer::Renderer(QVulkanWindow *w, bool msaa)
     mPickups.at(5)->updateMiddlePoints(0,4.0f,0.0f,-4.0f);
 
     // //NPC
-    /*mObjects.push_back((new NPC(mPickups.at(0)->getMiddlePoints(0))));*///must always be under pickups creation....
-    mObjects.push_back(new NPC({0.0f,0.0f,3.0f}));
-    //mPickups.at(0)->getMiddlePoints(0).x;
-    // mPickups.at(0)->getMiddlePoints(0).y;
-    // mPickups.at(0)->getMiddlePoints(0).z;
-    // for (int i=0;i<10;i++){
-    //     mObjects.at(2)->move(0.0f, 0.1f, 0.0f);
-    //     break;
-    // }
+    mObjects.push_back((new NPC(mPickups.at(0)->getMiddlePoints(0)))); //must always be under pickups creation....
+    mObjects.push_back((new NPC(mPickups.at(2)->getMiddlePoints(0))));
+
 
 
 
@@ -449,44 +443,31 @@ void Renderer::startNextFrame()
     //     break;
     // }
 
-    // for (int i=0;i<10;i++){
-    //     mObjects.at(2)->move(0.0f, 0.1f, 0.0f);
-    //     break;
-    // }
 
-    //check collision
-    //qDebug()<<mObjects.at(1)->getMiddlePoints(0).x<<mObjects.at(1)->getMiddlePoints(0).y<<mObjects.at(1)->getMiddlePoints(0).z;
-    //checkCollision(mObjects.at(1),mPickups.at(0));
+
 
     //check collision with the door
     checkCollision(mObjects.at(1),mObjects.at(5));
     if (DoorIsOpen){
-        //qDebug("You can enter");
-
-        // //MOST LIKELY i'll have to call update position here instead of move, because i only wanna move it once
-        mObjects.at(5)->move(0.0f,-0.001f,0.0f); //door object
-        mObjects.at(5)->updateMiddlePoints(0,0.0f,-2.0f,0.0f);
+        qDebug("You can enter");
+        mObjects.at(5)->move(0.0f,-0.1f,0.0f); //door object
         // //check collision with the entrance, i use just first created object of wall, because middle point is calculated in relation to the whole house either way, so it doesnt matter which wall i'm using
         checkCollision(mObjects.at(1),mObjects.at(2));
         if (HouseEntered){
             CanSwitch=true;
         }
     }
-    else{ //door will slide back up, if player doesn't enter
-            // if(DoorIsOpen){
-            //     mObjects.at(5)->move(0.0f,2.0f,0.0f); //door object
-            //     mObjects.at(5)->updateMiddlePoints(0,0.0f,2.0f,0.0f);
-            // }
-            // else{
-            // qDebug("door is closed");
-            // }
+    else{
+
     }
 
 
     //NPC patrol, next frame secures that new vertex positions are drawn in real time
     // 12 is NPC index, 1.0f patrol speed;
-    float t=updateNPC(0.01f,mObjects.at(12));
-    qDebug()<<t;
+    Patrol(0.01f,mObjects.at(12), -2.0f, 2.0f);
+    Patrol(0.02f,mObjects.at(13), -3.0f,1.0f);
+
+
     mWindow->frameReady();
     mWindow->requestUpdate(); // render continuously, throttled by the presentation rate
 }
@@ -717,6 +698,9 @@ VisualObject* Renderer::checkCollision(VisualObject* v1, VisualObject* v2){
         else if (DoorIsOpen && v2->CollisionType==2){
             HouseEntered=true;
         }
+        else{
+
+        }
     }
     else{
         IsColliding=false;
@@ -726,86 +710,40 @@ VisualObject* Renderer::checkCollision(VisualObject* v1, VisualObject* v2){
     return v2;
 }
 
-float Renderer::Patrol(VisualObject* obj, float t,Vertex c0, Vertex c1, Vertex c2)
+
+
+void Renderer::Patrol(float speed, VisualObject* ptr, float min, float max)
 {
+    float right_min=min;
+    float right_max=max;
 
-    // for (float i=0.1;i<1.1f;i+=0.1f){
-    //     mObjects.at(1)->setNewPosition(mObjects.at(1),i,0.0f,i);
-    //     if (i==1.0f){
-    //         for (float i=1.0;i>0.0f;i-=0.1f){
-    //             mObjects.at(1)->setNewPosition(mObjects.at(1),i,0.0f,i);
-    //         }
-    //     }
-    // }
-
-
-    //float t=t1/100.0f;
-    float x=(c0.x)*(t*(t-2)+1) + (c1.x)*t*(-2*t+2) +(c2.x)*qPow(t,2);
-    float z=(c0.z)*(t*(t-2)+1) + (c1.z)*t*(-2*t+2) +(c2.z)*qPow(t,2);
-
-    // if (t>=1.0f){
-
-    // }
-    // else{
-    //     //obj->setNewPosition(obj,x,z);
-    //     obj->move(z,0.0f,x);  //set position thing...
-    // }
-
-    // do {
-    //     obj->move(z,0.0f,x);
-    // } while (t<=1.0);
-    // bool CanMove=true;
-    // float new_x=c1.x-c0.x;
-    // float new_y=c1.y-c0.y;
-    // float new_z=c1.z-c0.z;
-    // obj->move(new_x,new_y, new_z);
-    // CanMove=false;
-    // if (!CanMove){
-
-    // }
-
-
-
-    // if (t>=0.0f){
-    //     float x=(c0.x)*(-t*(-t-2)+1) + (c1.x)*(-t)*(-2*(-t)+2) +(c2.x)*qPow(t,2);
-    //     float z=(c0.z)*(-t*(-t-2)+1) + (c1.z)*(-t)*(-2*(-t)+2) +(c2.z)*qPow(t,2);
-    // }
-    return x;
-    return z;
-}
-
-float Renderer::updateNPC(float speed, VisualObject* ptr)
-{
-    // ptr->mMatrix.setToIdentity();
-    float right_min=-2.0f;
-    float right_max=2.0f;
-
-    if (MovingRight){
+    if (ptr->MovingRight){
         for(auto it=ptr->mVertices.begin(); it!=ptr->mVertices.end();it++){
             (*it).x+=speed;
-            ptr->updateMiddlePoints(0,speed,0.0f,0.0f);
         }
+        ptr->updateMiddlePoints(0,speed,0.0f,0.0f);
         ptr->mMatrix.translate(speed,0.0f,0.0f);
         if (ptr->mVertices.at(0).x >=right_max){
-        MovingRight=false;
+        ptr->MovingRight=false;
         }
     }
     else{
         for(auto it=ptr->mVertices.begin(); it!=ptr->mVertices.end();it++){
-            (*it).x-=speed;
-            ptr->updateMiddlePoints(0,-speed,0.0f,0.0f);
+            (*it).x-=speed;    
         }
+        ptr->updateMiddlePoints(0,-speed,0.0f,0.0f);
         ptr->mMatrix.translate(-speed,0.0f,0.0f);
         if (ptr->mVertices.at(0).x<=right_min){
-        MovingRight=true;
+        ptr->MovingRight=true;
         }
     }
 
     VisualObject* temp=checkCollision(mObjects.at(1),ptr);
     if (IsColliding && temp==ptr){
         qDebug("You lost");
+        CanMove=false;
     }
-    return ptr->mVertices.at(0).x;
+
 };
 
 

@@ -48,13 +48,9 @@ public:
     std::vector<VisualObject*>& getObjects() { return mObjects; }
     std::unordered_map<std::string, VisualObject*>& getMap() { return mMap; }
 
-    bool IsColliding{false};
 
-    //Bezier kurve med 3 kontroll punkter c, t er hastighet
-    float Patrol(VisualObject* obj,float t,Vertex c0, Vertex c1, Vertex c2);//alt+Enter to generate definition
+    void Patrol(float speed, VisualObject* ptr, float min, float max);
 
-    float updateNPC(float speed, VisualObject* ptr);
-    bool MovingRight=true;
 protected:
 
     //Creates the Vulkan shader module from the precompiled shader files in .spv format
@@ -104,6 +100,9 @@ private:
     bool CanSwitch{false};
     bool DoorIsOpen{false};
     bool HouseEntered{false};
+    bool CanMove{true};
+    bool IsColliding{false};
+
     //VkDevice logicalDevice;
     //VkPipelineInputAssemblyStateCreateInfo ia;
     //VkGraphicsPipelineCreateInfo pipelineInfo;
