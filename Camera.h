@@ -23,6 +23,7 @@ public:
     void translate(float dx, float dy, float dz);
     void rotate(float t, float x, float y, float z);
     QMatrix4x4 cMatrix();
+    void update(){};
 };
 
 #endif // CAMERA_H

@@ -3,11 +3,7 @@
 #include <QFile>
 #include <QtMath>
 using namespace std;
-//Utility function for alignment:
-static inline VkDeviceSize aligned(VkDeviceSize v, VkDeviceSize byteAlign)
-{
-    return (v + byteAlign - 1) & ~(byteAlign - 1);
-}
+
 
 
 /*** Renderer class ***/
@@ -99,8 +95,11 @@ Renderer::Renderer(QVulkanWindow *w, bool msaa)
     // Legger inn objekter i map
     // **************************************
     //string navn{"navn"};
-    for (auto it=mObjects.begin(); it!=mObjects.end(); it++)
+    for (auto it=mObjects.begin(); it!=mObjects.end(); it++){
         mMap.insert(pair<string, VisualObject*>{(*it)->getName(),*it});
+    }
+
+    mVulkanWindow = dynamic_cast<VulkanWindow*>(w);
 }
 
 void Renderer::initResources()
@@ -110,9 +109,12 @@ void Renderer::initResources()
     VkDevice logicalDevice = mWindow->device();
     mDeviceFunctions = mWindow->vulkanInstance()->deviceFunctions(logicalDevice);
 
-    /* Prepare the vertex and uniform data.The vertex data will never
-    change so one buffer is sufficient regardless of the value of
-    QVulkanWindow::CONCURRENT_FRAME_COUNT. */
+
+
+    // Initialize the graphics queue
+    uint32_t graphicsQueueFamilyIndex = mWindow->graphicsQueueFamilyIndex();
+    mDeviceFunctions->vkGetDeviceQueue(logicalDevice, graphicsQueueFamilyIndex, 0, &mGraphicsQueue);
+
 
     const int concurrentFrameCount = mWindow->concurrentFrameCount(); // 2 on Oles Machine
     const VkPhysicalDeviceLimits *pdevLimits = &mWindow->physicalDeviceProperties()->limits;
@@ -126,20 +128,40 @@ void Renderer::initResources()
 
     for (auto it=mObjects.begin(); it!=mObjects.end(); it++)
     {
-        createBuffer(logicalDevice, uniAlign, *it);
+        if ((*it)->getIndices().size() > 0) {//If object has indices
+            createIndexBuffer(uniAlign, *it);
+
+        }
+
+        else{
+            createVertexBuffer(uniAlign, *it);
+            //createBuffer(logicalDevice, uniAlign, *it);
+        }
     }
 
     for (auto it=mPickups.begin(); it!=mPickups.end(); it++)
     {
-        createBuffer(logicalDevice, uniAlign, *it);
+        if ((*it)->getIndices().size() > 0){ //If object has indices
+            createIndexBuffer(uniAlign, *it);
+        }
+
+        else {
+            createVertexBuffer(uniAlign, *it);
+            //createBuffer(logicalDevice, uniAlign, *it);
+        }
+
     }
 
     /********************************* Vertex layout: *********************************/
-    VkVertexInputBindingDescription vertexBindingDesc = {
-        0,
-        sizeof(Vertex),
-        VK_VERTEX_INPUT_RATE_VERTEX
-    };
+    // VkVertexInputBindingDescription vertexBindingDesc = {
+    //     0, //binding
+    //     sizeof(Vertex),  //stride
+    //     VK_VERTEX_INPUT_RATE_VERTEX  //inputRate
+    // };
+    VkVertexInputBindingDescription vertexBindingDesc ={};
+    vertexBindingDesc.binding = 0;
+    vertexBindingDesc.stride = sizeof(Vertex);
+    vertexBindingDesc.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
 
     /********************************* Shader bindings: *********************************/
     //Descritpion of the attributes used for vertices in the shader
@@ -205,12 +227,12 @@ void Renderer::initResources()
 
     VkPipelineShaderStageCreateInfo shaderStages[2] = {
         {
-            VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
+            VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,   //sType  (structure type)
             nullptr,
             0,
-            VK_SHADER_STAGE_VERTEX_BIT,
-            vertShaderModule,
-            "main",
+            VK_SHADER_STAGE_VERTEX_BIT, //stage
+            vertShaderModule, //module
+            "main",   //pName
             nullptr
         },
         {
@@ -228,6 +250,7 @@ void Renderer::initResources()
     pipelineInfo.pStages = shaderStages;
     pipelineInfo.pVertexInputState = &vertexInputInfo;
 
+    // **** Input Assembly **** - describes how primitives are assembled in the Graphics pipeline
     VkPipelineInputAssemblyStateCreateInfo ia;  //input assembly
     memset(&ia, 0, sizeof(ia));
     ia.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
@@ -244,6 +267,7 @@ void Renderer::initResources()
     vp.scissorCount = 1;
     pipelineInfo.pViewportState = &vp;
 
+    // **** Rasterizer **** - takes the geometry and turns it into fragments
     VkPipelineRasterizationStateCreateInfo rs;  //rasterization
     memset(&rs, 0, sizeof(rs));
     rs.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
@@ -259,6 +283,8 @@ void Renderer::initResources()
     // Enable multisampling.
     ms.rasterizationSamples = mWindow->sampleCountFlagBits();
     pipelineInfo.pMultisampleState = &ms;
+
+    // **** Dynamic State **** - dynamic states can be changed without recreating the pipeline
 
     VkPipelineDepthStencilStateCreateInfo ds;
     memset(&ds, 0, sizeof(ds));
@@ -327,8 +353,8 @@ void Renderer::initSwapChainResources()
     mCamera.translate(0, 2, -15); //Camera is -15 away from origo
     mCamera.rotate(30,1.0f,0.0f,0.0f);
 
-
-    insideCamera.perspective(50.0f, sz.width() / (float) sz.height(), 0.01f, 100.0f); //first parameter brings camera closer to the scene
+    //                                     if camera goes closer than 0.01f, it starts "clipping" trhough the walls
+    insideCamera.perspective(50.0f, sz.width() / (float) sz.height(), 0.01f, 100.0f); //first parameter brings camera closer to the scene, last one gives perspective=how far can you see with camera)
     insideCamera.translate(-1.0, 1, -2.6); // -right, +backwards,- up
     insideCamera.rotate(70,1.0f,0.0f,0.0f); // we look at the scene from the top
 
@@ -336,7 +362,12 @@ void Renderer::initSwapChainResources()
 
 void Renderer::startNextFrame()
 {
+    mVulkanWindow->handleInput();
+    //mCamera.update();
+
     VkCommandBuffer cmdBuf = mWindow->currentCommandBuffer();
+    setRenderPassParameters(cmdBuf);
+
     const QSize sz = mWindow->swapChainImageSize();
     //qDebug() << "startNextFrame()";
     //Backtgound color of the render window - dark grey
@@ -382,26 +413,47 @@ void Renderer::startNextFrame()
     for (auto it=mObjects.begin(); it!=mObjects.end(); it++)
     {
         if ((*it)->drawType==0){
-            //pipeline 1 for triangle list
+            //pipeline 2 for triangle list
             mDeviceFunctions->vkCmdBindPipeline(cmdBuf, VK_PIPELINE_BIND_POINT_GRAPHICS, mPipeline2);
 
         }
         else{
-            //pipeline2 for line list
+            //pipeline1 for line list
             mDeviceFunctions->vkCmdBindPipeline(cmdBuf, VK_PIPELINE_BIND_POINT_GRAPHICS, mPipeline);
         }
         // if camera can switch, we switch to insideCamera from mMatrix
         if(CanSwitch==false){
             mDeviceFunctions->vkCmdBindVertexBuffers(cmdBuf, 0, 1, &(*it)->mBuffer, &vbOffset);
             setModelMatrix(mCamera.cMatrix() * (*it)->mMatrix);
-            mDeviceFunctions->vkCmdDraw(cmdBuf, (*it)->mVertices.size(), 1, 0, 0);
+            //mDeviceFunctions->vkCmdDraw(cmdBuf, (*it)->mVertices.size(), 1, 0, 0);
+            if ((*it)->getIndices().size() > 0)
+            {
+                mDeviceFunctions->vkCmdBindIndexBuffer(cmdBuf, (*it)->getIBuffer(), 0, VK_INDEX_TYPE_UINT32);
+                mDeviceFunctions->vkCmdDrawIndexed(cmdBuf, (*it)->getIndices().size(), 1, 0, 0, 0); //size == number of indices
+            }
+            else {  //No index buffer - use regular draw
+                mDeviceFunctions->vkCmdDraw(cmdBuf, (*it)->getVertices().size(), 1, 0, 0);
+
+            }
         }
         else{
             mDeviceFunctions->vkCmdBindVertexBuffers(cmdBuf, 0, 1, &(*it)->mBuffer, &vbOffset);
             setModelMatrix(insideCamera.cMatrix() * (*it)->mMatrix);
-            mDeviceFunctions->vkCmdDraw(cmdBuf, (*it)->mVertices.size(), 1, 0, 0);
+            //mDeviceFunctions->vkCmdDraw(cmdBuf, (*it)->mVertices.size(), 1, 0, 0);
+            if ((*it)->getIndices().size() > 0)
+            {
+                mDeviceFunctions->vkCmdBindIndexBuffer(cmdBuf, (*it)->getIBuffer(), 0, VK_INDEX_TYPE_UINT32);
+                mDeviceFunctions->vkCmdDrawIndexed(cmdBuf, (*it)->getIndices().size(), 1, 0, 0, 0); //size == number of indices
+            }
+            else {  //No index buffer - use regular draw
+                mDeviceFunctions->vkCmdDraw(cmdBuf, (*it)->getVertices().size(), 1, 0, 0);
+
+            }
         }
+
+
     }
+
 
     // //for rendering pickups
     for (auto it=mPickups.begin(); it!=mPickups.end(); it++){
@@ -552,6 +604,33 @@ void Renderer::createBuffer(VkDevice logicalDevice, const VkDeviceSize uniAlign,
     memcpy(p, visualObject->getVertices().data(), visualObject->getVertices().size()*sizeof(Vertex));
 
     mDeviceFunctions->vkUnmapMemory(logicalDevice, visualObject->mBufferMemory);
+}
+
+void Renderer::createVertexBuffer(const VkDeviceSize uniAlign, VisualObject *visualObject)
+{
+
+}
+
+void Renderer::createIndexBuffer(const VkDeviceSize uniAlign, VisualObject *visualObject)
+{
+
+}
+
+BufferHandle Renderer::createGeneralBuffer(const VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties)
+{
+
+    //return properties;
+}
+
+void Renderer::DestroyBuffer(BufferHandle handle)
+{
+
+}
+
+uint32_t Renderer::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags requiredProperties)
+{
+
+    return typeFilter;
 }
 
 void Renderer::getVulkanHWInfo()

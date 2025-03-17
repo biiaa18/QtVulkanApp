@@ -14,6 +14,8 @@
 #include "pickup.h"
 #include "npc.h"
 #include "door.h"
+#include "utilities.h"
+#include "VulkanWindow.h"
 
 class Renderer : public QVulkanWindowRenderer
 {
@@ -80,7 +82,9 @@ protected:
     VkPipelineLayout mPipelineLayout2{ VK_NULL_HANDLE };
     VkPipeline mPipeline2{ VK_NULL_HANDLE };
 
+    VkQueue mGraphicsQueue{ VK_NULL_HANDLE };
 
+    void setRenderPassParameters(VkCommandBuffer commandBuffer);
 private:
     friend class VulkanWindow;
     Triangle mTriangle;
@@ -93,6 +97,15 @@ private:
     void createBuffer(VkDevice logicalDevice,
                       const VkDeviceSize uniAlign, VisualObject* visualObject,
                       VkBufferUsageFlags usage=VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
+
+    // more flexible buffer creation, the whole point with index buffer is to reduce amount of used vertices and use indeces(ints) instead of floats, which takes more memory
+    void createVertexBuffer(const VkDeviceSize uniAlign, VisualObject* visualObject);
+    void createIndexBuffer(const VkDeviceSize uniAlign, VisualObject* visualObject);
+    BufferHandle createGeneralBuffer(const VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties);
+    void DestroyBuffer(BufferHandle handle);
+    uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags requiredProperties);
+
+
     //VkBuffer& buffer,
     //VkDeviceMemory& bufferMemory) ;
     Camera mCamera;
@@ -103,6 +116,16 @@ private:
     bool CanMove{true};
     bool IsColliding{false};
 
+    class VulkanWindow* mVulkanWindow{ nullptr };
+
+    VkCommandBuffer BeginTransientCommandBuffer();
+    void EndTransientCommandBuffer(VkCommandBuffer commandBuffer);
+
+
+
+
+
+    //----------------------
     //VkDevice logicalDevice;
     //VkPipelineInputAssemblyStateCreateInfo ia;
     //VkGraphicsPipelineCreateInfo pipelineInfo;

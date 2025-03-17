@@ -21,7 +21,7 @@ public:
     QVulkanWindowRenderer* createRenderer() override;
     QVulkanWindowRenderer* getRenderer() const { return mRenderer; }
     void setSelectedObject(VisualObject* object) { mSelectedObject = object; }
-
+    void handleInput();
 
 
 signals:

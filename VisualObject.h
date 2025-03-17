@@ -4,16 +4,13 @@
 #include <QVulkanWindow>
 #include <vector>
 #include "vertex.h"
+#include "utilities.h"
 
 class VisualObject
 {
 public:
     std::vector<Vertex> mVertices;
-    std::vector<Vertex> getVertices() { return mVertices; }
-    Vertex getVertices(int index) { return mVertices[index]; }
-    VisualObject();
-    void setName(std::string name);
-    std::string getName() const;
+    std::vector<uint32_t> mIndices;  //vector of index for vertex
 
     //
     VkDeviceMemory mBufferMemory{ VK_NULL_HANDLE };
@@ -37,9 +34,36 @@ public:
     int CollisionType{0}; // 0 is for pickups, 1 is for the door, 2 is for entrance
     std::vector<Vertex> NewPositions;
 
+    // inline VkBuffer& getVBuffer() { return mVertexBuffer.mBuffer; };  //vertex buffer
+    // inline VkBuffer& getIBuffer() { return mIndexBuffer.mBuffer; }; //index buffer
+    // inline VkDeviceMemory& getVBufferMemory() { return mVertexBuffer.mBufferMemory; };
+    // inline void setVBuffer(VkBuffer bufferIn) { mVertexBuffer.mBuffer = bufferIn; };
+    // inline void setIBuffer(VkBuffer bufferIn) { mIndexBuffer.mBuffer = bufferIn; };
+    // inline void setVBufferMemory(VkDeviceMemory bufferMemoryIn) { mVertexBuffer.mBufferMemory= bufferMemoryIn;};
+    // inline void setIBufferMemory(VkDeviceMemory bufferMemoryIn) { mIndexBuffer.mBufferMemory= bufferMemoryIn;};
+
+    VkBuffer& getVBuffer() { return mVertexBuffer.mBuffer; };  //vertex buffer
+    VkBuffer& getIBuffer() { return mIndexBuffer.mBuffer; }; //index buffer
+    VkDeviceMemory& getVBufferMemory() { return mVertexBuffer.mBufferMemory; };
+    void setVBuffer(VkBuffer bufferIn) { mVertexBuffer.mBuffer = bufferIn; };
+    void setIBuffer(VkBuffer bufferIn) { mIndexBuffer.mBuffer = bufferIn; };
+    void setVBufferMemory(VkDeviceMemory bufferMemoryIn) { mVertexBuffer.mBufferMemory= bufferMemoryIn;};
+    void setIBufferMemory(VkDeviceMemory bufferMemoryIn) { mIndexBuffer.mBufferMemory= bufferMemoryIn;};
+
+    std::vector<Vertex> getVertices() { return mVertices; }
+    std::vector<uint32_t> getIndices() { return mIndices; }
+    Vertex getVertices(int index) { return mVertices[index]; }
+    VisualObject();
+    void setName(std::string name);
+    std::string getName() const;
+
+
+
     bool MovingRight=true;
 protected:
     std::string mName;
+    BufferHandle mVertexBuffer;
+    BufferHandle mIndexBuffer;
 };
 
 #endif // VISUALOBJECT_H

@@ -14,6 +14,12 @@ QVulkanWindowRenderer* VulkanWindow::createRenderer()
     return mRenderer;
 }
 
+void VulkanWindow::handleInput()
+{
+
+
+}
+
 void VulkanWindow::keyPressEvent(QKeyEvent *event)
 {
     if (event->key() == Qt::Key_W)
