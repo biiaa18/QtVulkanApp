@@ -99,8 +99,8 @@ private:
                       VkBufferUsageFlags usage=VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
 
     // more flexible buffer creation, the whole point with index buffer is to reduce amount of used vertices and use indeces(ints) instead of floats, which takes more memory
-    void createVertexBuffer(const VkDeviceSize uniAlign, VisualObject* visualObject);
-    void createIndexBuffer(const VkDeviceSize uniAlign, VisualObject* visualObject);
+    void createVertexBuffer(const VkDeviceSize uniformAlignment, VisualObject* visualObject);
+    void createIndexBuffer(const VkDeviceSize uniformAlignment, VisualObject *visualObject);
     BufferHandle createGeneralBuffer(const VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties);
     void DestroyBuffer(BufferHandle handle);
     uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags requiredProperties);

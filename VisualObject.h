@@ -45,6 +45,7 @@ public:
     VkBuffer& getVBuffer() { return mVertexBuffer.mBuffer; };  //vertex buffer
     VkBuffer& getIBuffer() { return mIndexBuffer.mBuffer; }; //index buffer
     VkDeviceMemory& getVBufferMemory() { return mVertexBuffer.mBufferMemory; };
+    VkDeviceMemory& getIBufferMemory() { return mIndexBuffer.mBufferMemory; }
     void setVBuffer(VkBuffer bufferIn) { mVertexBuffer.mBuffer = bufferIn; };
     void setIBuffer(VkBuffer bufferIn) { mIndexBuffer.mBuffer = bufferIn; };
     void setVBufferMemory(VkDeviceMemory bufferMemoryIn) { mVertexBuffer.mBufferMemory= bufferMemoryIn;};

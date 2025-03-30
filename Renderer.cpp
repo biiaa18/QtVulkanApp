@@ -122,32 +122,30 @@ void Renderer::initResources()
     qDebug("uniform buffer offset alignment is %u", (uint)uniAlign); //64 on Oles machine
 
     /// Dag 240125:
-    VkBufferCreateInfo bufferInfo{};
-    memset(&bufferInfo, 0, sizeof(bufferInfo)); //Clear out the memory
-    bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO; // Set the structure type
+    // VkBufferCreateInfo bufferInfo{};
+    // memset(&bufferInfo, 0, sizeof(bufferInfo)); //Clear out the memory
+    // bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO; // Set the structure type
 
     for (auto it=mObjects.begin(); it!=mObjects.end(); it++)
     {
+        createVertexBuffer(uniAlign, *it);
+        //createBuffer(logicalDevice, uniAlign, *it);
+
         if ((*it)->getIndices().size() > 0) {//If object has indices
             createIndexBuffer(uniAlign, *it);
 
         }
 
-        else{
-            createVertexBuffer(uniAlign, *it);
-            //createBuffer(logicalDevice, uniAlign, *it);
-        }
     }
 
     for (auto it=mPickups.begin(); it!=mPickups.end(); it++)
     {
-        if ((*it)->getIndices().size() > 0){ //If object has indices
-            createIndexBuffer(uniAlign, *it);
-        }
+        createVertexBuffer(uniAlign, *it);
+        //createBuffer(logicalDevice, uniAlign, *it);
 
-        else {
-            createVertexBuffer(uniAlign, *it);
-            //createBuffer(logicalDevice, uniAlign, *it);
+        if ((*it)->getIndices().size() > 0) {//If object has indices
+            createIndexBuffer(uniAlign, *it);
+
         }
 
     }
@@ -165,20 +163,16 @@ void Renderer::initResources()
 
     /********************************* Shader bindings: *********************************/
     //Descritpion of the attributes used for vertices in the shader
-    VkVertexInputAttributeDescription vertexAttrDesc[] = {
-        { // position
-            0, // location has to correspond to the layout(location = x) in the shader
-            0, // binding
-            VK_FORMAT_R32G32B32_SFLOAT,
-            0
-        },
-        { // color
-            1, // location has to correspond to the layout(location = x) in the shader
-            0, // binding
-            VK_FORMAT_R32G32B32_SFLOAT,
-            3 * sizeof(float) // offset to account for X, Y, Z
-        }
-    };
+    VkVertexInputAttributeDescription vertexAttrDesc[2];    //Updated to a more common way to write it
+    vertexAttrDesc[0].location = 0;
+    vertexAttrDesc[0].binding = 0;
+    vertexAttrDesc[0].format = VK_FORMAT_R32G32B32_SFLOAT;
+    vertexAttrDesc[0].offset = 0;
+
+    vertexAttrDesc[1].location = 1;
+    vertexAttrDesc[1].binding = 0;
+    vertexAttrDesc[1].format = VK_FORMAT_R32G32B32_SFLOAT;
+    vertexAttrDesc[1].offset = 3 * sizeof(float);           // could use offsetof(Vertex, r); from <cstddef>
 
     VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
     vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
@@ -360,9 +354,48 @@ void Renderer::initSwapChainResources()
 
 }
 
+void Renderer::setRenderPassParameters(VkCommandBuffer commandBuffer)
+{
+    const QSize swapChainImageSize = mWindow->swapChainImageSize();
+
+    //Backtgound color of the render window - dark grey
+    VkClearColorValue clearColor = { { 0.3, 0.3, 0.3, 1 } };
+
+    VkClearDepthStencilValue clearDepthStencil = { 1, 0 };
+    VkClearValue clearValues[3]{};  //C++11 {} works even on arrays!
+    clearValues[0].color = clearValues[2].color = clearColor;
+    clearValues[1].depthStencil = clearDepthStencil;
+
+    VkRenderPassBeginInfo renderPassBeginInfo{};
+    renderPassBeginInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+    renderPassBeginInfo.renderPass = mWindow->defaultRenderPass();
+    renderPassBeginInfo.framebuffer = mWindow->currentFramebuffer();
+    renderPassBeginInfo.renderArea.extent.width = swapChainImageSize.width();
+    renderPassBeginInfo.renderArea.extent.height = swapChainImageSize.height();
+    renderPassBeginInfo.clearValueCount = mWindow->sampleCountFlagBits() > VK_SAMPLE_COUNT_1_BIT ? 3 : 2;
+    renderPassBeginInfo.pClearValues = clearValues;
+    mDeviceFunctions->vkCmdBeginRenderPass(commandBuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
+
+    //Viewport - area of the image to render to, usually (0,0) to (width, height)
+    VkViewport viewport{};
+    viewport.x = viewport.y = 0.f;
+    viewport.width = swapChainImageSize.width();
+    viewport.height = swapChainImageSize.height();
+    viewport.minDepth = 0.f;                //min framebuffer depth
+    viewport.maxDepth = 1.f;                //max framebuffer depth
+    mDeviceFunctions->vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
+
+    //Scissor - area to draw in the target frame buffer
+    VkRect2D scissor{};
+    scissor.offset.x = scissor.offset.y = 0;
+    scissor.extent.width = viewport.width;
+    scissor.extent.height = viewport.height;
+    mDeviceFunctions->vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
+}
+
 void Renderer::startNextFrame()
 {
-    mVulkanWindow->handleInput();
+    //mVulkanWindow->handleInput();
     //mCamera.update();
 
     VkCommandBuffer cmdBuf = mWindow->currentCommandBuffer();
@@ -606,31 +639,189 @@ void Renderer::createBuffer(VkDevice logicalDevice, const VkDeviceSize uniAlign,
     mDeviceFunctions->vkUnmapMemory(logicalDevice, visualObject->mBufferMemory);
 }
 
-void Renderer::createVertexBuffer(const VkDeviceSize uniAlign, VisualObject *visualObject)
+void Renderer::createVertexBuffer(const VkDeviceSize uniformAlignment, VisualObject *visualObject)
 {
+    //Get the size of the mesh and align it to the uniform alignment
+    VkDeviceSize vertexAllocSize = aligned(visualObject->getVertices().size() * sizeof(Vertex), uniformAlignment);
+
+    BufferHandle stagingHandle = createGeneralBuffer(vertexAllocSize, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_SRC_BIT, //Transfer source bit is for copying data to the GPU
+                                                     VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);    // Host visible memory (CPU) is slower to access than device local memory (GPU)
+
+    void* data{ nullptr };
+    mDeviceFunctions->vkMapMemory(mWindow->device(), stagingHandle.mBufferMemory, 0, vertexAllocSize, 0, &data);
+    memcpy(data, visualObject->getVertices().data(), vertexAllocSize);
+    mDeviceFunctions->vkUnmapMemory(mWindow->device(), stagingHandle.mBufferMemory);
+
+    //This is for copying the data to the GPU
+    BufferHandle gpuHandle = createGeneralBuffer(vertexAllocSize, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+                                                 VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT); // Device local memory (GPU VRam) is faster to access than host visible memory (CPU RAM)
+
+    //Set the buffer and buffer memory in the VisualObject for use in the draw call
+    visualObject->setVBuffer(gpuHandle.mBuffer);
+    visualObject->setVBufferMemory(gpuHandle.mBufferMemory);
+
+    //Copy the data from the staging buffer to the GPU buffer
+    VkCommandBuffer commandBuffer = BeginTransientCommandBuffer();
+    VkBufferCopy copyRegion{};
+    copyRegion.srcOffset = 0;
+    copyRegion.dstOffset = 0;
+    copyRegion.size = vertexAllocSize;
+    mDeviceFunctions->vkCmdCopyBuffer(commandBuffer, stagingHandle.mBuffer, gpuHandle.mBuffer, 1, &copyRegion);
+    EndTransientCommandBuffer(commandBuffer);
+
+    //Free the staging buffer
+    DestroyBuffer(stagingHandle);
 
 }
 
-void Renderer::createIndexBuffer(const VkDeviceSize uniAlign, VisualObject *visualObject)
+void Renderer::createIndexBuffer(const VkDeviceSize uniformAlignment, VisualObject *visualObject)
 {
+    //Get the size of the mesh and align it to the uniform alignment
+    VkDeviceSize indexAllocSize = aligned(visualObject->getIndices().size() * sizeof(uint32_t), uniformAlignment);
+
+    //Create a staging buffer for the index data
+    BufferHandle stagingHandle = createGeneralBuffer(indexAllocSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+                                                     VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);    // Host visible memory (CPU) is slower to access than device local memory (GPU)
+
+    void* data{ nullptr };
+    mDeviceFunctions->vkMapMemory(mWindow->device(), stagingHandle.mBufferMemory, 0, indexAllocSize, 0, &data);
+    memcpy(data, visualObject->getIndices().data(), indexAllocSize);
+    mDeviceFunctions->vkUnmapMemory(mWindow->device(), stagingHandle.mBufferMemory);
+
+    //This is for copying the data to the GPU
+    BufferHandle gpuHandle = createGeneralBuffer(indexAllocSize, VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+                                                 VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT); // Device local memory (GPU VRam) is faster to access than host visible memory (CPU RAM)
+
+    //Set the buffer and buffer memory in the VisualObject for use in the draw call
+    visualObject->setIBuffer(gpuHandle.mBuffer);
+    visualObject->setIBufferMemory(gpuHandle.mBufferMemory);
+
+    //Copy the data from the staging buffer to the GPU buffer:
+    VkCommandBuffer commandBuffer = BeginTransientCommandBuffer();
+
+    VkBufferCopy copyRegion{};
+    copyRegion.srcOffset = 0;
+    copyRegion.dstOffset = 0;
+    copyRegion.size = indexAllocSize;
+    mDeviceFunctions->vkCmdCopyBuffer(commandBuffer, stagingHandle.mBuffer, gpuHandle.mBuffer, 1, &copyRegion);
+    EndTransientCommandBuffer(commandBuffer);
+
+    //Free the staging buffer
+    DestroyBuffer(stagingHandle);
 
 }
 
 BufferHandle Renderer::createGeneralBuffer(const VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties)
 {
 
-    //return properties;
+    BufferHandle bufferHandle{};
+
+    VkBufferCreateInfo bufferInfo{};
+    bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;    // set the structure type
+    bufferInfo.size = size;                                     // size of the wanted buffer
+    bufferInfo.usage = usage;                                   // buffer usage type
+    bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+
+    VkResult err = mDeviceFunctions->vkCreateBuffer(mWindow->device(), &bufferInfo, nullptr, &bufferHandle.mBuffer);
+    if (err != VK_SUCCESS)
+    {
+        qFatal("Failed to create general buffer: %d", err);
+    }
+
+    VkMemoryRequirements memoryRequirements;
+    mDeviceFunctions->vkGetBufferMemoryRequirements(mWindow->device(), bufferHandle.mBuffer, &memoryRequirements);
+
+    // Manually find a memory type
+    uint32_t chosenMemoryType = findMemoryType(memoryRequirements.memoryTypeBits, properties);
+
+    VkMemoryAllocateInfo memoryAllocateInfo{};
+    memoryAllocateInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+    memoryAllocateInfo.allocationSize = memoryRequirements.size;
+    memoryAllocateInfo.memoryTypeIndex = chosenMemoryType;      //Qt has a helper function for this mWindow->hostVisibleMemoryIndex();
+
+    err = mDeviceFunctions->vkAllocateMemory(mWindow->device(), &memoryAllocateInfo, nullptr, &bufferHandle.mBufferMemory);
+    if (err != VK_SUCCESS)
+    {
+        qFatal("Failed to allocate buffer memory: %d", err);
+    }
+
+    mDeviceFunctions->vkBindBufferMemory(mWindow->device(), bufferHandle.mBuffer, bufferHandle.mBufferMemory, 0);
+
+    return bufferHandle;
 }
 
 void Renderer::DestroyBuffer(BufferHandle handle)
 {
+    mDeviceFunctions->vkDeviceWaitIdle(mWindow->device());
+    mDeviceFunctions->vkDestroyBuffer(mWindow->device(), handle.mBuffer, nullptr);
+    mDeviceFunctions->vkFreeMemory(mWindow->device(), handle.mBufferMemory, nullptr);
 
 }
 
 uint32_t Renderer::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags requiredProperties)
 {
 
-    return typeFilter;
+    VkPhysicalDeviceMemoryProperties memoryProperties;
+
+    // Get the QVulkanFunctions instance - pretty hidden in Qt
+    QVulkanFunctions* vulkanFunctions = mWindow->vulkanInstance()->functions();
+    vulkanFunctions->vkGetPhysicalDeviceMemoryProperties(mWindow->physicalDevice(), &memoryProperties);
+    std::vector<VkMemoryType> memoryTypes; //getting the memory types
+    for (uint32_t i = 0; i < memoryProperties.memoryTypeCount; i++)
+    {
+        memoryTypes.push_back(memoryProperties.memoryTypes[i]);
+    }
+
+    //uint32_t chosenMemoryType{ 0 };
+    for (uint32_t i = 0; i < memoryTypes.size(); i++)
+    {
+        bool isSuitable = (typeFilter & (1 << i));
+        //CPU memory
+        bool isHostVisible = (memoryTypes[i].propertyFlags & requiredProperties);
+        if (isSuitable && isHostVisible)
+        {
+            return i;
+        }
+    }
+    qFatal("Failed to find memory type! This will crash!");
+
+    return 0;
+}
+
+VkCommandBuffer Renderer::BeginTransientCommandBuffer()
+{
+    VkCommandBufferAllocateInfo allocateInfo{};
+    allocateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+    allocateInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+    allocateInfo.commandPool = mWindow->graphicsCommandPool();
+    allocateInfo.commandBufferCount = 1;
+
+    VkCommandBuffer commandBuffer;
+    mDeviceFunctions->vkAllocateCommandBuffers(mWindow->device(), &allocateInfo, &commandBuffer);
+
+    VkCommandBufferBeginInfo beginInfo{};
+    beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+    beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+
+    mDeviceFunctions->vkBeginCommandBuffer(commandBuffer, &beginInfo);
+
+    return commandBuffer;
+
+}
+
+void Renderer::EndTransientCommandBuffer(VkCommandBuffer commandBuffer)
+{
+    mDeviceFunctions->vkEndCommandBuffer(commandBuffer);
+
+    VkSubmitInfo submitInfo{};
+    submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+    submitInfo.commandBufferCount = 1;
+    submitInfo.pCommandBuffers = &commandBuffer;
+
+    //This is the way to submit a command buffer in Vulkan
+    mDeviceFunctions->vkQueueSubmit(mGraphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
+    //mDeviceFunctions->vkQueueWaitIdle(mGraphicsQueue);
+    mDeviceFunctions->vkFreeCommandBuffers(mWindow->device(), mWindow->graphicsCommandPool(), 1, &commandBuffer);
 }
 
 void Renderer::getVulkanHWInfo()
