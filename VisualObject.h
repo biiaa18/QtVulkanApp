@@ -65,6 +65,9 @@ protected:
     std::string mName;
     BufferHandle mVertexBuffer;
     BufferHandle mIndexBuffer;
+
+    //QMatrix4x4 mMatrix{};
+    QVector3D mColor{0.f, 0.f, 0.f};
 };
 
 #endif // VISUALOBJECT_H
