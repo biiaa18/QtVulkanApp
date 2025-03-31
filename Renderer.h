@@ -16,6 +16,7 @@
 #include "door.h"
 #include "utilities.h"
 #include "VulkanWindow.h"
+#include "objmesh.h"
 
 class Renderer : public QVulkanWindowRenderer
 {

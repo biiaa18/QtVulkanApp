@@ -42,17 +42,17 @@ public:
     // inline void setVBufferMemory(VkDeviceMemory bufferMemoryIn) { mVertexBuffer.mBufferMemory= bufferMemoryIn;};
     // inline void setIBufferMemory(VkDeviceMemory bufferMemoryIn) { mIndexBuffer.mBufferMemory= bufferMemoryIn;};
 
-    VkBuffer& getVBuffer() { return mVertexBuffer.mBuffer; };  //vertex buffer
-    VkBuffer& getIBuffer() { return mIndexBuffer.mBuffer; }; //index buffer
-    VkDeviceMemory& getVBufferMemory() { return mVertexBuffer.mBufferMemory; };
-    VkDeviceMemory& getIBufferMemory() { return mIndexBuffer.mBufferMemory; }
-    void setVBuffer(VkBuffer bufferIn) { mVertexBuffer.mBuffer = bufferIn; };
-    void setIBuffer(VkBuffer bufferIn) { mIndexBuffer.mBuffer = bufferIn; };
-    void setVBufferMemory(VkDeviceMemory bufferMemoryIn) { mVertexBuffer.mBufferMemory= bufferMemoryIn;};
-    void setIBufferMemory(VkDeviceMemory bufferMemoryIn) { mIndexBuffer.mBufferMemory= bufferMemoryIn;};
+    inline VkBuffer& getVBuffer() { return mVertexBuffer.mBuffer; };  //vertex buffer
+    inline VkBuffer& getIBuffer() { return mIndexBuffer.mBuffer; }; //index buffer
+    inline VkDeviceMemory& getVBufferMemory() { return mVertexBuffer.mBufferMemory; };
+    inline VkDeviceMemory& getIBufferMemory() { return mIndexBuffer.mBufferMemory; }
+    inline void setVBuffer(VkBuffer bufferIn) { mVertexBuffer.mBuffer = bufferIn; };
+    inline void setIBuffer(VkBuffer bufferIn) { mIndexBuffer.mBuffer = bufferIn; };
+    inline void setVBufferMemory(VkDeviceMemory bufferMemoryIn) { mVertexBuffer.mBufferMemory= bufferMemoryIn;};
+    inline void setIBufferMemory(VkDeviceMemory bufferMemoryIn) { mIndexBuffer.mBufferMemory= bufferMemoryIn;};
 
-    std::vector<Vertex> getVertices() { return mVertices; }
-    std::vector<uint32_t> getIndices() { return mIndices; }
+    inline std::vector<Vertex> getVertices() { return mVertices; }
+    inline std::vector<uint32_t> getIndices() { return mIndices; }
     Vertex getVertices(int index) { return mVertices[index]; }
     VisualObject();
     void setName(std::string name);

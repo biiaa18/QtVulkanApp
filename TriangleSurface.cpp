@@ -12,16 +12,27 @@ TriangleSurface::TriangleSurface() : VisualObject()
 
     Vertex v5{5.0f,0.0f,5.0f,   1.0f, 1.0f, 1.0f,   0.0f, 0.0f}; //middle point
 
-    //    Vertex v1{0.0f,   0.0f,  0.0f,   1.0f, 0.0f, 0.0f, 0.0f, 0.0f};
-    //    Vertex v2{1.0f,   0.0f,  0.0f,   0.0f, 1.0f, 0.0f, 0.0f, 0.0f};
-    //    Vertex v3{0.0f,   1.0f,  0.0f,   0.0f, 0.0f, 1.0f, 0.0f, 0.0f};
-    //    Vertex v4{1.0f,   1.0f,  0.0f,   1.0f, 1.0f, 0.0f, 0.0f, 0.0f};
+
+    // mVertices.push_back(v1);
+    // mVertices.push_back(v2);
+    // mVertices.push_back(v3);
+    // mVertices.push_back(v3);
+    // mVertices.push_back(v1);
+    // mVertices.push_back(v4);
+
+    //Pushing 1st triangle,
     mVertices.push_back(v1);
     mVertices.push_back(v2);
     mVertices.push_back(v3);
-    mVertices.push_back(v3);
-    mVertices.push_back(v1);
     mVertices.push_back(v4);
+
+    //Indexes for the two triangles to form a quad
+    mIndices.push_back(0);
+    mIndices.push_back(1);
+    mIndices.push_back(2);
+    mIndices.push_back(2);
+    mIndices.push_back(3);
+    mIndices.push_back(0);
 
     // mMatrix.scale(0.5f);
    mMatrix.translate(-5.0f, 0, 0); // fra startNextFrame

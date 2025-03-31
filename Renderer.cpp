@@ -86,7 +86,8 @@ Renderer::Renderer(QVulkanWindow *w, bool msaa)
     mObjects.push_back((new NPC(mPickups.at(2)->getMiddlePoints(0))));
 
 
-
+    //OBJECT
+    mObjects.push_back((new ObjMesh("sphere.obj")));
 
     mObjects.at(0)->setName("plane");
     // mObjects.at(1)->setName("wall1");
@@ -133,8 +134,8 @@ void Renderer::initResources()
 
         if ((*it)->getIndices().size() > 0) {//If object has indices
             createIndexBuffer(uniAlign, *it);
-
         }
+
 
     }
 
@@ -151,11 +152,6 @@ void Renderer::initResources()
     }
 
     /********************************* Vertex layout: *********************************/
-    // VkVertexInputBindingDescription vertexBindingDesc = {
-    //     0, //binding
-    //     sizeof(Vertex),  //stride
-    //     VK_VERTEX_INPUT_RATE_VERTEX  //inputRate
-    // };
     VkVertexInputBindingDescription vertexBindingDesc ={};
     vertexBindingDesc.binding = 0;
     vertexBindingDesc.stride = sizeof(Vertex);
@@ -456,7 +452,7 @@ void Renderer::startNextFrame()
         }
         // if camera can switch, we switch to insideCamera from mMatrix
         if(CanSwitch==false){
-            mDeviceFunctions->vkCmdBindVertexBuffers(cmdBuf, 0, 1, &(*it)->mBuffer, &vbOffset);
+            mDeviceFunctions->vkCmdBindVertexBuffers(cmdBuf, 0, 1, &(*it)->getVBuffer(), &vbOffset);
             setModelMatrix(mCamera.cMatrix() * (*it)->mMatrix);
             //mDeviceFunctions->vkCmdDraw(cmdBuf, (*it)->mVertices.size(), 1, 0, 0);
             if ((*it)->getIndices().size() > 0)
@@ -470,7 +466,7 @@ void Renderer::startNextFrame()
             }
         }
         else{
-            mDeviceFunctions->vkCmdBindVertexBuffers(cmdBuf, 0, 1, &(*it)->mBuffer, &vbOffset);
+            mDeviceFunctions->vkCmdBindVertexBuffers(cmdBuf, 0, 1, &(*it)->getVBuffer(), &vbOffset);
             setModelMatrix(insideCamera.cMatrix() * (*it)->mMatrix);
             //mDeviceFunctions->vkCmdDraw(cmdBuf, (*it)->mVertices.size(), 1, 0, 0);
             if ((*it)->getIndices().size() > 0)
@@ -497,12 +493,12 @@ void Renderer::startNextFrame()
         }
 
         if(CanSwitch==false){
-            mDeviceFunctions->vkCmdBindVertexBuffers(cmdBuf, 0, 1, &(*it)->mBuffer, &vbOffset);
+            mDeviceFunctions->vkCmdBindVertexBuffers(cmdBuf, 0, 1, &(*it)->getVBuffer(), &vbOffset);
             setModelMatrix(mCamera.cMatrix() * (*it)->mMatrix);
             mDeviceFunctions->vkCmdDraw(cmdBuf, (*it)->mVertices.size(), 1, 0, 0);
         }
         else{
-            mDeviceFunctions->vkCmdBindVertexBuffers(cmdBuf, 0, 1, &(*it)->mBuffer, &vbOffset);
+            mDeviceFunctions->vkCmdBindVertexBuffers(cmdBuf, 0, 1, &(*it)->getVBuffer(), &vbOffset);
             setModelMatrix(insideCamera.cMatrix() * (*it)->mMatrix);
             mDeviceFunctions->vkCmdDraw(cmdBuf, (*it)->mVertices.size(), 1, 0, 0);
         }
