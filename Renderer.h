@@ -73,20 +73,29 @@ protected:
 
     VkDeviceMemory mBufferMemory{ VK_NULL_HANDLE };
     VkBuffer mBuffer{ VK_NULL_HANDLE };
- 
+
+    //For Uniform buffers
     VkDescriptorPool mDescriptorPool{ VK_NULL_HANDLE };
     VkDescriptorSetLayout mDescriptorSetLayout{ VK_NULL_HANDLE };
     VkDescriptorSet mDescriptorSet[QVulkanWindow::MAX_CONCURRENT_FRAME_COUNT]{ VK_NULL_HANDLE };
 
     VkPipelineCache mPipelineCache{ VK_NULL_HANDLE };
     VkPipelineLayout mPipelineLayout{ VK_NULL_HANDLE };
-    VkPipeline mPipeline{ VK_NULL_HANDLE };
     VkPipelineLayout mPipelineLayout2{ VK_NULL_HANDLE };
+    VkPipeline mPipeline{ VK_NULL_HANDLE };
     VkPipeline mPipeline2{ VK_NULL_HANDLE };
 
     VkQueue mGraphicsQueue{ VK_NULL_HANDLE };
-
     void setRenderPassParameters(VkCommandBuffer commandBuffer);
+
+    //For Textures
+    VkDescriptorPool mTextureDescriptorPool{ VK_NULL_HANDLE };
+    VkDescriptorSetLayout mTextureDescriptorSetLayout{ VK_NULL_HANDLE };
+    VkSampler mTextureSampler{ VK_NULL_HANDLE };
+    void setTexture(TextureHandle& textureHandle, VkCommandBuffer commandBuffer);
+
+
+
 private:
     friend class VulkanWindow;
     Triangle mTriangle;
@@ -95,7 +104,14 @@ private:
     std::vector<VisualObject*> mObjects;
     std::vector<VisualObject*> mPickups; //i want to have 6 pickups
     std::unordered_map<std::string, VisualObject*> mMap;    // alternativ container
+    BufferHandle mUniformBuffer{};
+    VkSurfaceFormatKHR mSurfaceFormat{};
+    TextureHandle mTextureHandle{};
 
+
+
+    //FUNCTIONS
+    //buffers
     void createBuffer(VkDevice logicalDevice,
                       const VkDeviceSize uniAlign, VisualObject* visualObject,
                       VkBufferUsageFlags usage=VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
@@ -123,8 +139,34 @@ private:
     VkCommandBuffer BeginTransientCommandBuffer();
     void EndTransientCommandBuffer(VkCommandBuffer commandBuffer);
 
+    //MORE UNIFORM BUFFERS STUFF
+    // void createUniformBuffer();
+    // void createDescriptorSetLayouts();
+    // void createDescriptorSet();
+    // void createDescriptorPools();
+    // void* mUniformBufferLocation{ nullptr };
+
+    //TEXTURES
+    //vector<class Texture*> mTextures;  //all textures
+    void createTextureSampler();
+    TextureHandle createTexture(const char* filename);
+    TextureHandle createImage(int width, int height, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkFormat format);
+    void transitionImageLayout(VkImage image, VkImageLayout oldLayout, VkImageLayout newLayout); //sets up the transfer to the shader
+    void copyBufferToImage(VkBuffer buffer, VkImage image, int width, int height);
+    VkImageView createImageView(VkImage image, VkFormat format);
+    void destroyTexture(TextureHandle& textureHandle);
 
 
+
+
+
+    // Color shader material / shader
+    struct {
+        VkShaderModule vertShaderModule;
+        VkShaderModule fragShaderModule;
+        //VkPipelineLayout pipelineLayout{ VK_NULL_HANDLE };    //also should have had a spesific pipeline layout
+        VkPipeline pipeline{ VK_NULL_HANDLE };
+    } mColorMaterial;
 
 
     //----------------------

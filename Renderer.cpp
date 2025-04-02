@@ -2,6 +2,7 @@
 #include <QVulkanFunctions>
 #include <QFile>
 #include <QtMath>
+//#include "stb_image.h"
 using namespace std;
 
 
@@ -391,6 +392,7 @@ void Renderer::setRenderPassParameters(VkCommandBuffer commandBuffer)
     scissor.extent.height = viewport.height;
     mDeviceFunctions->vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 }
+
 
 void Renderer::startNextFrame()
 {
@@ -821,6 +823,274 @@ void Renderer::EndTransientCommandBuffer(VkCommandBuffer commandBuffer)
     mDeviceFunctions->vkQueueSubmit(mGraphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
     //mDeviceFunctions->vkQueueWaitIdle(mGraphicsQueue);
     mDeviceFunctions->vkFreeCommandBuffers(mWindow->device(), mWindow->graphicsCommandPool(), 1, &commandBuffer);
+}
+
+void Renderer::setTexture(TextureHandle &textureHandle, VkCommandBuffer commandBuffer)
+{
+    mDeviceFunctions->vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
+    mPipelineLayout, 1, 1, &textureHandle.mTextureDescriptorSet, 0, nullptr);
+}
+
+void Renderer::createTextureSampler()
+{
+    VkSamplerCreateInfo samplerInfo{};
+    samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
+    samplerInfo.magFilter = VK_FILTER_NEAREST;                   // Magnification filter - try VK_FILTER_LINEAR
+    samplerInfo.minFilter = VK_FILTER_NEAREST;                   // Minification filter - try VK_FILTER_LINEAR
+    samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;  // Address mode for U coordinates
+    samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;  // Address mode for V coordinates
+    samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;  // Address mode for W coordinates
+    samplerInfo.anisotropyEnable = VK_FALSE;                     // Enable anisotropy
+    samplerInfo.maxAnisotropy = 1.0;                             // Anisotropy level
+    samplerInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK; // Border color
+    samplerInfo.unnormalizedCoordinates = VK_FALSE;             // Normalized coordinates
+    samplerInfo.compareEnable = VK_FALSE;                       // Compare enable
+    samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;               // Compare operation
+    samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;     // Mipmap mode
+    samplerInfo.mipLodBias = 0.0f;                              // Mipmap level of detail bias
+    samplerInfo.minLod = 0.0f;                                  // Minimum level of detail
+    samplerInfo.maxLod = 0.0f;                                  // Maximum level of detail
+
+    VkResult err = mDeviceFunctions->vkCreateSampler(mWindow->device(), &samplerInfo, nullptr, &mTextureSampler);
+    if (err != VK_SUCCESS){
+        qFatal("Failed to create texture sampler: %d", err);
+    }
+}
+
+// TextureHandle Renderer::createTexture(const char *filename)
+// {
+//     // int texWidth, texHeight, texChannels;
+//     // VkDeviceSize bufferSize{};
+//     // VkFormat format{ VK_FORMAT_R8G8B8A8_SRGB }; //could be VK_FORMAT_R8G8B8_SRGB
+//     // BufferHandle stagingBuffer{};
+//     // stbi_uc* pixelData{ nullptr };
+
+//     // //Open the file and read the data into the imageFileData vector
+//     // ifstream file(filename, ios::binary);
+
+//     // //if the file is not open, we create a default texture
+//     // if (!file.is_open())
+//     // {
+//     //     Texture* texture = new Texture();   //new Texture(filename);
+//     //     bufferSize = texture->textureSize();
+//     //     texChannels = texture->bytesPrPixel();
+//     //     texWidth = texture->width();
+//     //     texHeight = texture->height();
+//     //     stagingBuffer = createGeneralBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+//     //                                         VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+
+
+//     //     void* data{};
+//     //     mDeviceFunctions->vkMapMemory(mWindow->device(), stagingBuffer.mBufferMemory, 0, bufferSize, 0, &data);
+//     //     memcpy(data, texture->getPixels(), bufferSize);
+//     // }
+//     // //if the file is open, we read the data into the imageFileData vector
+//     // else
+//     // {
+//     //     const std::uint32_t size = std::filesystem::file_size(filename);
+//     //     std::vector<std::uint8_t> imageFileData(size);
+//     //     file.read(reinterpret_cast<char*>(imageFileData.data()), size);
+
+//     //     //Use the stb_image library to load the image
+//     //     pixelData = stbi_load_from_memory(imageFileData.data(), size, &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
+
+//     //     bufferSize = texChannels * texWidth * texHeight;
+//     //     stagingBuffer = createGeneralBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+//     //                                         VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+
+//     //     void* data{};
+//     //     mDeviceFunctions->vkMapMemory(mWindow->device(), stagingBuffer.mBufferMemory, 0, bufferSize, 0, &data);
+//     //     memcpy(data, pixelData, bufferSize);
+//     // }
+
+//     // mDeviceFunctions->vkUnmapMemory(mWindow->device(), stagingBuffer.mBufferMemory);
+
+//     TextureHandle textureHandle = createImage(texWidth, texHeight, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
+//     //                                           VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, format);
+
+//     // transitionImageLayout(textureHandle.mImage, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+//     // copyBufferToImage(stagingBuffer.mBuffer, textureHandle.mImage, texWidth, texHeight);
+//     // transitionImageLayout(textureHandle.mImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+
+//     // textureHandle.mImageView = createImageView(textureHandle.mImage, format);
+
+//     // VkDescriptorSetAllocateInfo descriptorSetAllocateInfo{};
+//     // descriptorSetAllocateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+//     // descriptorSetAllocateInfo.descriptorPool = mTextureDescriptorPool;
+//     // descriptorSetAllocateInfo.descriptorSetCount = 1;
+//     // descriptorSetAllocateInfo.pSetLayouts = &mTextureDescriptorSetLayout;
+
+//     // VkResult err = mDeviceFunctions->vkAllocateDescriptorSets(mWindow->device(), &descriptorSetAllocateInfo, &textureHandle.mTextureDescriptorSet);
+//     // if (err != VK_SUCCESS) {
+//     //     std::exit(EXIT_FAILURE);
+//     // }
+
+//     // VkDescriptorImageInfo descriptorImageInfo{};
+//     // descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+//     // descriptorImageInfo.imageView = textureHandle.mImageView;
+//     // descriptorImageInfo.sampler = mTextureSampler;
+
+//     // VkWriteDescriptorSet writeDescriptorSet{};
+//     // writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+//     // writeDescriptorSet.dstSet = textureHandle.mTextureDescriptorSet;
+//     // writeDescriptorSet.dstBinding = 0;
+//     // writeDescriptorSet.dstArrayElement = 0;
+//     // writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+//     // writeDescriptorSet.descriptorCount = 1;
+//     // writeDescriptorSet.pImageInfo = &descriptorImageInfo;
+
+//     // mDeviceFunctions->vkUpdateDescriptorSets(mWindow->device(), 1, &writeDescriptorSet, 0, nullptr);
+
+//     // destroyBuffer(stagingBuffer);
+
+//     // stbi_image_free(pixelData);
+
+//      return textureHandle;
+// }
+
+TextureHandle Renderer::createImage(int width, int height, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkFormat format)
+{
+    TextureHandle textureHandle{};
+
+    VkImageCreateInfo textureInfo{};
+    textureInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;    // set the structure type
+    textureInfo.usage = usage;                                   // buffer usage type
+    textureInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+    textureInfo.imageType = VK_IMAGE_TYPE_2D;
+    textureInfo.extent.width = width;
+    textureInfo.extent.height = height;
+    textureInfo.extent.depth = 1;
+    textureInfo.mipLevels = 1;
+    textureInfo.arrayLayers = 1;
+    textureInfo.format = format;
+    textureInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
+    textureInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+    //textureInfo.usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+    textureInfo.samples = VK_SAMPLE_COUNT_1_BIT;        // No multisampling
+    //textureInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+    textureInfo.flags = 0;
+
+    VkResult err = mDeviceFunctions->vkCreateImage(mWindow->device(), &textureInfo, nullptr, &textureHandle.mImage);
+    if (err != VK_SUCCESS)
+    {
+        qFatal("Failed to create image buffer: %d", err);
+    }
+
+    VkMemoryRequirements memoryRequirements{};
+    mDeviceFunctions->vkGetImageMemoryRequirements(mWindow->device(), textureHandle.mImage, &memoryRequirements);
+
+    // Manually find a memory type
+    uint32_t chosenMemoryType = findMemoryType(memoryRequirements.memoryTypeBits, properties);
+
+    VkMemoryAllocateInfo memoryAllocateInfo{};
+    memoryAllocateInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+    memoryAllocateInfo.allocationSize = memoryRequirements.size;
+    memoryAllocateInfo.memoryTypeIndex = chosenMemoryType;      //Qt has a helper function for this mWindow->hostVisibleMemoryIndex();
+
+    err = mDeviceFunctions->vkAllocateMemory(mWindow->device(), &memoryAllocateInfo, nullptr, &textureHandle.mTextureMemory);
+    if (err != VK_SUCCESS)
+    {
+        qFatal("Failed to allocate image memory: %d", err);
+    }
+
+    mDeviceFunctions->vkBindImageMemory(mWindow->device(), textureHandle.mImage, textureHandle.mTextureMemory, 0);
+
+    return textureHandle;
+}
+
+void Renderer::transitionImageLayout(VkImage image, VkImageLayout oldLayout, VkImageLayout newLayout)
+{
+    VkCommandBuffer commandBuffer = BeginTransientCommandBuffer();
+
+    VkImageMemoryBarrier barrier{};
+    barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+    barrier.oldLayout = oldLayout;
+    barrier.newLayout = newLayout;
+    barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+    barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+    barrier.image = image;
+    barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+    barrier.subresourceRange.baseArrayLayer = 0;
+    barrier.subresourceRange.baseMipLevel = 0;
+    barrier.subresourceRange.levelCount = 1;
+    barrier.subresourceRange.layerCount = 1;
+
+    VkPipelineStageFlags sourceStage{};
+    VkPipelineStageFlags destinationStage{};
+
+    if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL)
+    {
+        barrier.srcAccessMask = 0;
+        barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+        sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+        destinationStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+    }
+    else if (oldLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
+    {
+        barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+        barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+        sourceStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+        destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+    }
+
+    mDeviceFunctions->vkCmdPipelineBarrier(commandBuffer, sourceStage, destinationStage, 0, 0, nullptr, 0, nullptr, 1, &barrier);
+
+    EndTransientCommandBuffer(commandBuffer);
+}
+
+void Renderer::copyBufferToImage(VkBuffer buffer, VkImage image, int width, int height)
+{
+    VkCommandBuffer commandBuffer = BeginTransientCommandBuffer();
+
+    VkBufferImageCopy region{};
+    region.bufferOffset = 0;
+    region.bufferRowLength = 0;
+    region.bufferImageHeight = 0;
+    region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+    region.imageSubresource.mipLevel = 0;
+    region.imageSubresource.baseArrayLayer = 0;
+    region.imageSubresource.layerCount = 1;
+    region.imageOffset = { 0, 0, 0 };
+    region.imageExtent = { static_cast<std::uint32_t>(width), static_cast<std::uint32_t>(height), 1 };
+
+    mDeviceFunctions->vkCmdCopyBufferToImage(commandBuffer, buffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
+
+    EndTransientCommandBuffer(commandBuffer);
+}
+
+VkImageView Renderer::createImageView(VkImage image, VkFormat format)
+{
+    VkImageViewCreateInfo info{};
+    info.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+    info.image = image;
+    info.viewType = VK_IMAGE_VIEW_TYPE_2D;
+    info.format = format;
+    info.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
+    info.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
+    info.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
+    info.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;
+    info.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+    info.subresourceRange.baseMipLevel = 0;
+    info.subresourceRange.levelCount = 1;
+    info.subresourceRange.baseArrayLayer = 0;
+    info.subresourceRange.layerCount = 1;
+
+    VkImageView view;
+    VkResult err = mDeviceFunctions->vkCreateImageView(mWindow->device(), &info, nullptr, &view);
+    if (err != VK_SUCCESS) {
+        std::exit(EXIT_FAILURE);
+    }
+
+    return view;
+}
+
+void Renderer::destroyTexture(TextureHandle &textureHandle)
+{
+    mDeviceFunctions->vkDeviceWaitIdle(mWindow->device());
+    mDeviceFunctions->vkFreeDescriptorSets(mWindow->device(), mTextureDescriptorPool, 1, &textureHandle.mTextureDescriptorSet);
+    mDeviceFunctions->vkDestroyImageView(mWindow->device(), textureHandle.mImageView, nullptr);
+    mDeviceFunctions->vkDestroyImage(mWindow->device(), textureHandle.mImage, nullptr);
+    mDeviceFunctions->vkFreeMemory(mWindow->device(), textureHandle.mTextureMemory, nullptr);
 }
 
 void Renderer::getVulkanHWInfo()
