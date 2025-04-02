@@ -25,6 +25,7 @@ qt_add_executable(QtVulkanApp
     utilities.h
     utilities.h
     objmesh.h objmesh.cpp
+    texture.h texture.cpp
 )
 # Define the shader files
 set(SHADER_FILES

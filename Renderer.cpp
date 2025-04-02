@@ -89,6 +89,9 @@ Renderer::Renderer(QVulkanWindow *w, bool msaa)
     //OBJECT
     mObjects.push_back((new ObjMesh("sphere.obj")));
 
+    //TEXTURE
+    //mObjects.push_back((new Texture("name.....")));
+
     mObjects.at(0)->setName("plane");
     // mObjects.at(1)->setName("wall1");
     // mObjects.at(2)->setName("wall2");

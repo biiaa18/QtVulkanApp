@@ -17,6 +17,7 @@
 #include "utilities.h"
 #include "VulkanWindow.h"
 #include "objmesh.h"
+#include "texture.h"
 
 class Renderer : public QVulkanWindowRenderer
 {
