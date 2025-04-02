@@ -27,6 +27,7 @@ qt_add_executable(QtVulkanApp
     objmesh.h objmesh.cpp
     texture.h texture.cpp
     stb_image.h
+    texture.frag texture.vert
 
 
 
