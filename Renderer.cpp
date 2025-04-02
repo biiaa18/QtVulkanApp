@@ -2,7 +2,8 @@
 #include <QVulkanFunctions>
 #include <QFile>
 #include <QtMath>
-//#include "stb_image.h"
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
 using namespace std;
 
 
@@ -857,96 +858,97 @@ void Renderer::createTextureSampler()
     }
 }
 
-// TextureHandle Renderer::createTexture(const char *filename)
-// {
-//     // int texWidth, texHeight, texChannels;
-//     // VkDeviceSize bufferSize{};
-//     // VkFormat format{ VK_FORMAT_R8G8B8A8_SRGB }; //could be VK_FORMAT_R8G8B8_SRGB
-//     // BufferHandle stagingBuffer{};
-//     // stbi_uc* pixelData{ nullptr };
+TextureHandle Renderer::createTexture(const char *filename)
+{
 
-//     // //Open the file and read the data into the imageFileData vector
-//     // ifstream file(filename, ios::binary);
+    int texWidth, texHeight, texChannels;
+    VkDeviceSize bufferSize{};
+    VkFormat format{ VK_FORMAT_R8G8B8A8_SRGB }; //could be VK_FORMAT_R8G8B8_SRGB
+    BufferHandle stagingBuffer{};
+    stbi_uc* pixelData{ nullptr };
 
-//     // //if the file is not open, we create a default texture
-//     // if (!file.is_open())
-//     // {
-//     //     Texture* texture = new Texture();   //new Texture(filename);
-//     //     bufferSize = texture->textureSize();
-//     //     texChannels = texture->bytesPrPixel();
-//     //     texWidth = texture->width();
-//     //     texHeight = texture->height();
-//     //     stagingBuffer = createGeneralBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-//     //                                         VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+    //Open the file and read the data into the imageFileData vector
+    ifstream file(filename, ios::binary);
+
+    //if the file is not open, we create a default texture
+    if (!file.is_open())
+    {
+        Texture* texture = new Texture();   //new Texture(filename);
+        bufferSize = texture->textureSize();
+        texChannels = texture->bytesPrPixel();
+        texWidth = texture->width();
+        texHeight = texture->height();
+        stagingBuffer = createGeneralBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+                                            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 
 
-//     //     void* data{};
-//     //     mDeviceFunctions->vkMapMemory(mWindow->device(), stagingBuffer.mBufferMemory, 0, bufferSize, 0, &data);
-//     //     memcpy(data, texture->getPixels(), bufferSize);
-//     // }
-//     // //if the file is open, we read the data into the imageFileData vector
-//     // else
-//     // {
-//     //     const std::uint32_t size = std::filesystem::file_size(filename);
-//     //     std::vector<std::uint8_t> imageFileData(size);
-//     //     file.read(reinterpret_cast<char*>(imageFileData.data()), size);
+        void* data{};
+        mDeviceFunctions->vkMapMemory(mWindow->device(), stagingBuffer.mBufferMemory, 0, bufferSize, 0, &data);
+        memcpy(data, texture->getPixels(), bufferSize);
+    }
+    //if the file is open, we read the data into the imageFileData vector
+    else
+    {
+        const std::uint32_t size = std::filesystem::file_size(filename);
+        std::vector<std::uint8_t> imageFileData(size);
+        file.read(reinterpret_cast<char*>(imageFileData.data()), size);
 
-//     //     //Use the stb_image library to load the image
-//     //     pixelData = stbi_load_from_memory(imageFileData.data(), size, &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
+        //Use the stb_image library to load the image
+        pixelData = stbi_load_from_memory(imageFileData.data(), size, &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
 
-//     //     bufferSize = texChannels * texWidth * texHeight;
-//     //     stagingBuffer = createGeneralBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-//     //                                         VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+        bufferSize = texChannels * texWidth * texHeight;
+        stagingBuffer = createGeneralBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+                                            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 
-//     //     void* data{};
-//     //     mDeviceFunctions->vkMapMemory(mWindow->device(), stagingBuffer.mBufferMemory, 0, bufferSize, 0, &data);
-//     //     memcpy(data, pixelData, bufferSize);
-//     // }
+        void* data{};
+        mDeviceFunctions->vkMapMemory(mWindow->device(), stagingBuffer.mBufferMemory, 0, bufferSize, 0, &data);
+        memcpy(data, pixelData, bufferSize);
+    }
 
-//     // mDeviceFunctions->vkUnmapMemory(mWindow->device(), stagingBuffer.mBufferMemory);
+    mDeviceFunctions->vkUnmapMemory(mWindow->device(), stagingBuffer.mBufferMemory);
 
-//     TextureHandle textureHandle = createImage(texWidth, texHeight, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
-//     //                                           VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, format);
+    TextureHandle textureHandle = createImage(texWidth, texHeight, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
+                                              VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, format);
 
-//     // transitionImageLayout(textureHandle.mImage, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-//     // copyBufferToImage(stagingBuffer.mBuffer, textureHandle.mImage, texWidth, texHeight);
-//     // transitionImageLayout(textureHandle.mImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+    transitionImageLayout(textureHandle.mImage, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+    copyBufferToImage(stagingBuffer.mBuffer, textureHandle.mImage, texWidth, texHeight);
+    transitionImageLayout(textureHandle.mImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
-//     // textureHandle.mImageView = createImageView(textureHandle.mImage, format);
+    textureHandle.mImageView = createImageView(textureHandle.mImage, format);
 
-//     // VkDescriptorSetAllocateInfo descriptorSetAllocateInfo{};
-//     // descriptorSetAllocateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-//     // descriptorSetAllocateInfo.descriptorPool = mTextureDescriptorPool;
-//     // descriptorSetAllocateInfo.descriptorSetCount = 1;
-//     // descriptorSetAllocateInfo.pSetLayouts = &mTextureDescriptorSetLayout;
+    VkDescriptorSetAllocateInfo descriptorSetAllocateInfo{};
+    descriptorSetAllocateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+    descriptorSetAllocateInfo.descriptorPool = mTextureDescriptorPool;
+    descriptorSetAllocateInfo.descriptorSetCount = 1;
+    descriptorSetAllocateInfo.pSetLayouts = &mTextureDescriptorSetLayout;
 
-//     // VkResult err = mDeviceFunctions->vkAllocateDescriptorSets(mWindow->device(), &descriptorSetAllocateInfo, &textureHandle.mTextureDescriptorSet);
-//     // if (err != VK_SUCCESS) {
-//     //     std::exit(EXIT_FAILURE);
-//     // }
+    VkResult err = mDeviceFunctions->vkAllocateDescriptorSets(mWindow->device(), &descriptorSetAllocateInfo, &textureHandle.mTextureDescriptorSet);
+    if (err != VK_SUCCESS) {
+        std::exit(EXIT_FAILURE);
+    }
 
-//     // VkDescriptorImageInfo descriptorImageInfo{};
-//     // descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-//     // descriptorImageInfo.imageView = textureHandle.mImageView;
-//     // descriptorImageInfo.sampler = mTextureSampler;
+    VkDescriptorImageInfo descriptorImageInfo{};
+    descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+    descriptorImageInfo.imageView = textureHandle.mImageView;
+    descriptorImageInfo.sampler = mTextureSampler;
 
-//     // VkWriteDescriptorSet writeDescriptorSet{};
-//     // writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-//     // writeDescriptorSet.dstSet = textureHandle.mTextureDescriptorSet;
-//     // writeDescriptorSet.dstBinding = 0;
-//     // writeDescriptorSet.dstArrayElement = 0;
-//     // writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-//     // writeDescriptorSet.descriptorCount = 1;
-//     // writeDescriptorSet.pImageInfo = &descriptorImageInfo;
+    VkWriteDescriptorSet writeDescriptorSet{};
+    writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+    writeDescriptorSet.dstSet = textureHandle.mTextureDescriptorSet;
+    writeDescriptorSet.dstBinding = 0;
+    writeDescriptorSet.dstArrayElement = 0;
+    writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    writeDescriptorSet.descriptorCount = 1;
+    writeDescriptorSet.pImageInfo = &descriptorImageInfo;
 
-//     // mDeviceFunctions->vkUpdateDescriptorSets(mWindow->device(), 1, &writeDescriptorSet, 0, nullptr);
+    mDeviceFunctions->vkUpdateDescriptorSets(mWindow->device(), 1, &writeDescriptorSet, 0, nullptr);
 
-//     // destroyBuffer(stagingBuffer);
+    DestroyBuffer(stagingBuffer);
 
-//     // stbi_image_free(pixelData);
+    stbi_image_free(pixelData);
 
-//      return textureHandle;
-// }
+    return textureHandle;
+}
 
 TextureHandle Renderer::createImage(int width, int height, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkFormat format)
 {
