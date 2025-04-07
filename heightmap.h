@@ -1,6 +1,7 @@
 #ifndef HEIGHTMAP_H
 #define HEIGHTMAP_H
 #include "VisualObject.h"
+#include "Vertex.h"
 
 class HeightMap: public VisualObject
 {

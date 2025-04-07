@@ -50,8 +50,8 @@ public:
     //return object from vector Pickups?
     VisualObject* checkCollision(VisualObject* v1, VisualObject* v2);
 
-    std::vector<VisualObject*>& getObjects() { return mObjects; }
-    std::unordered_map<std::string, VisualObject*>& getMap() { return mMap; }
+    std::vector<VisualObject*>& getObjects();
+    std::unordered_map<std::string, VisualObject*>& getMap();
 
 
     void Patrol(float speed, VisualObject* ptr, float min, float max);
@@ -96,6 +96,7 @@ protected:
     void setTexture(TextureHandle& textureHandle, VkCommandBuffer commandBuffer);
 
 
+    void setViewProjectionMatrix();
 
 private:
     friend class VulkanWindow;
@@ -176,5 +177,9 @@ private:
     //VkPipelineInputAssemblyStateCreateInfo ia;
     //VkGraphicsPipelineCreateInfo pipelineInfo;
 };
+
+inline std::vector<VisualObject *> &Renderer::getObjects() { return mObjects; }
+
+inline std::unordered_map<string, VisualObject *> &Renderer::getMap() { return mMap; }
 
 #endif // RENDERER_H

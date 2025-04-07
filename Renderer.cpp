@@ -204,10 +204,15 @@ void Renderer::initResources()
         16 * sizeof(float) // 16 floats for the model matrix
     };
 
+    //DESCRIPTOR
+    array<VkDescriptorSetLayout, 2> descriptorSetLayouts = { mDescriptorSetLayout, mTextureDescriptorSetLayout };
+
+
     VkPipelineLayoutCreateInfo pipelineLayoutInfo;
     memset(&pipelineLayoutInfo, 0, sizeof(pipelineLayoutInfo));
     pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-    pipelineLayoutInfo.setLayoutCount = 0;
+    pipelineLayoutInfo.setLayoutCount = 2;
+    pipelineLayoutInfo.pSetLayouts = &descriptorSetLayouts[0];
     pipelineLayoutInfo.pushConstantRangeCount = 1;  // OEF: PushConstants update
     pipelineLayoutInfo.pPushConstantRanges = &pushConstantRange; // OEF: PushConstants update
     err = mDeviceFunctions->vkCreatePipelineLayout(logicalDevice, &pipelineLayoutInfo, nullptr, &mPipelineLayout);
@@ -333,7 +338,7 @@ void Renderer::initResources()
     if (fragShaderModule)
         mDeviceFunctions->vkDestroyShaderModule(logicalDevice, fragShaderModule, nullptr);
 
-    getVulkanHWInfo(); // if you want to get info about the Vulkan hardware
+
 
     createUniformBuffer();
     createDescriptorPools();
@@ -343,8 +348,15 @@ void Renderer::initResources()
     createTextureSampler();
 
     //TEXTURE
-    //mTextureHandle = createTexture("../../Assets/Heightmap.jpg"); //Heightmap.jpg HundA.bmp
+    mTextureHandle = createTexture("phone.bmp");
+
+    //HEIGHT MAP
+    //mTextureHandle = createTexture("D:\\HeightMap\\Heightmap.jpg");  // "D:\HeightMap\Heightmap.jpg"
+
+
+    getVulkanHWInfo(); // if you want to get info about the Vulkan hardware
 }
+
 
 // This function is called at startup and when the app window is resized
 void Renderer::initSwapChainResources()
@@ -437,11 +449,19 @@ void Renderer::startNextFrame()
     rpBeginInfo.renderArea.extent.height = sz.height();
     rpBeginInfo.clearValueCount = mWindow->sampleCountFlagBits() > VK_SAMPLE_COUNT_1_BIT ? 3 : 2;
     rpBeginInfo.pClearValues = clearValues;
+
+    //DESCRIPTOR BINDING
+    mDeviceFunctions->vkCmdBindDescriptorSets(cmdBuf, VK_PIPELINE_BIND_POINT_GRAPHICS, mPipelineLayout, 0, 1,&mDescriptorSet, 0, nullptr);
+
+
+
     mDeviceFunctions->vkCmdBeginRenderPass(cmdBuf, &rpBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
 
     mDeviceFunctions->vkCmdBindPipeline(cmdBuf, VK_PIPELINE_BIND_POINT_GRAPHICS, mPipeline);
 
     VkDeviceSize vbOffset = 0;
+
+
 
     VkViewport viewport{};
     viewport.x = viewport.y = 0;
@@ -456,6 +476,8 @@ void Renderer::startNextFrame()
     scissor.extent.width = viewport.width;
     scissor.extent.height = viewport.height;
     mDeviceFunctions->vkCmdSetScissor(cmdBuf, 0, 1, &scissor);
+
+    setViewProjectionMatrix();
 
     /********************************* Our draw call!: *********************************/
 
@@ -472,6 +494,10 @@ void Renderer::startNextFrame()
         }
         // if camera can switch, we switch to insideCamera from mMatrix
         if(CanSwitch==false){
+            //TEXTURE
+            setTexture(mTextureHandle, cmdBuf);
+
+            //BUFFERS
             mDeviceFunctions->vkCmdBindVertexBuffers(cmdBuf, 0, 1, &(*it)->getVBuffer(), &vbOffset);
             setModelMatrix(mCamera.cMatrix() * (*it)->mMatrix);
             //mDeviceFunctions->vkCmdDraw(cmdBuf, (*it)->mVertices.size(), 1, 0, 0);
@@ -486,6 +512,10 @@ void Renderer::startNextFrame()
             }
         }
         else{
+            //TEXTURE
+            setTexture(mTextureHandle, cmdBuf);
+
+            //BUFFERS
             mDeviceFunctions->vkCmdBindVertexBuffers(cmdBuf, 0, 1, &(*it)->getVBuffer(), &vbOffset);
             setModelMatrix(insideCamera.cMatrix() * (*it)->mMatrix);
             //mDeviceFunctions->vkCmdDraw(cmdBuf, (*it)->mVertices.size(), 1, 0, 0);
@@ -954,6 +984,15 @@ void Renderer::setTexture(TextureHandle &textureHandle, VkCommandBuffer commandB
 {
     mDeviceFunctions->vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
     mPipelineLayout, 1, 1, &textureHandle.mTextureDescriptorSet, 0, nullptr);
+}
+
+void Renderer::setViewProjectionMatrix()
+{
+    memcpy(mUniformBufferLocation, mCamera.viewMatrix().constData(), 64);
+    QMatrix4x4 temp = mCamera.projectionMatrix();
+    temp = temp * mWindow->clipCorrectionMatrix();  //Correcting for Vulkans -Y
+    //Adding 64 bytes to the uniform buffer location to get to the projection matrix position
+    memcpy(static_cast<char*>(mUniformBufferLocation) + 64, temp.constData(), 64);
 }
 
 void Renderer::createTextureSampler()

@@ -24,6 +24,9 @@ public:
     void rotate(float t, float x, float y, float z);
     QMatrix4x4 cMatrix();
     void update(){};
+
+    inline QMatrix4x4 viewMatrix() const { return mViewMatrix; }
+    inline QMatrix4x4 projectionMatrix() const { return mProjectionMatrix; }
 };
 
 #endif // CAMERA_H
