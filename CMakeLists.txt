@@ -28,6 +28,7 @@ qt_add_executable(QtVulkanApp
     texture.h texture.cpp
     stb_image.h
     texture.frag texture.vert
+    heightmap.h heightmap.cpp
 
 
 

@@ -18,6 +18,7 @@
 #include "VulkanWindow.h"
 #include "objmesh.h"
 #include "texture.h"
+#include "heightmap.h"
 
 class Renderer : public QVulkanWindowRenderer
 {
@@ -77,7 +78,7 @@ protected:
     //For Uniform buffers
     VkDescriptorPool mDescriptorPool{ VK_NULL_HANDLE };
     VkDescriptorSetLayout mDescriptorSetLayout{ VK_NULL_HANDLE };
-    VkDescriptorSet mDescriptorSet[QVulkanWindow::MAX_CONCURRENT_FRAME_COUNT]{ VK_NULL_HANDLE };
+    VkDescriptorSet mDescriptorSet{ VK_NULL_HANDLE }; //[QVulkanWindow::MAX_CONCURRENT_FRAME_COUNT]
 
     VkPipelineCache mPipelineCache{ VK_NULL_HANDLE };
     VkPipelineLayout mPipelineLayout{ VK_NULL_HANDLE };
@@ -107,6 +108,7 @@ private:
     BufferHandle mUniformBuffer{};
     VkSurfaceFormatKHR mSurfaceFormat{};
     TextureHandle mTextureHandle{};
+    //For Uniform buffers
 
 
 
@@ -140,11 +142,11 @@ private:
     void EndTransientCommandBuffer(VkCommandBuffer commandBuffer);
 
     //MORE UNIFORM BUFFERS STUFF
-    // void createUniformBuffer();
-    // void createDescriptorSetLayouts();
-    // void createDescriptorSet();
-    // void createDescriptorPools();
-    // void* mUniformBufferLocation{ nullptr };
+    void createUniformBuffer();
+    void createDescriptorSetLayouts();
+    void createDescriptorSet();
+    void createDescriptorPools();
+    void* mUniformBufferLocation{ nullptr };
 
     //TEXTURES
     //vector<class Texture*> mTextures;  //all textures
