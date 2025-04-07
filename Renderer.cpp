@@ -207,7 +207,7 @@ void Renderer::initResources()
     //DESCRIPTOR
     array<VkDescriptorSetLayout, 2> descriptorSetLayouts = { mDescriptorSetLayout, mTextureDescriptorSetLayout };
 
-
+    //LAYOUT COUNT
     VkPipelineLayoutCreateInfo pipelineLayoutInfo;
     memset(&pipelineLayoutInfo, 0, sizeof(pipelineLayoutInfo));
     pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
@@ -253,6 +253,7 @@ void Renderer::initResources()
     pipelineInfo.stageCount = 2; //vertex and fragment shader
     pipelineInfo.pStages = shaderStages;
     pipelineInfo.pVertexInputState = &vertexInputInfo;
+
 
     // **** Input Assembly **** - describes how primitives are assembled in the Graphics pipeline
     VkPipelineInputAssemblyStateCreateInfo ia;  //input assembly
@@ -340,6 +341,46 @@ void Renderer::initResources()
 
 
 
+
+    ////////////////////////////////// TEXTURE
+    ///
+    // Texture pipeline
+    VkShaderModule vertTextureShaderModule = createShader(QStringLiteral(":/texture.vert"));
+    VkShaderModule fragTextureShaderModule = createShader(QStringLiteral(":/texture.frag"));
+
+    VkGraphicsPipelineCreateInfo TexturePipelineInfo;
+    memset(&TexturePipelineInfo, 0, sizeof(TexturePipelineInfo));
+    TexturePipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+
+    VkPipelineShaderStageCreateInfo TextureShaderStages[2] = {
+        {
+            VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,   //sType  (structure type)
+            nullptr,
+            0,
+            VK_SHADER_STAGE_VERTEX_BIT, //stage
+            vertTextureShaderModule, //module
+            "main",   //pName
+            nullptr
+        },
+        {
+            VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
+            nullptr,
+            0,
+            VK_SHADER_STAGE_FRAGMENT_BIT,
+            fragTextureShaderModule,
+            "main",
+            nullptr
+        }
+    };
+
+    TexturePipelineInfo.stageCount = 2; //texture.vert and texture.frag shader
+    TexturePipelineInfo.pStages = TextureShaderStages;
+    TexturePipelineInfo.pVertexInputState = &vertexInputInfo;
+
+
+
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     createUniformBuffer();
     createDescriptorPools();
     createDescriptorSet();
@@ -487,6 +528,7 @@ void Renderer::startNextFrame()
             //pipeline 2 for triangle list
             mDeviceFunctions->vkCmdBindPipeline(cmdBuf, VK_PIPELINE_BIND_POINT_GRAPHICS, mPipeline2);
 
+
         }
         else{
             //pipeline1 for line list
@@ -539,6 +581,7 @@ void Renderer::startNextFrame()
         if ((*it)->drawType==0){
             //pipeline 1 for triangle list
             mDeviceFunctions->vkCmdBindPipeline(cmdBuf, VK_PIPELINE_BIND_POINT_GRAPHICS, mPipeline2);
+            //mDeviceFunctions->vkCmdBindPipeline(cmdBuf, VK_PIPELINE_BIND_POINT_GRAPHICS, mTexturePipeline);
 
         }
 

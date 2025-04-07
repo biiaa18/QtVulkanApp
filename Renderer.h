@@ -83,8 +83,10 @@ protected:
     VkPipelineCache mPipelineCache{ VK_NULL_HANDLE };
     VkPipelineLayout mPipelineLayout{ VK_NULL_HANDLE };
     VkPipelineLayout mPipelineLayout2{ VK_NULL_HANDLE };
+    VkPipelineLayout mTexturePipelineLayout{ VK_NULL_HANDLE };
     VkPipeline mPipeline{ VK_NULL_HANDLE };
     VkPipeline mPipeline2{ VK_NULL_HANDLE };
+    VkPipeline mTexturePipeline{ VK_NULL_HANDLE };
 
     VkQueue mGraphicsQueue{ VK_NULL_HANDLE };
     void setRenderPassParameters(VkCommandBuffer commandBuffer);
