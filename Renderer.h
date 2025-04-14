@@ -155,6 +155,7 @@ private:
     //vector<class Texture*> mTextures;  //all textures
     void createTextureSampler();
     TextureHandle createTexture(const char* filename);
+    TextureHandle createHeightMap(const char* filename);
     TextureHandle createImage(int width, int height, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkFormat format);
     void transitionImageLayout(VkImage image, VkImageLayout oldLayout, VkImageLayout newLayout); //sets up the transfer to the shader
     void copyBufferToImage(VkBuffer buffer, VkImage image, int width, int height);

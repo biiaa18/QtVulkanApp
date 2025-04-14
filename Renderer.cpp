@@ -67,6 +67,8 @@ Renderer::Renderer(QVulkanWindow *w, bool msaa)
 
     // //Pickups
     mPickups.push_back((new Pickup()));//0
+    mPickups.at(0)->scale(10.0f);
+    mPickups.at(0)->move (3.0f,0.0f,-4.5f);
     mPickups.push_back((new Pickup()));//1
     mPickups.at(1)->move (0.0f,0.0f,-2.0f);
     mPickups.at(1)->updateMiddlePoints(0,0.0f,0.0f,-2.0f);
@@ -355,7 +357,7 @@ void Renderer::initResources()
 
     //Making a pipeline for drawing lines
     mColorMaterial.pipeline = mPipeline;                       // reusing most of the settings from the first pipeline
-    inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_LINE_LIST;   // draw lines
+    inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;   // draw lines
     rasterization.polygonMode = VK_POLYGON_MODE_FILL;           // VK_POLYGON_MODE_LINE will make a wireframe; VK_POLYGON_MODE_FILL
     rasterization.lineWidth = 5.0f;
     pipelineInfo.pInputAssemblyState = &inputAssembly;
@@ -387,8 +389,8 @@ void Renderer::initResources()
     createTextureSampler();
 
     //TEXTURE
-    mTextureHandle = createTexture("hund.bmp");
-
+    //mTextureHandle = createTexture("D:\\Textures\\hund.bmp");
+    mTextureHandle = createTexture("D:\\Textures\\color.bmp");
 
     //************************************************* HEIGHT  MAP   ***************************
     //HEIGHT MAP
@@ -465,7 +467,8 @@ void Renderer::setRenderPassParameters(VkCommandBuffer commandBuffer)
 void Renderer::startNextFrame()
 {
     //mVulkanWindow->handleInput();
-    //mCamera.update();
+    mCamera.update();
+    insideCamera.update();
 
     VkCommandBuffer cmdBuf = mWindow->currentCommandBuffer();
     setRenderPassParameters(cmdBuf);
@@ -483,7 +486,7 @@ void Renderer::startNextFrame()
     {
         if ((*it)->drawType==0){
             //pipeline 2 for triangle list
-            mDeviceFunctions->vkCmdBindPipeline(cmdBuf, VK_PIPELINE_BIND_POINT_GRAPHICS, mPipeline);
+            mDeviceFunctions->vkCmdBindPipeline(cmdBuf, VK_PIPELINE_BIND_POINT_GRAPHICS, mColorMaterial.pipeline);
 
 
         }
@@ -493,12 +496,16 @@ void Renderer::startNextFrame()
         }
         // if camera can switch, we switch to insideCamera from mMatrix
         if(CanSwitch==false){
-            //TEXTURE
-            //setTexture(mTextureHandle, cmdBuf);
 
             //BUFFERS
             mDeviceFunctions->vkCmdBindVertexBuffers(cmdBuf, 0, 1, &(*it)->getVBuffer(), &vbOffset);
-            setModelMatrix(mCamera.cMatrix() * (*it)->mMatrix);
+
+            QMatrix4x4 mvp = mCamera.projectionMatrix() * mCamera.viewMatrix() * (*it)->getMatrix();
+            setModelMatrix(mvp); //mvp);
+
+            //setModelMatrix(mCamera.cMatrix() * (*it)->mMatrix);
+
+            /*****old**/
             //mDeviceFunctions->vkCmdDraw(cmdBuf, (*it)->mVertices.size(), 1, 0, 0);
             if ((*it)->getIndices().size() > 0)
             {
@@ -511,12 +518,13 @@ void Renderer::startNextFrame()
             }
         }
         else{
-            //TEXTURE
-            //setTexture(mTextureHandle, cmdBuf);
 
             //BUFFERS
             mDeviceFunctions->vkCmdBindVertexBuffers(cmdBuf, 0, 1, &(*it)->getVBuffer(), &vbOffset);
-            setModelMatrix(insideCamera.cMatrix() * (*it)->mMatrix);
+            QMatrix4x4 mvp = insideCamera.projectionMatrix() * insideCamera.viewMatrix() * (*it)->getMatrix();
+            setModelMatrix(mvp); //mvp);
+
+            //setModelMatrix(insideCamera.cMatrix() * (*it)->mMatrix);
             //mDeviceFunctions->vkCmdDraw(cmdBuf, (*it)->mVertices.size(), 1, 0, 0);
             if ((*it)->getIndices().size() > 0)
             {
@@ -545,13 +553,15 @@ void Renderer::startNextFrame()
         if(CanSwitch==false){
             setTexture(mTextureHandle, cmdBuf);
             mDeviceFunctions->vkCmdBindVertexBuffers(cmdBuf, 0, 1, &(*it)->getVBuffer(), &vbOffset);
-            setModelMatrix(mCamera.cMatrix() * (*it)->mMatrix);
+            QMatrix4x4 mvp = mCamera.projectionMatrix() * mCamera.viewMatrix() * (*it)->getMatrix();
+            setModelMatrix(mvp); //mvp);
             mDeviceFunctions->vkCmdDraw(cmdBuf, (*it)->mVertices.size(), 1, 0, 0);
         }
         else{
             setTexture(mTextureHandle, cmdBuf);
             mDeviceFunctions->vkCmdBindVertexBuffers(cmdBuf, 0, 1, &(*it)->getVBuffer(), &vbOffset);
-            setModelMatrix(insideCamera.cMatrix() * (*it)->mMatrix);
+            QMatrix4x4 mvp = insideCamera.projectionMatrix() * insideCamera.viewMatrix() * (*it)->getMatrix();
+            setModelMatrix(mvp); //mvp);
             mDeviceFunctions->vkCmdDraw(cmdBuf, (*it)->mVertices.size(), 1, 0, 0);
         }
     }
@@ -1021,7 +1031,7 @@ void Renderer::createTextureSampler()
     }
 }
 
-TextureHandle Renderer::createTexture(const char *filename)
+TextureHandle Renderer::createHeightMap(const char *filename)
 {
 
     int texWidth, texHeight, texChannels;
@@ -1115,6 +1125,99 @@ TextureHandle Renderer::createTexture(const char *filename)
         qDebug() << "Pixel " << i << "a " << temp;
     }
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    mDeviceFunctions->vkUnmapMemory(mWindow->device(), stagingBuffer.mBufferMemory);
+
+    TextureHandle textureHandle = createImage(texWidth, texHeight, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
+                                              VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, format);
+
+    transitionImageLayout(textureHandle.mImage, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+    copyBufferToImage(stagingBuffer.mBuffer, textureHandle.mImage, texWidth, texHeight);
+    transitionImageLayout(textureHandle.mImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+
+    textureHandle.mImageView = createImageView(textureHandle.mImage, format);
+
+    VkDescriptorSetAllocateInfo descriptorSetAllocateInfo{};
+    descriptorSetAllocateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+    descriptorSetAllocateInfo.descriptorPool = mTextureDescriptorPool;
+    descriptorSetAllocateInfo.descriptorSetCount = 1;
+    descriptorSetAllocateInfo.pSetLayouts = &mTextureDescriptorSetLayout;
+
+    VkResult err = mDeviceFunctions->vkAllocateDescriptorSets(mWindow->device(), &descriptorSetAllocateInfo, &textureHandle.mTextureDescriptorSet);
+    if (err != VK_SUCCESS) {
+        std::exit(EXIT_FAILURE);
+    }
+
+    VkDescriptorImageInfo descriptorImageInfo{};
+    descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+    descriptorImageInfo.imageView = textureHandle.mImageView;
+    descriptorImageInfo.sampler = mTextureSampler;
+
+    VkWriteDescriptorSet writeDescriptorSet{};
+    writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+    writeDescriptorSet.dstSet = textureHandle.mTextureDescriptorSet;
+    writeDescriptorSet.dstBinding = 0;
+    writeDescriptorSet.dstArrayElement = 0;
+    writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    writeDescriptorSet.descriptorCount = 1;
+    writeDescriptorSet.pImageInfo = &descriptorImageInfo;
+
+    mDeviceFunctions->vkUpdateDescriptorSets(mWindow->device(), 1, &writeDescriptorSet, 0, nullptr);
+
+    DestroyBuffer(stagingBuffer);
+
+    stbi_image_free(pixelData);
+
+    return textureHandle;
+}
+
+TextureHandle Renderer::createTexture(const char *filename)
+{
+
+    int texWidth, texHeight, texChannels;
+    VkDeviceSize bufferSize{};
+    VkFormat format{ VK_FORMAT_R8G8B8A8_SRGB }; //could be VK_FORMAT_R8G8B8_SRGB
+    BufferHandle stagingBuffer{};
+    stbi_uc* pixelData{ nullptr };
+
+    //Open the file and read the data into the imageFileData vector
+    std::ifstream file(filename, std::ios::binary);
+
+    //if the file is not open, we create a default texture
+    if (!file.is_open())
+    {
+        Texture* texture = new Texture();   // (filename);
+        bufferSize = texture->textureSize();
+        texChannels = texture->bytesPrPixel();
+        texWidth = texture->width();
+        texHeight = texture->height();
+        stagingBuffer = createGeneralBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+                                            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+
+        void* data{};
+        mDeviceFunctions->vkMapMemory(mWindow->device(), stagingBuffer.mBufferMemory, 0, bufferSize, 0, &data);
+        memcpy(data, texture->getPixels(), bufferSize);
+    }
+    //if the file is open, we read the data into the imageFileData vector
+    else
+    {
+        const std::uint32_t size = std::filesystem::file_size(filename);
+        std::vector<std::uint8_t> imageFileData(size);
+        file.read(reinterpret_cast<char*>(imageFileData.data()), size);
+
+        //Use the stb_image library to load the image
+        //Force all images to RGBA format
+        pixelData = stbi_load_from_memory(imageFileData.data(), size, &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
+
+        //texChannels might be 1, 3 or 4, so hardcode it to 4
+        bufferSize = 4 * texWidth * texHeight;
+        stagingBuffer = createGeneralBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+                                            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+
+        void* data{};
+        mDeviceFunctions->vkMapMemory(mWindow->device(), stagingBuffer.mBufferMemory, 0, bufferSize, 0, &data);
+        memcpy(data, pixelData, bufferSize);
+    }
 
     mDeviceFunctions->vkUnmapMemory(mWindow->device(), stagingBuffer.mBufferMemory);
 

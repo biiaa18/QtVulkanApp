@@ -8,8 +8,8 @@ Texture::Texture()
 
 Texture::Texture(const string& filename)
 {
-    textureFilename = "D:\\Textures\\" + filename;   //filename
-    readBitmap(textureFilename);     //readBitmap(filename);   //reads the BMP into memory
+    textureFilename =filename;   //filename "D:\Textures\hund.bmp"
+    readBitmap(filename);     //readBitmap(filename);   //reads the BMP into memory
 
 
     //bool success = readBitmap(filename);       //reads the BMP into memory
@@ -167,7 +167,7 @@ bool Texture::readBitmap(const string &filename)
 
 void Texture::makeTexture()
 {
-    //qDebug("Making texture");
+    qDebug("Making texture");
     for (int i = 0; i < 16; i++){
         pixels[i] = 0;
     }

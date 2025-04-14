@@ -68,10 +68,20 @@ set_source_files_properties("color_frag.spv"
 set_source_files_properties("color_vert.spv"
     PROPERTIES QT_RESOURCE_ALIAS "color_vert.spv"
 )
+set_source_files_properties("texture_frag.spv"
+    PROPERTIES QT_RESOURCE_ALIAS "texture_frag.spv"
+)
+
+set_source_files_properties("texture_vert.spv"
+    PROPERTIES QT_RESOURCE_ALIAS "texture_vert.spv"
+)
+
 
 set(QtVulkanApp_resource_files
     "color_frag.spv"
     "color_vert.spv"
+   "texture_vert.spv"
+   "texture_frag.spv"
 )
 
 qt_add_resources(QtVulkanApp "QtVulkanApp"
@@ -108,7 +118,21 @@ add_custom_target(
     COMMENT "Compiling vertex shader"
 )
 
+add_custom_target(
+    PreBuildCommandF2 ALL
+    COMMAND glslc texture.frag -o texture_frag.spv
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    COMMENT "Compiling fragment shader"
+)
+add_custom_target(
+    PreBuildCommandV2 ALL
+    COMMAND glslc texture.vert -o texture_vert.spv
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    COMMENT "Compiling vertex shader"
+)
 add_dependencies(QtVulkanApp PreBuildCommandF)
 add_dependencies(QtVulkanApp PreBuildCommandV)
+add_dependencies(QtVulkanApp PreBuildCommandF2)
+add_dependencies(QtVulkanApp PreBuildCommandV2)
 
 

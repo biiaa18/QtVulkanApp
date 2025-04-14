@@ -35,14 +35,6 @@ public:
     int CollisionType{0}; // 0 is for pickups, 1 is for the door, 2 is for entrance
     std::vector<Vertex> NewPositions;
 
-    // inline VkBuffer& getVBuffer() { return mVertexBuffer.mBuffer; };  //vertex buffer
-    // inline VkBuffer& getIBuffer() { return mIndexBuffer.mBuffer; }; //index buffer
-    // inline VkDeviceMemory& getVBufferMemory() { return mVertexBuffer.mBufferMemory; };
-    // inline void setVBuffer(VkBuffer bufferIn) { mVertexBuffer.mBuffer = bufferIn; };
-    // inline void setIBuffer(VkBuffer bufferIn) { mIndexBuffer.mBuffer = bufferIn; };
-    // inline void setVBufferMemory(VkDeviceMemory bufferMemoryIn) { mVertexBuffer.mBufferMemory= bufferMemoryIn;};
-    // inline void setIBufferMemory(VkDeviceMemory bufferMemoryIn) { mIndexBuffer.mBufferMemory= bufferMemoryIn;};
-
     inline VkBuffer& getVBuffer() { return mVertexBuffer.mBuffer; };  //vertex buffer
     inline VkBuffer& getIBuffer() { return mIndexBuffer.mBuffer; }; //index buffer
     inline VkDeviceMemory& getVBufferMemory() { return mVertexBuffer.mBufferMemory; };
@@ -59,7 +51,7 @@ public:
     void setName(std::string name);
     std::string getName() const;
 
-
+    inline QMatrix4x4 getMatrix() const {return mMatrix;}
 
     bool MovingRight=true;
 protected:
