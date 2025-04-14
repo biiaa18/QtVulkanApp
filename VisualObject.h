@@ -24,6 +24,7 @@ public:
     // to render different topology types
     int drawType{0}; // 0 is for fill, 1 is for lines
     void setdrawType(int type){drawType=type;};
+    inline int getDrawType() const { return drawType; }
 
     std::vector<Vertex> MiddlePoints;
     Vertex getMiddlePoints(int object_number);
