@@ -27,7 +27,6 @@ qt_add_executable(QtVulkanApp
     objmesh.h objmesh.cpp
     texture.h texture.cpp
     stb_image.h
-    texture.frag texture.vert
     heightmap.h heightmap.cpp
 
 
@@ -38,6 +37,10 @@ qt_add_executable(QtVulkanApp
 set(SHADER_FILES
     color.frag
     color.vert
+    texture.frag
+    texture.vert
+
+
 )
 
 # Add the shader files to the project

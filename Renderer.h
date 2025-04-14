@@ -82,8 +82,6 @@ protected:
 
     VkPipelineCache mPipelineCache{ VK_NULL_HANDLE };
     VkPipelineLayout mPipelineLayout{ VK_NULL_HANDLE };
-    VkPipelineLayout mPipelineLayout2{ VK_NULL_HANDLE };
-    VkPipelineLayout mTexturePipelineLayout{ VK_NULL_HANDLE };
     VkPipeline mPipeline{ VK_NULL_HANDLE };
     VkPipeline mPipeline2{ VK_NULL_HANDLE };
     VkPipeline mTexturePipeline{ VK_NULL_HANDLE };
@@ -109,6 +107,8 @@ private:
     std::vector<VisualObject*> mPickups; //i want to have 6 pickups
     std::unordered_map<std::string, VisualObject*> mMap;    // alternativ container
     BufferHandle mUniformBuffer{};
+    //TEXTURES
+    vector<class Texture*> mTextures;
     VkSurfaceFormatKHR mSurfaceFormat{};
     TextureHandle mTextureHandle{};
     //For Uniform buffers

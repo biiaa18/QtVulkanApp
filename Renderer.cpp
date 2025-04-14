@@ -537,7 +537,7 @@ void Renderer::startNextFrame()
         // if camera can switch, we switch to insideCamera from mMatrix
         if(CanSwitch==false){
             //TEXTURE
-            setTexture(mTextureHandle, cmdBuf);
+            //setTexture(mTextureHandle, cmdBuf);
 
             //BUFFERS
             mDeviceFunctions->vkCmdBindVertexBuffers(cmdBuf, 0, 1, &(*it)->getVBuffer(), &vbOffset);
@@ -555,7 +555,7 @@ void Renderer::startNextFrame()
         }
         else{
             //TEXTURE
-            setTexture(mTextureHandle, cmdBuf);
+            //setTexture(mTextureHandle, cmdBuf);
 
             //BUFFERS
             mDeviceFunctions->vkCmdBindVertexBuffers(cmdBuf, 0, 1, &(*it)->getVBuffer(), &vbOffset);
@@ -586,11 +586,13 @@ void Renderer::startNextFrame()
         }
 
         if(CanSwitch==false){
+            setTexture(mTextureHandle, cmdBuf);
             mDeviceFunctions->vkCmdBindVertexBuffers(cmdBuf, 0, 1, &(*it)->getVBuffer(), &vbOffset);
             setModelMatrix(mCamera.cMatrix() * (*it)->mMatrix);
             mDeviceFunctions->vkCmdDraw(cmdBuf, (*it)->mVertices.size(), 1, 0, 0);
         }
         else{
+            setTexture(mTextureHandle, cmdBuf);
             mDeviceFunctions->vkCmdBindVertexBuffers(cmdBuf, 0, 1, &(*it)->getVBuffer(), &vbOffset);
             setModelMatrix(insideCamera.cMatrix() * (*it)->mMatrix);
             mDeviceFunctions->vkCmdDraw(cmdBuf, (*it)->mVertices.size(), 1, 0, 0);
