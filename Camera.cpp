@@ -63,6 +63,10 @@ void Camera::moveRight(float delta)
 {
     mPosition.setX( mPosition.x() + delta);
 }
+void Camera::moveForward(float delta)
+{
+    mPosition.setZ( mPosition.z() + delta);
+}
 
 void Camera::updateHeigth(float deltaHeigth)
 {

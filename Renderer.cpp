@@ -86,12 +86,13 @@ Renderer::Renderer(QVulkanWindow *w, bool msaa)
     mPickups.at(5)->updateMiddlePoints(0,4.0f,0.0f,-4.0f);
 
     // //NPC
-    mObjects.push_back((new NPC(mPickups.at(0)->getMiddlePoints(0)))); //must always be under pickups creation....
-    mObjects.push_back((new NPC(mPickups.at(2)->getMiddlePoints(0))));
+    mObjects.push_back((new NPC(mPickups.at(0)->getMiddlePoints(0)))); //12//must always be under pickups creation....
+    mObjects.push_back((new NPC(mPickups.at(2)->getMiddlePoints(0))));//13
 
 
     //OBJECT
-    mObjects.push_back((new ObjMesh("sphere.obj")));
+    mObjects.push_back((new ObjMesh("sphere.obj"))); //14
+    mObjects.at(14)->move(-2.0f, 0.0f, 0.0f);
 
     mObjects.at(0)->setName("plane");
     // mObjects.at(1)->setName("wall1");
@@ -425,7 +426,11 @@ void Renderer::initSwapChainResources()
     // insideCamera.translate(-1.0, 1, -2.6); // -right, +backwards,- up
     // insideCamera.rotate(70,1.0f,0.0f,0.0f); // we look at the scene from the top
 
-    mCamera.perspective(-45.0f, sz.width() / (float) sz.height(), 0.01f, 500.0f);
+    mCamera.perspective(-100.0f, sz.width() / (float) sz.height(), 0.01f, 500.0f);
+    // mCamera.updateHeigth(-4.0f);
+    mCamera.setPosition({0.0f, -3.f, -12.0f});
+
+    //insideCamera.perspective(45.0f, sz.width() / (float) sz.height(), 0.01f, 700.0f);
 
 }
 

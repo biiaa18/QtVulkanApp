@@ -5,7 +5,7 @@
 class Camera
 {
 private:
-    QVector3D mEye{0.0, 0.0, 0.0};  // Kameraposisjon
+    QVector3D mEye{0.0, 15.0, 0.0};  // Kameraposisjon
     QVector3D mAt{0.0, 0.0, -1.0};   // Kamerafokus
     QVector3D mUp{0.0, 1.0, 0.0};   // Kamera-orientering
 
@@ -37,6 +37,7 @@ public:
 
     void setSpeed(float speed);
     void moveRight(float delta);
+    void moveForward(float delta);
     void updateHeigth(float deltaHeigth);
 
     void setPosition(const QVector3D& position);

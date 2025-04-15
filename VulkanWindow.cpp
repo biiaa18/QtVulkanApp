@@ -84,7 +84,7 @@ void VulkanWindow::keyPressEvent(QKeyEvent *event)
             //     qDebug("Move left");
             //     mSelectedObject->move(0.0f,0.0f, 10.1f);
             // }
-            float rate=-0.5f;
+            float rate=0.5f;
             qDebug("Move left");
             dynamic_cast<Renderer*>(mRenderer)->mObjects.at(1)->move(rate,0.0f, 0.0f);
             dynamic_cast<Renderer*>(mRenderer)->mObjects.at(1)->updateMiddlePoints(0,rate,0.0f,0.0f);
@@ -106,7 +106,7 @@ void VulkanWindow::keyPressEvent(QKeyEvent *event)
              //     qDebug("Move right");
              //     mSelectedObject->move(0.0f,0.0f, -10.1f);
              // }
-             float rate=0.5f;
+             float rate=-0.5f;
              qDebug("Move right");
              dynamic_cast<Renderer*>(mRenderer)->mObjects.at(1)->move(rate,0.0f, 0.0f);
              dynamic_cast<Renderer*>(mRenderer)->mObjects.at(1)->updateMiddlePoints(0,rate,0.0f,0.0f);
@@ -158,15 +158,28 @@ void VulkanWindow::keyPressEvent(QKeyEvent *event)
     //     // dynamic_cast<Renderer*>(mRenderer)->mCamera.translate(.0f, 0.0f, -0.2f);
     //     grabKeyboard();
     // }
-    if(event->key() == Qt::Key_Y)
-    {
-        dynamic_cast<Renderer*>(mRenderer)->mCamera.rotate(45, 0.0f, 1.0f, 0.0f);
+    if(event->key() == Qt::Key_Up)
+    {        // dynamic_cast<Renderer*>(mRenderer)->mCamera.rotate(45, 0.0f, 1.0f, 0.0f);
+
+        dynamic_cast<Renderer*>(mRenderer)->mCamera.moveForward(0.5f);
 
     }
-    // if(event->key() == Qt::Key_X)
-    // {
-    //     dynamic_cast<Renderer*>(mRenderer)->mCamera.rotate(45, 1.0f, 0.0f, 0.0f);
-    // }
+    if(event->key() == Qt::Key_Right)
+    {
+        dynamic_cast<Renderer*>(mRenderer)->mCamera.moveRight(0.5f);
+    }
+
+    if(event->key() == Qt::Key_Down)
+    {        // dynamic_cast<Renderer*>(mRenderer)->mCamera.rotate(45, 0.0f, 1.0f, 0.0f);
+
+        dynamic_cast<Renderer*>(mRenderer)->mCamera.moveForward(-0.5f);
+
+    }
+    if(event->key() == Qt::Key_Left)
+    {
+        dynamic_cast<Renderer*>(mRenderer)->mCamera.moveRight(-0.5f);
+    }
+
     // if(event->key() == Qt::Key_Z)
     // {
     //     //dynamic_cast<Renderer*>(mRenderer)->mCamera.rotate(45, 0.0f, 0.0f, 1.0f);
