@@ -92,7 +92,7 @@ Renderer::Renderer(QVulkanWindow *w, bool msaa)
 
     //OBJECT
     mObjects.push_back((new ObjMesh("sphere.obj"))); //14
-    mObjects.at(14)->move(-2.0f, 0.0f, 0.0f);
+    mObjects.at(14)->move(-4.0f, 4.0f, 0.0f);
 
     mObjects.at(0)->setName("plane");
     // mObjects.at(1)->setName("wall1");
@@ -105,7 +105,9 @@ Renderer::Renderer(QVulkanWindow *w, bool msaa)
         mMap.insert(pair<string, VisualObject*>{(*it)->getName(),*it});
     }
 
-    mCamera.setPosition(QVector3D(-0.5, -0.5, -8));
+
+    //CAMERA
+    mCamera.setPosition(QVector3D(0.0f, -3.f, -12.0f));
 
     mVulkanWindow = dynamic_cast<VulkanWindow*>(w);
 }
@@ -393,12 +395,12 @@ void Renderer::initResources()
 
     //TEXTURE
     //mTextureHandle = createTexture("D:\\Textures\\hund.bmp");
-    mTextureHandle = createTexture("D:\\Textures\\hundA.bmp");
-    //mTextureHandle = createTexture("D:\\Textures\\color.bmp");
+    mTextureHandle = createTexture("D:\\Textures\\color.bmp");
+
 
     //************************************************* HEIGHT  MAP   ***************************
     //HEIGHT MAP
-    //mTextureHandle = createTexture("D:\\HeightMap\\Heightmap.jpg");  // "D:\HeightMap\Heightmap.jpg"
+    mHeightMapHandle = createHeightMap("D:\\HeightMap\\Heightmap.jpg");  // "D:\HeightMap\Heightmap.jpg"
 
 
     getVulkanHWInfo(); // if you want to get info about the Vulkan hardware
@@ -428,7 +430,7 @@ void Renderer::initSwapChainResources()
 
     mCamera.perspective(-100.0f, sz.width() / (float) sz.height(), 0.01f, 500.0f);
     // mCamera.updateHeigth(-4.0f);
-    mCamera.setPosition({0.0f, -3.f, -12.0f});
+    // mCamera.setPosition({0.0f, -3.f, -12.0f});
 
     //insideCamera.perspective(45.0f, sz.width() / (float) sz.height(), 0.01f, 700.0f);
 
@@ -476,7 +478,7 @@ void Renderer::setRenderPassParameters(VkCommandBuffer commandBuffer)
 
 void Renderer::startNextFrame()
 {
-    //mVulkanWindow->handleInput();
+    mVulkanWindow->handleInput();
     mCamera.update();
     insideCamera.update();
 
@@ -494,9 +496,9 @@ void Renderer::startNextFrame()
 
     for (auto it=mObjects.begin(); it!=mObjects.end(); it++)
     {
-        if ((*it)->drawType==0){
+        if ((*it)->drawType==2){   //index 2 for future  height map
             //pipeline 2 for triangle list
-            mDeviceFunctions->vkCmdBindPipeline(cmdBuf, VK_PIPELINE_BIND_POINT_GRAPHICS, mColorMaterial.pipeline);
+            mDeviceFunctions->vkCmdBindPipeline(cmdBuf, VK_PIPELINE_BIND_POINT_GRAPHICS, mPipeline);
 
 
         }
@@ -506,7 +508,8 @@ void Renderer::startNextFrame()
         }
         // if camera can switch, we switch to insideCamera from mMatrix
         if(CanSwitch==false){
-
+            setTexture(mTextureHandle, cmdBuf);
+            setTexture(mHeightMapHandle, cmdBuf);
             //BUFFERS
             mDeviceFunctions->vkCmdBindVertexBuffers(cmdBuf, 0, 1, &(*it)->getVBuffer(), &vbOffset);
 
@@ -529,6 +532,8 @@ void Renderer::startNextFrame()
         }
         else{
 
+            setTexture(mTextureHandle, cmdBuf);
+            setTexture(mHeightMapHandle, cmdBuf);
             //BUFFERS
             mDeviceFunctions->vkCmdBindVertexBuffers(cmdBuf, 0, 1, &(*it)->getVBuffer(), &vbOffset);
             QMatrix4x4 mvp = insideCamera.projectionMatrix() * insideCamera.viewMatrix() * (*it)->getMatrix();
@@ -1123,7 +1128,7 @@ TextureHandle Renderer::createHeightMap(const char *filename)
     //We see that in a grey scale image, the R, G, B values are the same! The A value is 255
 
     unsigned char temp{};
-    for (int i = 0; i < texWidth * texHeight; i += 1200)
+    for (int i = 0; i < texWidth * texHeight; i += 600)
     {
         temp = pixelData[i];
         qDebug() << "Pixel " << i << "r " << temp;

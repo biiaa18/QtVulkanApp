@@ -1,6 +1,8 @@
 #include "npc.h"
 
 NPC::NPC(Vertex start) {
+    drawType=1;
+
     Vertex v1=start;
     float rate=0.5;
     float new_x=start.x+rate;

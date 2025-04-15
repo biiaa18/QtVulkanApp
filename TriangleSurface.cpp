@@ -3,7 +3,7 @@
 #include <QDebug>
 TriangleSurface::TriangleSurface() : VisualObject()
 {
-    drawType=0;
+    drawType=2;
     Vertex v1{0.0f,   0.0f,  0.0f,   1.0f, 1.0f, 1.0f, 0.0f, 0.0f};
     Vertex v2{0.0f,   0.0f, 10.0f,   0.0f, 1.0f, 1.0f, 0.0f, 0.0f};
     Vertex v3{10.0f,   0.0f,  10.0f,   0.0f, 1.0f, 1.0f, 0.0f, 0.0f};

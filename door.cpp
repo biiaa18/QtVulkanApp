@@ -1,6 +1,7 @@
 #include "door.h"
 
 door::door() {
+    drawType=1;
     Vertex v1{2.0f,   0.0f,  0.0f,   0.3f, 0.2f, 0.7f, 0.0f, 0.0f};
     Vertex v2{2.0f,   2.0f,  0.0f,   0.3f, 0.2f, 0.4f, 0.0f, 0.0f};
     Vertex v3{2.0f,   2.0f,  0.66f,   0.3f, 0.2f, 0.0f, 0.0f, 0.0f};

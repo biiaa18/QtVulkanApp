@@ -106,14 +106,15 @@ private:
     std::vector<VisualObject*> mObjects;
     std::vector<VisualObject*> mPickups; //i want to have 6 pickups
     std::unordered_map<std::string, VisualObject*> mMap;    // alternativ container
-    BufferHandle mUniformBuffer{};
     //TEXTURES
     vector<class Texture*> mTextures;
     VkSurfaceFormatKHR mSurfaceFormat{};
     TextureHandle mTextureHandle{};
+    TextureHandle mHeightMapHandle{};
     //For Uniform buffers
 
-
+    //HEIGTHT MAP
+    BufferHandle mUniformBuffer{};
 
     //FUNCTIONS
     //buffers
@@ -155,7 +156,6 @@ private:
     //vector<class Texture*> mTextures;  //all textures
     void createTextureSampler();
     TextureHandle createTexture(const char* filename);
-    TextureHandle createHeightMap(const char* filename);
     TextureHandle createImage(int width, int height, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkFormat format);
     void transitionImageLayout(VkImage image, VkImageLayout oldLayout, VkImageLayout newLayout); //sets up the transfer to the shader
     void copyBufferToImage(VkBuffer buffer, VkImage image, int width, int height);
@@ -163,6 +163,8 @@ private:
     void destroyTexture(TextureHandle& textureHandle);
 
 
+    //HEIGHT MAP
+    TextureHandle createHeightMap(const char* filename);
 
 
 

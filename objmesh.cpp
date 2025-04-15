@@ -5,6 +5,7 @@ using namespace std;
 
 ObjMesh::ObjMesh(const string& filename)
 {
+    drawType=1;
     if (!readObjFile(filename))  //If file does not read, just make a triangle
     {
         mVertices.push_back(Vertex{ -0.5f,   0.0f,  0.0f,   1.0f, 0.0f, 0.0f, 0.0f, 0.0f });
