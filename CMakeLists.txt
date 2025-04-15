@@ -23,12 +23,11 @@ qt_add_executable(QtVulkanApp
     npc.h npc.cpp
     door.h door.cpp
     utilities.h
-    utilities.h
     objmesh.h objmesh.cpp
     texture.h texture.cpp
     stb_image.h
     heightmap.h heightmap.cpp
-    texture_frag.spv texture_vert.spv
+
 
 
 
@@ -109,26 +108,26 @@ add_custom_target(
     PreBuildCommandF ALL
     COMMAND glslc color.frag -o color_frag.spv
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-    COMMENT "Compiling fragment shader"
+    COMMENT "Compiling color fragment shader"
 )
 add_custom_target(
     PreBuildCommandV ALL
     COMMAND glslc color.vert -o color_vert.spv
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-    COMMENT "Compiling vertex shader"
+    COMMENT "Compiling color vertex shader"
 )
 
 add_custom_target(
     PreBuildCommandF2 ALL
     COMMAND glslc texture.frag -o texture_frag.spv
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-    COMMENT "Compiling fragment shader"
+    COMMENT "Compiling texture fragment shader"
 )
 add_custom_target(
     PreBuildCommandV2 ALL
     COMMAND glslc texture.vert -o texture_vert.spv
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-    COMMENT "Compiling vertex shader"
+    COMMENT "Compiling texture vertex shader"
 )
 add_dependencies(QtVulkanApp PreBuildCommandF)
 add_dependencies(QtVulkanApp PreBuildCommandV)
