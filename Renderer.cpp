@@ -104,6 +104,8 @@ Renderer::Renderer(QVulkanWindow *w, bool msaa)
         mMap.insert(pair<string, VisualObject*>{(*it)->getName(),*it});
     }
 
+    mCamera.setPosition(QVector3D(-0.5, -0.5, -8));
+
     mVulkanWindow = dynamic_cast<VulkanWindow*>(w);
 }
 
@@ -390,7 +392,8 @@ void Renderer::initResources()
 
     //TEXTURE
     //mTextureHandle = createTexture("D:\\Textures\\hund.bmp");
-    mTextureHandle = createTexture("D:\\Textures\\color.bmp");
+    mTextureHandle = createTexture("D:\\Textures\\hundA.bmp");
+    //mTextureHandle = createTexture("D:\\Textures\\color.bmp");
 
     //************************************************* HEIGHT  MAP   ***************************
     //HEIGHT MAP
@@ -409,18 +412,20 @@ void Renderer::initSwapChainResources()
     // Projection matrix - how the scene will be projected into the render window
 
     //This function is called at startup and when the app window is resized
-    mProjectionMatrix.setToIdentity();
+    //mProjectionMatrix.setToIdentity();
     //find the size of the window
     const QSize sz = mWindow->swapChainImageSize();
 
-    mCamera.perspective(45.0f, sz.width() / (float) sz.height(), 0.01f, 100.0f);
-    mCamera.translate(0, 2, -15); //Camera is -15 away from origo
-    mCamera.rotate(30,1.0f,0.0f,0.0f);
+    // mCamera.perspective(45.0f, sz.width() / (float) sz.height(), 0.01f, 100.0f);
+    // mCamera.translate(0, 2, -15); //Camera is -15 away from origo
+    // mCamera.rotate(30,1.0f,0.0f,0.0f);
 
-    //                                     if camera goes closer than 0.01f, it starts "clipping" trhough the walls
-    insideCamera.perspective(50.0f, sz.width() / (float) sz.height(), 0.01f, 100.0f); //first parameter brings camera closer to the scene, last one gives perspective=how far can you see with camera)
-    insideCamera.translate(-1.0, 1, -2.6); // -right, +backwards,- up
-    insideCamera.rotate(70,1.0f,0.0f,0.0f); // we look at the scene from the top
+    // //                                     if camera goes closer than 0.01f, it starts "clipping" trhough the walls
+    // insideCamera.perspective(50.0f, sz.width() / (float) sz.height(), 0.01f, 100.0f); //first parameter brings camera closer to the scene, last one gives perspective=how far can you see with camera)
+    // insideCamera.translate(-1.0, 1, -2.6); // -right, +backwards,- up
+    // insideCamera.rotate(70,1.0f,0.0f,0.0f); // we look at the scene from the top
+
+    mCamera.perspective(-45.0f, sz.width() / (float) sz.height(), 0.01f, 500.0f);
 
 }
 

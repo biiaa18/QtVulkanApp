@@ -1,15 +1,13 @@
 #version 440
 
-layout(location = 0) in vec4 position;
+layout(location = 0) in vec3 position;
 layout(location = 1) in vec3 color;
 
-layout(location = 0) out vec3 v_color;
+layout(location = 0) out vec3 vColor;
 
-layout(push_constant) uniform buf {
-    mat4 mvp;
-} ubuf;
-
-out gl_PerVertex { vec4 gl_Position; };
+layout(push_constant) uniform mod {
+    mat4 model;
+} model;
 
 
 layout(set = 0, binding = 0) uniform cam {
@@ -17,13 +15,14 @@ layout(set = 0, binding = 0) uniform cam {
     mat4 projection;
 } camera;
 
-
+out gl_PerVertex { vec4 gl_Position; };
 
 void main()
 {
-    v_color = color;
+    vColor = color;
 
-    gl_Position =  ubuf.mvp*position;
+    gl_Position =  model.model*vec4(position,1.0);
+    //gl_Position=camera.projection * camera.view * model.model * vec4(position, 1.0);
    }
 
 

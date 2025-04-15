@@ -23,7 +23,7 @@ void main()
 {
     vColor = color;
     vUV = texcoord;
-   // gl_Position =   camera.projection * camera.view * model.model * vec4(position, 1.0);
+    //gl_Position =   camera.projection * camera.view * model.model * vec4(position, 1.0);
     gl_Position = model.model * vec4(position, 1.0);
 }
 
