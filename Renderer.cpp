@@ -94,6 +94,18 @@ Renderer::Renderer(QVulkanWindow *w, bool msaa)
     mObjects.push_back((new ObjMesh("sphere.obj"))); //14
     mObjects.at(14)->move(-4.0f, 4.0f, 0.0f);
 
+
+    //HEIGHT MAP
+    //mObjects.push_back(new HeightMap); //15
+
+    //CAMERA
+    mCamera.setPosition(QVector3D(0.0f, -3.f, -12.0f));
+
+
+
+
+
+    /***********************************************************/
     mObjects.at(0)->setName("plane");
     // mObjects.at(1)->setName("wall1");
     // mObjects.at(2)->setName("wall2");
@@ -104,10 +116,7 @@ Renderer::Renderer(QVulkanWindow *w, bool msaa)
     for (auto it=mObjects.begin(); it!=mObjects.end(); it++){
         mMap.insert(pair<string, VisualObject*>{(*it)->getName(),*it});
     }
-
-
-    //CAMERA
-    mCamera.setPosition(QVector3D(0.0f, -3.f, -12.0f));
+    /*************************************************************/
 
     mVulkanWindow = dynamic_cast<VulkanWindow*>(w);
 }
@@ -394,9 +403,8 @@ void Renderer::initResources()
     createTextureSampler();
 
     //TEXTURE
-    //mTextureHandle = createTexture("D:\\Textures\\hund.bmp");
     mTextureHandle = createTexture("D:\\Textures\\color.bmp");
-
+    //mTextureHandle = createHeightMap("D:\\Textures\\color.bmp"); //makes no difference in apperance, alternative way to make texture
 
     //************************************************* HEIGHT  MAP   ***************************
     //HEIGHT MAP
@@ -508,7 +516,7 @@ void Renderer::startNextFrame()
         }
         // if camera can switch, we switch to insideCamera from mMatrix
         if(CanSwitch==false){
-            setTexture(mTextureHandle, cmdBuf);
+            //setTexture(mTextureHandle, cmdBuf);
             setTexture(mHeightMapHandle, cmdBuf);
             //BUFFERS
             mDeviceFunctions->vkCmdBindVertexBuffers(cmdBuf, 0, 1, &(*it)->getVBuffer(), &vbOffset);
@@ -532,7 +540,7 @@ void Renderer::startNextFrame()
         }
         else{
 
-            setTexture(mTextureHandle, cmdBuf);
+            //setTexture(mTextureHandle, cmdBuf);
             setTexture(mHeightMapHandle, cmdBuf);
             //BUFFERS
             mDeviceFunctions->vkCmdBindVertexBuffers(cmdBuf, 0, 1, &(*it)->getVBuffer(), &vbOffset);
@@ -1128,7 +1136,7 @@ TextureHandle Renderer::createHeightMap(const char *filename)
     //We see that in a grey scale image, the R, G, B values are the same! The A value is 255
 
     unsigned char temp{};
-    for (int i = 0; i < texWidth * texHeight; i += 600)
+    for (int i = 0; i < texWidth * texHeight; i += 1200)
     {
         temp = pixelData[i];
         qDebug() << "Pixel " << i << "r " << temp;
@@ -1139,7 +1147,14 @@ TextureHandle Renderer::createHeightMap(const char *filename)
         temp = pixelData[i + 3];
         qDebug() << "Pixel " << i << "a " << temp;
     }
+
+
+    // float grid_size = static_cast<float>(texWidth);
+    // HeightMap(pixelData,grid_size,0.05f); //15
+
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
 
     mDeviceFunctions->vkUnmapMemory(mWindow->device(), stagingBuffer.mBufferMemory);
 
@@ -1201,7 +1216,7 @@ TextureHandle Renderer::createTexture(const char *filename)
     //if the file is not open, we create a default texture
     if (!file.is_open())
     {
-        Texture* texture = new Texture();   // (filename);
+        Texture* texture = new Texture(filename);   // (filename);
         bufferSize = texture->textureSize();
         texChannels = texture->bytesPrPixel();
         texWidth = texture->width();
@@ -1241,8 +1256,9 @@ TextureHandle Renderer::createTexture(const char *filename)
 
     transitionImageLayout(textureHandle.mImage, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
     copyBufferToImage(stagingBuffer.mBuffer, textureHandle.mImage, texWidth, texHeight);
-    transitionImageLayout(textureHandle.mImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+    transitionImageLayout(textureHandle.mImage, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
+       //VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
     textureHandle.mImageView = createImageView(textureHandle.mImage, format);
 
     VkDescriptorSetAllocateInfo descriptorSetAllocateInfo{};
@@ -1384,8 +1400,24 @@ void Renderer::copyBufferToImage(VkBuffer buffer, VkImage image, int width, int 
     region.imageOffset = { 0, 0, 0 };
     region.imageExtent = { static_cast<std::uint32_t>(width), static_cast<std::uint32_t>(height), 1 };
 
-    mDeviceFunctions->vkCmdCopyBufferToImage(commandBuffer, buffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
 
+    ///ai suggestion to fix reading 1 pixel only...didnt work
+    // const uint32_t chunkHeight = 256; // Example chunk height (adjust based on your needs)
+    // const uint32_t totalChunks = (height + chunkHeight - 1) / chunkHeight;
+
+    // for (uint32_t chunkIndex = 0; chunkIndex < totalChunks; ++chunkIndex) {
+    //     uint32_t currentChunkHeight = std::min(chunkHeight, height - chunkIndex * chunkHeight);
+
+    //     // Set offsets and dimensions for the current chunk
+    //     region.bufferOffset = chunkIndex * chunkHeight * width * 4; // Assuming 4 bytes per pixel (RGBA)
+    //     region.imageOffset = {0, static_cast<int32_t>(chunkIndex * chunkHeight), 0};
+    //     region.imageExtent.width = width;
+    //     region.imageExtent.height = currentChunkHeight;
+    //     mDeviceFunctions->vkCmdCopyBufferToImage(commandBuffer, buffer, image, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, 1, &region); //VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
+    // }
+
+
+    mDeviceFunctions->vkCmdCopyBufferToImage(commandBuffer, buffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
     EndTransientCommandBuffer(commandBuffer);
 }
 

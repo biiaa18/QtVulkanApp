@@ -114,6 +114,7 @@ private:
     //For Uniform buffers
 
     //HEIGTHT MAP
+
     BufferHandle mUniformBuffer{};
 
     //FUNCTIONS

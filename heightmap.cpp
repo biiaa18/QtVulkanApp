@@ -1,7 +1,8 @@
 #include "heightmap.h"
 
-HeightMap::HeightMap() {
+HeightMap::HeightMap(unsigned char* textureData,float grid_size, float step) {
 
+    makeTerrain(textureData, grid_size, step);
 }
 
 void HeightMap::makeTerrain(unsigned char* textureData,float grid_size, float step) {
@@ -20,7 +21,7 @@ void HeightMap::makeTerrain(unsigned char* textureData,float grid_size, float st
             //                                      x - value                      y-value               z-value
             mVertices.emplace_back(Vertex{x_min + (y * step), heightFromBitmap, vertexZStart - (x * step),
                                           //  R , G, B                    U, V
-                                          0.0f,0.5f,0.0f,           y / (y_max - 1.f), x / (x_max - 1.f)});
+                                          0.0f,1.0f,0.0f,           y / (y_max - 1.f), x / (x_max - 1.f)});
         }
     }
 

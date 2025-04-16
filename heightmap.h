@@ -8,6 +8,7 @@ class HeightMap: public VisualObject
 public:
     HeightMap();
 
+    HeightMap(unsigned char* textureData,float grid_size, float step);
     void makeTerrain(unsigned char* textureData, float grid_size, float step);
 };
 
