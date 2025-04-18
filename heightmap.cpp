@@ -6,7 +6,7 @@ HeightMap::HeightMap():VisualObject()
 {
 
    //makeTerrain("D:\\HeightMap\\Heightmap.jpg", 256, 256);
-   makeTerrain("D:\\HeightMap\\Heightmap.jpg", 256, 0.1, 0.05);
+   makeTerrain("D:\\HeightMap\\Heightmap.jpg", 256, 0.1, 0.055);
    //mMatrix.rotate(45, 0.0, 0.0, 0.0f);
 
 }
