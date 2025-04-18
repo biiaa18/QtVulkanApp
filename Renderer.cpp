@@ -96,7 +96,8 @@ Renderer::Renderer(QVulkanWindow *w, bool msaa)
 
 
     //HEIGHT MAP
-    //mObjects.push_back(new HeightMap); //15
+    mObjects.push_back(new HeightMap()); //15
+    mObjects.at(15)->move (-15.0f,-4.5f,15.0f);
 
     //CAMERA
     mCamera.setPosition(QVector3D(0.0f, -3.f, -12.0f));
