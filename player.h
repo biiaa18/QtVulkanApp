@@ -8,6 +8,8 @@ class Player: public VisualObject
 public:
     Player();
 
+
+
 };
 
 #endif // PLAYER_H

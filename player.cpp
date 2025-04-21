@@ -2,9 +2,9 @@
 
 Player::Player() {            //right  up   forward
     drawType=1;
-    Vertex v1{0.0f,  0.1f,  8.0f,   1.0f, 0.0f, 0.0f, 0.0f, 0.0f};
-    Vertex v2{0.5f,   0.1f,  8.0f,   1.0f, 0.0f, 0.0f, 0.0f, 0.0f};
-    Vertex v3{0.25f,   0.1f,  7.75f,   1.0f, 0.0f, 0.0f, 0.0f, 0.0f};
+    Vertex v1{0.0f,  0.1f,  0.0f,   1.0f, 0.0f, 0.0f, 0.0f, 0.0f};
+    Vertex v2{0.5f,   0.1f,  0.0f,   1.0f, 0.0f, 0.0f, 0.0f, 0.0f};
+    Vertex v3{0.25f,   0.1f,  -.25f,   1.0f, 0.0f, 0.0f, 0.0f, 0.0f};
     mVertices.push_back(v1);
     mVertices.push_back(v2);
     mVertices.push_back(v3);
@@ -22,5 +22,4 @@ Player::Player() {            //right  up   forward
     MiddlePoints.push_back(v4);
     radius=0.28f;
 }
-
 

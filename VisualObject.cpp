@@ -29,6 +29,36 @@ void VisualObject::updateMiddlePoints(int index,float new_x,float new_y,float ne
 
 }
 
+
+
+void VisualObject::setPosition(const QVector3D &position)
+{
+    mPosition = position;
+    //update();
+
+}
+
+QVector3D VisualObject::getPosition()
+{
+    return mPosition;
+}
+
+// void Player::updateHeight()
+// {
+//     mPosition.setY(mPosition.y());
+// }
+
+void VisualObject::moveRight(float delta)
+{
+    mPosition.setX( mPosition.x() + delta);
+
+}
+
+void VisualObject::moveForward(float delta)
+{
+    mPosition.setZ( mPosition.z() + delta);
+}
+
 void VisualObject::setNewPosition(float speed, float new_x,float new_y, float new_z)
 {
     // mMatrix.setToIdentity();
@@ -57,14 +87,14 @@ void VisualObject::setNewPosition(float speed, float new_x,float new_y, float ne
 
 
 
-void VisualObject::move(float x, float y, float z)
+void VisualObject::move(float t, float x, float y, float z)
 {
-    mMatrix.translate(x, y, z);
+    mPosition+=QVector3D(x,y,z)*t;
 }
 
 void VisualObject::scale(float s)
 {
-    mMatrix.scale(s);
+    //mMatrix.scale(s);
 }
 
 
@@ -81,4 +111,12 @@ void VisualObject::setName(std::string name)
 std::string VisualObject::getName() const
 {
     return mName;
+}
+
+QMatrix4x4 VisualObject::getMatrix()
+{
+    QMatrix4x4 temp;
+    temp.translate(mPosition);
+
+    return temp;
 }

@@ -32,30 +32,30 @@ Renderer::Renderer(QVulkanWindow *w, bool msaa)
 
     // //player
     mObjects.push_back((new Player()));//1
-
+    mObjects.at(1)->setPosition({-5.0f,0.0f,0.0f});
     // // house: i decided to do walls this way, was less lines, so i didnt push vertices for each wall in house.cpp
     // //walls
     mObjects.push_back((new wall(0.0))); //2
     mObjects.push_back((new wall(0.0))); //3
-    mObjects.at(3)->move (0.0f,0.0f,2.0f);
+    mObjects.at(3)->setPosition({0.0f,0.0f,2.0f});
     mObjects.push_back((new wall(0.0))); //4
     mObjects.at(4)->rotate(-90.0f, 0.0f, 1.0f, 0.0f);
     mObjects.push_back((new door())); //5   is the actual door
-    mObjects.at(5)->move (0.0f,0.0f,0.67f);
+    mObjects.at(5)->setPosition ({0.0f,0.0f,0.67f});
     mObjects.at(5)->updateMiddlePoints(0,0.0f,0.0f,0.66f);
     mObjects.push_back((new door())); //6
     mObjects.push_back((new door())); //7
-    mObjects.at(7)->move (0.0f,0.0f,1.35f);
+    mObjects.at(7)->setPosition ({0.0f,0.0f,1.35f});
     //roof: used pythagoras here to understand the translation
     mObjects.push_back((new wall(1.0))); //8
-    mObjects.at(8)->move (0.0f,1.59f,-0.41f);
+    mObjects.at(8)->setPosition ({0.0f,1.59f,-0.41f});
     mObjects.at(8)->rotate(45.0f, 1.0f, 0.0f, 0.0f);
     mObjects.push_back((new wall(1.0))); //9
-    mObjects.at(9)->move (0.0f,1.59f,2.41f);
+    mObjects.at(9)->setPosition ({0.0f,1.59f,2.41f});
     mObjects.at(9)->rotate(-45.0f, 1.0f, 0.0f, 0.0f);
     mObjects.push_back((new Triangle())); //10
     mObjects.push_back((new Triangle())); //11
-    mObjects.at(11)->move (2.0f,0.0f,0.0f);
+    mObjects.at(11)->setPosition ({2.0f,0.0f,0.0f});
 
     // //Axis
     // mObjects.push_back((new TriangleSurface("D:\\1x_axis.txt")));
@@ -68,19 +68,19 @@ Renderer::Renderer(QVulkanWindow *w, bool msaa)
     // //Pickups
     mPickups.push_back((new Pickup()));//0
     mPickups.push_back((new Pickup()));//1
-    mPickups.at(1)->move (0.0f,0.0f,-2.0f);
+    mPickups.at(1)->setPosition ({0.0f,0.0f,-2.0f});
     mPickups.at(1)->updateMiddlePoints(0,0.0f,0.0f,-2.0f);
     mPickups.push_back((new Pickup()));//2
-    mPickups.at(2)->move (0.0f,0.0f,3.0f);
+    mPickups.at(2)->setPosition ({0.0f,0.0f,3.0f});
     mPickups.at(2)->updateMiddlePoints(0,0.0f,0.0f,3.0f);
     mPickups.push_back((new Pickup()));//3
-    mPickups.at(3)->move (5.0f,0.0f,0.0f);
+    mPickups.at(3)->setPosition ({5.0f,0.0f,0.0f});
     mPickups.at(3)->updateMiddlePoints(0,5.0f,0.0f,0.0f);
     mPickups.push_back((new Pickup()));//4
-    mPickups.at(4)->move (4.0f,0.0f,3.0f);
+    mPickups.at(4)->setPosition ({4.0f,0.0f,3.0f});
     mPickups.at(4)->updateMiddlePoints(0,4.0f,0.0f,3.0f);
     mPickups.push_back((new Pickup()));//5
-    mPickups.at(5)->move (4.0f,0.0f,-4.0f);
+    mPickups.at(5)->setPosition ({4.0f,0.0f,-4.0f});
     mPickups.at(5)->updateMiddlePoints(0,4.0f,0.0f,-4.0f);
 
     // //NPC
@@ -90,15 +90,15 @@ Renderer::Renderer(QVulkanWindow *w, bool msaa)
 
     //OBJECT
     mObjects.push_back((new ObjMesh("sphere.obj"))); //14
-    mObjects.at(14)->move(-4.0f, 4.0f, 0.0f);
+    mObjects.at(14)->setPosition({-4.0f, 4.0f, 0.0f});
 
 
     //HEIGHT MAP
     mObjects.push_back(new HeightMap()); //15
-    mObjects.at(15)->move (-15.0f,-4.5f,15.0f);
+    //mObjects.at(15)->setPosition ({-15.0f,-4.5f,15.0f});
 
     //CAMERA
-    mCamera.setPosition(QVector3D(0.0f, -3.f, -12.0f));
+    mCamera.setPosition(QVector3D(0.0f, -7.f, -12.0f));
 
 
 
@@ -615,7 +615,7 @@ void Renderer::startNextFrame()
     checkCollision(mObjects.at(1),mObjects.at(5));
     if (DoorIsOpen){
         //qDebug("You can enter");
-        mObjects.at(5)->move(0.0f,-0.1f,0.0f); //door object
+        mObjects.at(5)->setPosition({0.0f,-0.1f,0.0f}); //door object
         // //check collision with the entrance, i use just first created object of wall, because middle point is calculated in relation to the whole house either way, so it doesnt matter which wall i'm using
         checkCollision(mObjects.at(1),mObjects.at(2));
         if (HouseEntered){
@@ -1653,9 +1653,9 @@ void Renderer::Patrol(float speed, VisualObject* ptr, float min, float max)
 void Renderer::updatePlayerHeight(VisualObject* player,  VisualObject* terrain)
 {
 
-    float playerX = player->MiddlePoints[0].x;
-    float playerZ = player->MiddlePoints[0].z;
-    float playerY = player->MiddlePoints[0].y;
+    float playerX = player->getPosition().x();
+    float playerZ = player->getPosition().z();
+    float playerY = player->getPosition().y();
 
     for (size_t i = 0; i < terrain->mIndices.size(); i += 3)
     {
@@ -1665,9 +1665,7 @@ void Renderer::updatePlayerHeight(VisualObject* player,  VisualObject* terrain)
         // barycentric coordinates
         QVector3D AB=QVector3D{B.x-A.x, B.y-A.y, B.z-A.z};
         QVector3D AC=QVector3D{C.x-A.x, C.y-A.y, C.z-A.z};
-
         float denominator = AB.x()*AC.z() -AC.x()*AB.z();
-
 
         if (denominator == 0.0f)
         {
@@ -1678,8 +1676,8 @@ void Renderer::updatePlayerHeight(VisualObject* player,  VisualObject* terrain)
         QVector3D PC=QVector3D{C.x-playerX, C.y-playerY, C.z-playerZ};
         QVector3D PA=QVector3D{A.x-playerX, A.y-playerY, A.z-playerZ};
 
-        float lambda1 = (PB.x()*PC.z() -PC.x()*PB.z())/denominator;
-        float lambda2 = (PC.x()*PA.z() -PC.x()*PA.z())/denominator;
+        float lambda1 = (PB.x()*PC.z() -PC.x()*PB.z()); ///denominator;
+        float lambda2 = (PC.x()*PA.z() -PC.x()*PA.z()); ///denominator;
         float lambda3 = 1.0f - lambda1 - lambda2;
 
 
@@ -1688,13 +1686,10 @@ void Renderer::updatePlayerHeight(VisualObject* player,  VisualObject* terrain)
         {
             // Point is inside the triangle, update player's height
             float terrain_height=lambda1 * A.y + lambda2 * B.y + lambda3 * C.y ;
+            qDebug("not inside triangle of  terrain");
 
-            player->MiddlePoints[0].y = terrain_height+10;
-            //player->move(0.0, 0.1, 0.0);
+            player->setPosition({player->getPosition().x(), terrain_height+0.1f, player->getPosition().z()});
 
-            for (auto i=0;i<player->mVertices.size();i++){
-                player->mVertices[i].y=terrain_height+10;
-            }
             break;
         }
         else{

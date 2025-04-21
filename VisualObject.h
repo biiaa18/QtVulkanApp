@@ -18,13 +18,26 @@ public:
     VkPrimitiveTopology mTopology { VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST };
     //
     QMatrix4x4 mMatrix;
-    void move(float x, float y, float z);
+    void move(float t, float x, float y, float z);
     void scale(float s);
     void rotate(float t, float x, float y, float z);
     // to render different topology types
     int drawType{0}; // 0 is for fill, 1 is for lines
     void setdrawType(int type){drawType=type;};
     inline int getDrawType() const { return drawType; }
+
+
+
+    //REFACTORING
+    QVector3D mPosition{ 0.f, 0.f, 0.f };
+
+    void setPosition(const QVector3D& position);
+    QVector3D getPosition();
+    void moveRight(float delta);
+    void moveForward(float delta);
+
+
+    ///////////////////////////////////////////////////////////////
 
     std::vector<Vertex> MiddlePoints;
     Vertex getMiddlePoints(int object_number);
@@ -51,7 +64,7 @@ public:
     void setName(std::string name);
     std::string getName() const;
 
-    inline QMatrix4x4 getMatrix() const {return mMatrix;}
+    QMatrix4x4 getMatrix() ;
 
     bool MovingRight=true;
 protected:

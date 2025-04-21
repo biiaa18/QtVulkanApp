@@ -33,16 +33,16 @@ void VulkanWindow::keyPressEvent(QKeyEvent *event)
     if (event->key() == Qt::Key_W)
     {
         if (dynamic_cast<Renderer*>(mRenderer)->CanMove){
-            float rate=-0.5f;
+            float rate=-5.0f;
 
-            dynamic_cast<Renderer*>(mRenderer)->mObjects.at(1)->move(0.0f,0.0f, rate);
+            dynamic_cast<Renderer*>(mRenderer)->mObjects.at(1)->move(0.016f,0.0f,0.0f, rate);
             qDebug("Move forward");
 
             dynamic_cast<Renderer*>(mRenderer)->mObjects.at(1)->updateMiddlePoints(0,0.0f,0.0f,rate);
 
-            VisualObject* player=dynamic_cast<Renderer*>(mRenderer)->mObjects.at(1);
+            /*VisualObject* player=dynamic_cast<Renderer*>(mRenderer)->mObjects.at(1);
             VisualObject* terrain=dynamic_cast<Renderer*>(mRenderer)->mObjects.at(15);
-            dynamic_cast<Renderer*>(mRenderer)->updatePlayerHeight(player, terrain);            //.at(1) for player, .at(15) for heightmap
+            dynamic_cast<Renderer*>(mRenderer)->updatePlayerHeight(player, terrain);  */          //.at(1) for player, .at(15) for heightmap
 
 
         }
@@ -62,13 +62,13 @@ void VulkanWindow::keyPressEvent(QKeyEvent *event)
             //     mSelectedObject->move(-10.1f,0.0f, 0.0f);
             // }
             //mIndex
-            float rate=0.5f;
-            dynamic_cast<Renderer*>(mRenderer)->mObjects.at(1)->move(0.0f, 0.0f,rate);
+            float rate=5.0f;
+            dynamic_cast<Renderer*>(mRenderer)->mObjects.at(1)->move(0.016f,0.0f,0.0f, rate);
             dynamic_cast<Renderer*>(mRenderer)->mObjects.at(1)->updateMiddlePoints(0,0.0f,0.0f,rate);
 
-            VisualObject* player=dynamic_cast<Renderer*>(mRenderer)->mObjects.at(1);
-            VisualObject* terrain=dynamic_cast<Renderer*>(mRenderer)->mObjects.at(15);
-            dynamic_cast<Renderer*>(mRenderer)->updatePlayerHeight(player, terrain);
+            // VisualObject* player=dynamic_cast<Renderer*>(mRenderer)->mObjects.at(1);
+            // VisualObject* terrain=dynamic_cast<Renderer*>(mRenderer)->mObjects.at(15);
+            // dynamic_cast<Renderer*>(mRenderer)->updatePlayerHeight(player, terrain);
 
             qDebug("Move backwards");
         }
@@ -89,14 +89,14 @@ void VulkanWindow::keyPressEvent(QKeyEvent *event)
             //     qDebug("Move left");
             //     mSelectedObject->move(0.0f,0.0f, 10.1f);
             // }
-            float rate=0.5f;
+            float rate=5.0f;
             qDebug("Move left");
-            dynamic_cast<Renderer*>(mRenderer)->mObjects.at(1)->move(rate,0.0f, 0.0f);
+            dynamic_cast<Renderer*>(mRenderer)->mObjects.at(1)->move(0.016f,rate,0.0f, 0.0f);
             dynamic_cast<Renderer*>(mRenderer)->mObjects.at(1)->updateMiddlePoints(0,rate,0.0f,0.0f);
 
-            VisualObject* player=dynamic_cast<Renderer*>(mRenderer)->mObjects.at(1);
-            VisualObject* terrain=dynamic_cast<Renderer*>(mRenderer)->mObjects.at(15);
-            dynamic_cast<Renderer*>(mRenderer)->updatePlayerHeight(player, terrain);
+            // VisualObject* player=dynamic_cast<Renderer*>(mRenderer)->mObjects.at(1);
+            // VisualObject* terrain=dynamic_cast<Renderer*>(mRenderer)->mObjects.at(15);
+            // dynamic_cast<Renderer*>(mRenderer)->updatePlayerHeight(player, terrain);
         }
 
         else{
@@ -114,14 +114,14 @@ void VulkanWindow::keyPressEvent(QKeyEvent *event)
              //     qDebug("Move right");
              //     mSelectedObject->move(0.0f,0.0f, -10.1f);
              // }
-             float rate=-0.5f;
+             float rate=-5.0f;
              qDebug("Move right");
-             dynamic_cast<Renderer*>(mRenderer)->mObjects.at(1)->move(rate,0.0f, 0.0f);
+             dynamic_cast<Renderer*>(mRenderer)->mObjects.at(1)->move(0.016f,rate,0.0f, 0.0f);
              dynamic_cast<Renderer*>(mRenderer)->mObjects.at(1)->updateMiddlePoints(0,rate,0.0f,0.0f);
 
-             VisualObject* player=dynamic_cast<Renderer*>(mRenderer)->mObjects.at(1);
-             VisualObject* terrain=dynamic_cast<Renderer*>(mRenderer)->mObjects.at(15);
-             dynamic_cast<Renderer*>(mRenderer)->updatePlayerHeight(player, terrain);
+             // VisualObject* player=dynamic_cast<Renderer*>(mRenderer)->mObjects.at(1);
+             // VisualObject* terrain=dynamic_cast<Renderer*>(mRenderer)->mObjects.at(15);
+             // dynamic_cast<Renderer*>(mRenderer)->updatePlayerHeight(player, terrain);
          }
          else{
              qDebug("You lost");
