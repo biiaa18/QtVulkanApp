@@ -3,8 +3,8 @@
 Pickup::Pickup() {
     drawType=0;
     Vertex v1{-3.0f,  0.1f,  5.0f,   0.5f, 0.5f, 0.5f, 0.0f, 0.0f};
-    Vertex v2{-3.25f,   0.5f,  5.0f,   0.5f, 0.5f, 0.5f, 0.0f, 0.0f};
-    Vertex v3{-3.5f,   0.1f,  5.0f,   0.5f, 0.5f, 0.5f, 0.0f, 0.0f};
+    Vertex v2{-3.25f,   0.5f,  5.0f,   0.5f, 0.5f, 0.5f, 0.5f, 1.0f};
+    Vertex v3{-3.5f,   0.1f,  5.0f,   0.5f, 0.5f, 0.5f, 1.0f, 0.0f};
     mVertices.push_back(v1);
     mVertices.push_back(v2);
     mVertices.push_back(v3);

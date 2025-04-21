@@ -35,18 +35,16 @@ void VulkanWindow::keyPressEvent(QKeyEvent *event)
         if (dynamic_cast<Renderer*>(mRenderer)->CanMove){
             float rate=-0.5f;
 
-            dynamic_cast<Renderer*>(mRenderer)->mObjects.at(1)->move(0.0f, 0.0f, rate);
+            dynamic_cast<Renderer*>(mRenderer)->mObjects.at(1)->move(0.0f,0.0f, rate);
             qDebug("Move forward");
-            //updateHeight() maybe should be done in Renderer.cpp with parameters player and heightmap instead of in the player
-            //dynamic_cast<Renderer*>(mRenderer)->mObjects.at(1)->updateHeight();
-            //dynamic_cast<Renderer*>(mRenderer)->updateHeight(mObjects.at(1), mObjects.at(15));            //.at(1) for player, .at(15) for heightmap
+
             dynamic_cast<Renderer*>(mRenderer)->mObjects.at(1)->updateMiddlePoints(0,0.0f,0.0f,rate);
 
-            // if(mSelectedObject)
-            // {
-            //     qDebug("Move forward");
-            //     mSelectedObject->move(0.0f,10.0f, 0.0f);
-            // }
+            VisualObject* player=dynamic_cast<Renderer*>(mRenderer)->mObjects.at(1);
+            VisualObject* terrain=dynamic_cast<Renderer*>(mRenderer)->mObjects.at(15);
+            dynamic_cast<Renderer*>(mRenderer)->updatePlayerHeight(player, terrain);            //.at(1) for player, .at(15) for heightmap
+
+
         }
 
         else{
@@ -68,6 +66,9 @@ void VulkanWindow::keyPressEvent(QKeyEvent *event)
             dynamic_cast<Renderer*>(mRenderer)->mObjects.at(1)->move(0.0f, 0.0f,rate);
             dynamic_cast<Renderer*>(mRenderer)->mObjects.at(1)->updateMiddlePoints(0,0.0f,0.0f,rate);
 
+            VisualObject* player=dynamic_cast<Renderer*>(mRenderer)->mObjects.at(1);
+            VisualObject* terrain=dynamic_cast<Renderer*>(mRenderer)->mObjects.at(15);
+            dynamic_cast<Renderer*>(mRenderer)->updatePlayerHeight(player, terrain);
 
             qDebug("Move backwards");
         }
@@ -93,6 +94,9 @@ void VulkanWindow::keyPressEvent(QKeyEvent *event)
             dynamic_cast<Renderer*>(mRenderer)->mObjects.at(1)->move(rate,0.0f, 0.0f);
             dynamic_cast<Renderer*>(mRenderer)->mObjects.at(1)->updateMiddlePoints(0,rate,0.0f,0.0f);
 
+            VisualObject* player=dynamic_cast<Renderer*>(mRenderer)->mObjects.at(1);
+            VisualObject* terrain=dynamic_cast<Renderer*>(mRenderer)->mObjects.at(15);
+            dynamic_cast<Renderer*>(mRenderer)->updatePlayerHeight(player, terrain);
         }
 
         else{
@@ -114,6 +118,10 @@ void VulkanWindow::keyPressEvent(QKeyEvent *event)
              qDebug("Move right");
              dynamic_cast<Renderer*>(mRenderer)->mObjects.at(1)->move(rate,0.0f, 0.0f);
              dynamic_cast<Renderer*>(mRenderer)->mObjects.at(1)->updateMiddlePoints(0,rate,0.0f,0.0f);
+
+             VisualObject* player=dynamic_cast<Renderer*>(mRenderer)->mObjects.at(1);
+             VisualObject* terrain=dynamic_cast<Renderer*>(mRenderer)->mObjects.at(15);
+             dynamic_cast<Renderer*>(mRenderer)->updatePlayerHeight(player, terrain);
          }
          else{
              qDebug("You lost");

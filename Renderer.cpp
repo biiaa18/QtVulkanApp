@@ -67,8 +67,6 @@ Renderer::Renderer(QVulkanWindow *w, bool msaa)
 
     // //Pickups
     mPickups.push_back((new Pickup()));//0
-    mPickups.at(0)->scale(10.0f);
-    mPickups.at(0)->move (3.0f,0.0f,-4.5f);
     mPickups.push_back((new Pickup()));//1
     mPickups.at(1)->move (0.0f,0.0f,-2.0f);
     mPickups.at(1)->updateMiddlePoints(0,0.0f,0.0f,-2.0f);
@@ -96,8 +94,8 @@ Renderer::Renderer(QVulkanWindow *w, bool msaa)
 
 
     //HEIGHT MAP
-    // mObjects.push_back(new HeightMap()); //15
-    // mObjects.at(15)->move (-15.0f,-4.5f,15.0f);
+    mObjects.push_back(new HeightMap()); //15
+    mObjects.at(15)->move (-15.0f,-4.5f,15.0f);
 
     //CAMERA
     mCamera.setPosition(QVector3D(0.0f, -3.f, -12.0f));
@@ -636,7 +634,7 @@ void Renderer::startNextFrame()
 
 
     //BARYCENTRIC COORDINATES
-    //updatePlayerHeight(mObjects.at(1),  mObjects.at(15));
+    updatePlayerHeight(mObjects.at(1),  mObjects.at(15));
 
 
     mWindow->frameReady();
@@ -1655,23 +1653,53 @@ void Renderer::Patrol(float speed, VisualObject* ptr, float min, float max)
 void Renderer::updatePlayerHeight(VisualObject* player,  VisualObject* terrain)
 {
 
+    float playerX = player->MiddlePoints[0].x;
+    float playerZ = player->MiddlePoints[0].z;
+    float playerY = player->MiddlePoints[0].y;
+
     for (size_t i = 0; i < terrain->mIndices.size(); i += 3)
     {
         Vertex A = terrain->mVertices[terrain->mIndices[i]];
         Vertex B = terrain->mVertices[terrain->mIndices[i + 1]];
         Vertex C = terrain->mVertices[terrain->mIndices[i + 2]];
+        // barycentric coordinates
+        QVector3D AB=QVector3D{B.x-A.x, B.y-A.y, B.z-A.z};
+        QVector3D AC=QVector3D{C.x-A.x, C.y-A.y, C.z-A.z};
 
-        // float denominator = (B.z - C.z) * (A.x - C.x) + (C.x - B.x) * (A.z - C.z);
-        // float lambda1 = ((B.z - C.z) * (player->x - C.x) + (C.x - B.x) * (player->z - C.z)) / denominator;
-        // float lambda2 = ((C.z - A.z) * (player->x - C.x) + (A.x - C.x) * (player->z - C.z)) / denominator;
-        // float lambda3 = 1.0f - lambda1 - lambda2;
+        float denominator = AB.x()*AC.z() -AC.x()*AB.z();
 
-        // if (lambda1 >= 0 && lambda2 >= 0 && lambda3 >= 0)
-        // {
-        //     // Point is inside the triangle
-        //     player->y = lambda1 * A.y + lambda2 * B.y + lambda3 * C.y;
-        //     break;
-        // }
+
+        if (denominator == 0.0f)
+        {
+            continue;
+        }
+
+        QVector3D PB=QVector3D{B.x-playerX, B.y-playerY, B.z-playerZ};
+        QVector3D PC=QVector3D{C.x-playerX, C.y-playerY, C.z-playerZ};
+        QVector3D PA=QVector3D{A.x-playerX, A.y-playerY, A.z-playerZ};
+
+        float lambda1 = (PB.x()*PC.z() -PC.x()*PB.z())/denominator;
+        float lambda2 = (PC.x()*PA.z() -PC.x()*PA.z())/denominator;
+        float lambda3 = 1.0f - lambda1 - lambda2;
+
+
+
+        if (lambda1 >= 0 && lambda2 >= 0 && lambda3 >= 0)
+        {
+            // Point is inside the triangle, update player's height
+            float terrain_height=lambda1 * A.y + lambda2 * B.y + lambda3 * C.y ;
+
+            player->MiddlePoints[0].y = terrain_height+10;
+            //player->move(0.0, 0.1, 0.0);
+
+            for (auto i=0;i<player->mVertices.size();i++){
+                player->mVertices[i].y=terrain_height+10;
+            }
+            break;
+        }
+        else{
+            //qDebug("not inside triangle of  terrain");
+        }
     }
 };
 
