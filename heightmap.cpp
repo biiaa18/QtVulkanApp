@@ -143,3 +143,5 @@ void HeightMap::makeTerrain(const char* textureData,int grid_size, float horison
         }
     }
 }
+
+

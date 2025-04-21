@@ -98,6 +98,9 @@ protected:
 
     void setViewProjectionMatrix();
 
+    //BARYCENTRIC COORDINATES
+    void updatePlayerHeight(VisualObject* player,  VisualObject* terrain);
+
 private:
     friend class VulkanWindow;
     Triangle mTriangle;

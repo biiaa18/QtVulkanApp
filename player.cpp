@@ -22,3 +22,5 @@ Player::Player() {            //right  up   forward
     MiddlePoints.push_back(v4);
     radius=0.28f;
 }
+
+

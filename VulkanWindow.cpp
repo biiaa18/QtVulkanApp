@@ -34,8 +34,12 @@ void VulkanWindow::keyPressEvent(QKeyEvent *event)
     {
         if (dynamic_cast<Renderer*>(mRenderer)->CanMove){
             float rate=-0.5f;
+
             dynamic_cast<Renderer*>(mRenderer)->mObjects.at(1)->move(0.0f, 0.0f, rate);
             qDebug("Move forward");
+            //updateHeight() maybe should be done in Renderer.cpp with parameters player and heightmap instead of in the player
+            //dynamic_cast<Renderer*>(mRenderer)->mObjects.at(1)->updateHeight();
+            //dynamic_cast<Renderer*>(mRenderer)->updateHeight(mObjects.at(1), mObjects.at(15));            //.at(1) for player, .at(15) for heightmap
             dynamic_cast<Renderer*>(mRenderer)->mObjects.at(1)->updateMiddlePoints(0,0.0f,0.0f,rate);
 
             // if(mSelectedObject)

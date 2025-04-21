@@ -96,8 +96,8 @@ Renderer::Renderer(QVulkanWindow *w, bool msaa)
 
 
     //HEIGHT MAP
-    mObjects.push_back(new HeightMap()); //15
-    mObjects.at(15)->move (-15.0f,-4.5f,15.0f);
+    // mObjects.push_back(new HeightMap()); //15
+    // mObjects.at(15)->move (-15.0f,-4.5f,15.0f);
 
     //CAMERA
     mCamera.setPosition(QVector3D(0.0f, -3.f, -12.0f));
@@ -635,6 +635,10 @@ void Renderer::startNextFrame()
     Patrol(0.02f,mObjects.at(13), -3.0f,1.0f);
 
 
+    //BARYCENTRIC COORDINATES
+    //updatePlayerHeight(mObjects.at(1),  mObjects.at(15));
+
+
     mWindow->frameReady();
     mWindow->requestUpdate(); // render continuously, throttled by the presentation rate
 }
@@ -1029,6 +1033,8 @@ void Renderer::setViewProjectionMatrix()
     memcpy(static_cast<char*>(mUniformBufferLocation) + 64, temp.constData(), 64);
 }
 
+
+
 void Renderer::createTextureSampler()
 {
     VkSamplerCreateInfo samplerInfo{};
@@ -1148,10 +1154,6 @@ TextureHandle Renderer::createHeightMap(const char *filename)
         temp = pixelData[i + 3];
         qDebug() << "Pixel " << i << "a " << temp;
     }
-
-
-    // float grid_size = static_cast<float>(texWidth);
-    // HeightMap(pixelData,grid_size,0.05f); //15
 
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -1647,6 +1649,30 @@ void Renderer::Patrol(float speed, VisualObject* ptr, float min, float max)
         CanMove=false;
     }
 
+}
+
+
+void Renderer::updatePlayerHeight(VisualObject* player,  VisualObject* terrain)
+{
+
+    for (size_t i = 0; i < terrain->mIndices.size(); i += 3)
+    {
+        Vertex A = terrain->mVertices[terrain->mIndices[i]];
+        Vertex B = terrain->mVertices[terrain->mIndices[i + 1]];
+        Vertex C = terrain->mVertices[terrain->mIndices[i + 2]];
+
+        // float denominator = (B.z - C.z) * (A.x - C.x) + (C.x - B.x) * (A.z - C.z);
+        // float lambda1 = ((B.z - C.z) * (player->x - C.x) + (C.x - B.x) * (player->z - C.z)) / denominator;
+        // float lambda2 = ((C.z - A.z) * (player->x - C.x) + (A.x - C.x) * (player->z - C.z)) / denominator;
+        // float lambda3 = 1.0f - lambda1 - lambda2;
+
+        // if (lambda1 >= 0 && lambda2 >= 0 && lambda3 >= 0)
+        // {
+        //     // Point is inside the triangle
+        //     player->y = lambda1 * A.y + lambda2 * B.y + lambda3 * C.y;
+        //     break;
+        // }
+    }
 };
 
 
