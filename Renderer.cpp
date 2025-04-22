@@ -1662,31 +1662,35 @@ void Renderer::updatePlayerHeight(VisualObject* player,  VisualObject* terrain)
         Vertex A = terrain->mVertices[terrain->mIndices[i]];
         Vertex B = terrain->mVertices[terrain->mIndices[i + 1]];
         Vertex C = terrain->mVertices[terrain->mIndices[i + 2]];
-        // barycentric coordinates
+
+
+
+        //barycentric coordinates
         QVector3D AB=QVector3D{B.x-A.x, B.y-A.y, B.z-A.z};
         QVector3D AC=QVector3D{C.x-A.x, C.y-A.y, C.z-A.z};
-        float denominator = AB.x()*AC.z() -AC.x()*AB.z();
+        float denominator = AB.x()*AC.z() -AB.z()*AC.x();   //CROSS PRODUCT OF AB, AC
 
         if (denominator == 0.0f)
         {
             continue;
         }
 
+
+        QVector3D PA=QVector3D{A.x-playerX, A.y-playerY, A.z-playerZ};
         QVector3D PB=QVector3D{B.x-playerX, B.y-playerY, B.z-playerZ};
         QVector3D PC=QVector3D{C.x-playerX, C.y-playerY, C.z-playerZ};
-        QVector3D PA=QVector3D{A.x-playerX, A.y-playerY, A.z-playerZ};
 
-        float lambda1 = (PB.x()*PC.z() -PC.x()*PB.z()); ///denominator;
-        float lambda2 = (PC.x()*PA.z() -PC.x()*PA.z()); ///denominator;
-        float lambda3 = 1.0f - lambda1 - lambda2;
 
+        float lambda1 = (PB.x()*PC.z() -PB.z()*PC.x())/denominator;
+        float lambda2 = (PC.x()*PA.z() -PC.z()*PA.x())/denominator;
+        float lambda3 = 1.0f - lambda1 - lambda2;  //cause barycentric sum up to 1
 
 
         if (lambda1 >= 0 && lambda2 >= 0 && lambda3 >= 0)
         {
             // Point is inside the triangle, update player's height
             float terrain_height=lambda1 * A.y + lambda2 * B.y + lambda3 * C.y ;
-            qDebug("not inside triangle of  terrain");
+            qDebug("inside triangle of  terrain");
 
             player->setPosition({player->getPosition().x(), terrain_height+0.1f, player->getPosition().z()});
 

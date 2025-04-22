@@ -6,7 +6,7 @@ HeightMap::HeightMap():VisualObject()
 {
 
    //makeTerrain("D:\\HeightMap\\Heightmap.jpg", 256, 256);
-   makeTerrain("D:\\HeightMap\\Heightmap.jpg", 256, 0.1, 0.055);
+   makeTerrain("D:\\HeightMap\\Heightmap.jpg", 256, 0.1, 0.05);
    //mMatrix.rotate(45, 0.0, 0.0, 0.0f);
 
 }
@@ -99,10 +99,10 @@ void HeightMap::makeTerrain(const char* textureData,int grid_size, float horison
     int z_min=0;
     unsigned short x_max=grid_size; //just the max boundaries of the input image
     unsigned short z_max=grid_size; //just the max boundaries of the input image
-    float heightPlacement{10.f};
+    float heightPlacement{-5.f};
 
-    float vertexXStart{0.f};            // if world origo should be at center use: {0.f - width * horisontalSpacing / 2};
-    float vertexZStart{0.f};            // if world origo should be at center use: {0.f + depth * horisontalSpacing / 2};
+    float vertexXStart{0.f - grid_size * horisontal_space / 2};    //{0.f}        // if world origo should be at center use: {0.f - width * horisontalSpacing / 2};
+    float vertexZStart{0.f + grid_size * horisontal_space / 2};     //{0.f}        // if world origo should be at center use: {0.f + depth * horisontalSpacing / 2};
 
 
     //MAKE VERTICES FIRST
@@ -114,9 +114,9 @@ void HeightMap::makeTerrain(const char* textureData,int grid_size, float horison
                 qDebug() << "Index out of bounds:" << index;
                 return;
             }
-            float heightFromBitmap = static_cast<float>(TextureData[index]);         // * heightSpacing + heightPlacement;
+            float heightFromBitmap = static_cast<float>(TextureData[index])* vertical_space + heightPlacement;         // * heightSpacing + heightPlacement;
             //                                      x - value                      y-value               z-value
-            mVertices.emplace_back(Vertex{vertexXStart + (z * horisontal_space), heightFromBitmap*vertical_space, vertexZStart - (x * horisontal_space),
+            mVertices.emplace_back(Vertex{vertexXStart + (z * horisontal_space), heightFromBitmap, vertexZStart - (x * horisontal_space),    //heightFromBitmap*vertical_space
                                           //  R , G, B                    U, V
                                           0.0f,0.5f, 0.0f,           z / (z_max - 1.f), x / (x_max - 1.f)});
         }
