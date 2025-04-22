@@ -29,17 +29,17 @@ Renderer::Renderer(QVulkanWindow *w, bool msaa)
 
     //plane
     mObjects.push_back((new TriangleSurface()));  //0
-
+    mObjects.at(0)->setPosition({0.0f,-5.0f,0.0f});
     // //player
     mObjects.push_back((new Player()));//1
-    mObjects.at(1)->setPosition({-5.0f,0.0f,0.0f});
+    mObjects.at(1)->setPosition({0.0f,0.0f,8.0f});
     // // house: i decided to do walls this way, was less lines, so i didnt push vertices for each wall in house.cpp
     // //walls
     mObjects.push_back((new wall(0.0))); //2
     mObjects.push_back((new wall(0.0))); //3
     mObjects.at(3)->setPosition({0.0f,0.0f,2.0f});
     mObjects.push_back((new wall(0.0))); //4
-    mObjects.at(4)->rotate(-90.0f, 0.0f, 1.0f, 0.0f);
+    //mObjects.at(4)->rotate(-90.0f, 0.0f, 1.0f, 0.0f);
     mObjects.push_back((new door())); //5   is the actual door
     mObjects.at(5)->setPosition ({0.0f,0.0f,0.67f});
     mObjects.at(5)->updateMiddlePoints(0,0.0f,0.0f,0.66f);
@@ -49,10 +49,10 @@ Renderer::Renderer(QVulkanWindow *w, bool msaa)
     //roof: used pythagoras here to understand the translation
     mObjects.push_back((new wall(1.0))); //8
     mObjects.at(8)->setPosition ({0.0f,1.59f,-0.41f});
-    mObjects.at(8)->rotate(45.0f, 1.0f, 0.0f, 0.0f);
+    //mObjects.at(8)->rotate(45.0f, 1.0f, 0.0f, 0.0f);
     mObjects.push_back((new wall(1.0))); //9
     mObjects.at(9)->setPosition ({0.0f,1.59f,2.41f});
-    mObjects.at(9)->rotate(-45.0f, 1.0f, 0.0f, 0.0f);
+    //mObjects.at(9)->rotate(-45.0f, 1.0f, 0.0f, 0.0f);
     mObjects.push_back((new Triangle())); //10
     mObjects.push_back((new Triangle())); //11
     mObjects.at(11)->setPosition ({2.0f,0.0f,0.0f});
@@ -85,8 +85,9 @@ Renderer::Renderer(QVulkanWindow *w, bool msaa)
 
     // //NPC
     mObjects.push_back((new NPC(mPickups.at(0)->getMiddlePoints(0)))); //12//must always be under pickups creation....
+    mObjects.at(12)->setPosition ({0.0f,0.0f,0.0f});
     mObjects.push_back((new NPC(mPickups.at(2)->getMiddlePoints(0))));//13
-
+    mObjects.at(12)->setPosition ({0.0f,0.0f,0.0f});
 
     //OBJECT
     mObjects.push_back((new ObjMesh("sphere.obj"))); //14
@@ -98,8 +99,8 @@ Renderer::Renderer(QVulkanWindow *w, bool msaa)
     //mObjects.at(15)->setPosition ({-15.0f,-4.5f,15.0f});
 
     //CAMERA
-    mCamera.setPosition(QVector3D(0.0f, -7.f, -12.0f));
-
+    mCamera.setPosition(QVector3D(0.0f, -2.f, -12.0f));
+    mCamera.rotate(45, 0.f, 0.f, 1.0f);
 
 
 
@@ -440,6 +441,7 @@ void Renderer::initSwapChainResources()
     // mCamera.setPosition({0.0f, -3.f, -12.0f});
 
     //insideCamera.perspective(45.0f, sz.width() / (float) sz.height(), 0.01f, 700.0f);
+
 
 }
 
@@ -1141,7 +1143,7 @@ TextureHandle Renderer::createHeightMap(const char *filename)
     //We see that in a grey scale image, the R, G, B values are the same! The A value is 255
 
     unsigned char temp{};
-    for (int i = 0; i < texWidth * texHeight; i += 1200)
+    for (int i = 0; i < texWidth * texHeight; i += 600)
     {
         temp = pixelData[i];
         qDebug() << "Pixel " << i << "r " << temp;
@@ -1619,13 +1621,17 @@ void Renderer::Patrol(float speed, VisualObject* ptr, float min, float max)
 {
     float right_min=min;
     float right_max=max;
+    float height=(updatePlayerHeight(ptr,mObjects.at(15)));
 
     if (ptr->MovingRight){
         for(auto it=ptr->mVertices.begin(); it!=ptr->mVertices.end();it++){
             (*it).x+=speed;
         }
-        ptr->updateMiddlePoints(0,speed,0.0f,0.0f);
-        ptr->mMatrix.translate(speed,0.0f,0.0f);
+        updatePlayerHeight(ptr,mObjects.at(15));
+        ptr->setmovingPosition({speed,0.0f,0.0f});
+        //ptr->updateMiddlePoints(0,speed,height,0.0f);
+        // ptr->setmovingPosition({speed,ptr->getPosition().y(),ptr->getPosition().z()});
+
         if (ptr->mVertices.at(0).x >=right_max){
         ptr->MovingRight=false;
         }
@@ -1634,8 +1640,15 @@ void Renderer::Patrol(float speed, VisualObject* ptr, float min, float max)
         for(auto it=ptr->mVertices.begin(); it!=ptr->mVertices.end();it++){
             (*it).x-=speed;    
         }
-        ptr->updateMiddlePoints(0,-speed,0.0f,0.0f);
-        ptr->mMatrix.translate(-speed,0.0f,0.0f);
+        updatePlayerHeight(ptr,mObjects.at(15));
+        ptr->setmovingPosition({-speed,0.0f,0.0f});
+
+        //ptr->updateMiddlePoints(0,speed,height,0.0f);
+        //ptr->setmovingPosition({-speed,ptr->getPosition().y(),ptr->getPosition().z()});
+
+        // updatePlayerHeight(ptr,mObjects.at(15));
+        // ptr->updateMiddlePoints(0,-speed,height,0.0f);
+        // ptr->setmovingPosition({-speed,height,0.0f});
         if (ptr->mVertices.at(0).x<=right_min){
         ptr->MovingRight=true;
         }
@@ -1650,9 +1663,10 @@ void Renderer::Patrol(float speed, VisualObject* ptr, float min, float max)
 }
 
 
-void Renderer::updatePlayerHeight(VisualObject* player,  VisualObject* terrain)
+float Renderer::updatePlayerHeight(VisualObject* player,  VisualObject* terrain)
 {
 
+    float terrain_height=0.0f;
     float playerX = player->getPosition().x();
     float playerZ = player->getPosition().z();
     float playerY = player->getPosition().y();
@@ -1663,23 +1677,18 @@ void Renderer::updatePlayerHeight(VisualObject* player,  VisualObject* terrain)
         Vertex B = terrain->mVertices[terrain->mIndices[i + 1]];
         Vertex C = terrain->mVertices[terrain->mIndices[i + 2]];
 
-
-
         //barycentric coordinates
         QVector3D AB=QVector3D{B.x-A.x, B.y-A.y, B.z-A.z};
         QVector3D AC=QVector3D{C.x-A.x, C.y-A.y, C.z-A.z};
         float denominator = AB.x()*AC.z() -AB.z()*AC.x();   //CROSS PRODUCT OF AB, AC
-
         if (denominator == 0.0f)
         {
             continue;
         }
-
-
+        //player&heightmap triangles vectors
         QVector3D PA=QVector3D{A.x-playerX, A.y-playerY, A.z-playerZ};
         QVector3D PB=QVector3D{B.x-playerX, B.y-playerY, B.z-playerZ};
         QVector3D PC=QVector3D{C.x-playerX, C.y-playerY, C.z-playerZ};
-
 
         float lambda1 = (PB.x()*PC.z() -PB.z()*PC.x())/denominator;
         float lambda2 = (PC.x()*PA.z() -PC.z()*PA.x())/denominator;
@@ -1689,10 +1698,11 @@ void Renderer::updatePlayerHeight(VisualObject* player,  VisualObject* terrain)
         if (lambda1 >= 0 && lambda2 >= 0 && lambda3 >= 0)
         {
             // Point is inside the triangle, update player's height
-            float terrain_height=lambda1 * A.y + lambda2 * B.y + lambda3 * C.y ;
+            terrain_height=lambda1 * A.y + lambda2 * B.y + lambda3 * C.y ;
             qDebug("inside triangle of  terrain");
 
-            player->setPosition({player->getPosition().x(), terrain_height+0.1f, player->getPosition().z()});
+            player->setPosition({player->getPosition().x(), terrain_height+0.2f, player->getPosition().z()});
+            player->updateMiddlePoints(0, 0.f,terrain_height+0.2f, 0.f);
 
             break;
         }
@@ -1700,6 +1710,8 @@ void Renderer::updatePlayerHeight(VisualObject* player,  VisualObject* terrain)
             //qDebug("not inside triangle of  terrain");
         }
     }
+
+    return terrain_height;
 };
 
 

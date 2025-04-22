@@ -192,6 +192,15 @@ void VulkanWindow::keyPressEvent(QKeyEvent *event)
         dynamic_cast<Renderer*>(mRenderer)->mCamera.moveRight(-0.5f);
     }
 
+    if(event->key() == Qt::Key_Shift)
+    {
+        dynamic_cast<Renderer*>(mRenderer)->mCamera.updateHeigth(-0.5f);
+    }
+    if(event->key() == Qt::Key_Control)
+    {
+        dynamic_cast<Renderer*>(mRenderer)->mCamera.updateHeigth(0.5f);
+    }
+
     // if(event->key() == Qt::Key_Z)
     // {
     //     //dynamic_cast<Renderer*>(mRenderer)->mCamera.rotate(45, 0.0f, 0.0f, 1.0f);

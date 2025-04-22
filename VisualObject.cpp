@@ -59,30 +59,13 @@ void VisualObject::moveForward(float delta)
     mPosition.setZ( mPosition.z() + delta);
 }
 
-void VisualObject::setNewPosition(float speed, float new_x,float new_y, float new_z)
+void VisualObject::setmovingPosition(const QVector3D &position)
 {
-    // mMatrix.setToIdentity();
-    // QVector4D vec4={new_x,new_y,new_z,0.0f};
-    // QVector4D x_vec=(vec4*mMatrix.inverted())/speed;   //x=b*A^-1
 
-    // if (mVertices.at(0).x>1.0f || new_z>1.0f){
-    //     new_x=1.0f;
-    //     new_z=1.0f;
-    // }
-
-
-    // for (float i=0.0;i<2.0;i+=0.1){
-    //     mMatrix.translate(x_vec.x() ,x_vec.y(),x_vec.z());
-    // }
-
-
-
-    // for (int i=0;i<temp->mVertices.size();i++){
-    //     mVertices[i].x=new_x;
-    //     mVertices[i].y=new_y;
-    //     mVertices[i].z=new_z;
-    // }
-
+    mPosition+=position;
+    // mPosition.x() += position.x();
+    // mPosition.y()=position.y();
+    // mPosition.z()=position.z();
 }
 
 
@@ -94,13 +77,17 @@ void VisualObject::move(float t, float x, float y, float z)
 
 void VisualObject::scale(float s)
 {
-    //mMatrix.scale(s);
+    mPosition=mPosition*s;
 }
 
 
 void VisualObject::rotate(float t, float x, float y, float z)
 {
     mMatrix.rotate(t, x, y, z);
+    // QMatrix4x4 temp;
+    // temp.rotate(mRotation.x(),x, y, z);
+    // // temp.rotate(mRotation.y(),1.f, 0.f, 0.f);
+    // // temp.rotate(mRotation.z(),1.f, 0.f, 0.f);
 }
 
 void VisualObject::setName(std::string name)
@@ -117,6 +104,7 @@ QMatrix4x4 VisualObject::getMatrix()
 {
     QMatrix4x4 temp;
     temp.translate(mPosition);
+    //temp.rotate(mRotation.x(),1.f, 0.f, 0.f);
 
     return temp;
 }

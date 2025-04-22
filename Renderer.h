@@ -99,7 +99,7 @@ protected:
     void setViewProjectionMatrix();
 
     //BARYCENTRIC COORDINATES
-    void updatePlayerHeight(VisualObject* player,  VisualObject* terrain);
+    float updatePlayerHeight(VisualObject* player,  VisualObject* terrain);
 
 private:
     friend class VulkanWindow;

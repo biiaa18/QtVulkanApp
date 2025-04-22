@@ -30,19 +30,20 @@ public:
 
     //REFACTORING
     QVector3D mPosition{ 0.f, 0.f, 0.f };
+    QVector3D mRotation{ 45, 45, 45 };
 
     void setPosition(const QVector3D& position);
     QVector3D getPosition();
     void moveRight(float delta);
     void moveForward(float delta);
 
+    void setmovingPosition(const  QVector3D& position);
 
     ///////////////////////////////////////////////////////////////
 
     std::vector<Vertex> MiddlePoints;
     Vertex getMiddlePoints(int object_number);
     void updateMiddlePoints(int index,float new_x,float new_y,float new_z);
-    void setNewPosition(float speed,float new_x,float new_y,float new_z);
     float radius{0.0f};
 
     int CollisionType{0}; // 0 is for pickups, 1 is for the door, 2 is for entrance
