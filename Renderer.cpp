@@ -1143,7 +1143,7 @@ TextureHandle Renderer::createHeightMap(const char *filename)
     //We see that in a grey scale image, the R, G, B values are the same! The A value is 255
 
     unsigned char temp{};
-    for (int i = 0; i < texWidth * texHeight; i += 600)
+    for (int i = 0; i < texWidth * texHeight; i += 100)
     {
         temp = pixelData[i];
         qDebug() << "Pixel " << i << "r " << temp;
